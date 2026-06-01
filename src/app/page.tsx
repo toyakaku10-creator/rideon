@@ -238,13 +238,13 @@ export default function Home() {
   const mapFollow = tab === 'speed' && currentPosition !== null;
 
   return (
-    <div className="flex flex-col bg-[#0f0f0f]" style={{ height: '100dvh' }}>
+    <div className="flex flex-col bg-[var(--bg)]" style={{ height: '100dvh' }}>
       {/* Header */}
       <header
-        className="flex items-center justify-between px-4 shrink-0 bg-[#1a1a1a] border-b border-[#2a2a2a]"
+        className="flex items-center justify-between px-4 shrink-0 bg-[var(--surface)] border-b border-[var(--border)]"
         style={{ height: '48px' }}
       >
-        <span className="text-[#c8f55a] font-bold text-lg tracking-tight flex items-center gap-1.5">
+        <span className="text-[var(--accent)] font-bold text-lg tracking-tight flex items-center gap-1.5">
           <Bike size={20} />
           cycle-map
         </span>
@@ -260,8 +260,8 @@ export default function Home() {
               onClick={() => setTab(key)}
               className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
                 tab === key
-                  ? 'bg-[#c8f55a] text-black'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'bg-[var(--accent)] text-white'
+                  : 'text-[var(--text-muted)] hover:text-[var(--text)]'
               }`}
             >
               {label}
@@ -283,7 +283,7 @@ export default function Home() {
           onMapClick={handleMapClick}
         />
         {isLoading && (
-          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[900] bg-black/75 text-[#c8f55a] text-xs px-4 py-1.5 rounded-full pointer-events-none">
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[900] bg-black/50 text-white text-xs px-4 py-1.5 rounded-full pointer-events-none">
             ルート取得中…
           </div>
         )}

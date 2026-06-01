@@ -24,20 +24,20 @@ export default function SpeedPanel({
 }: SpeedPanelProps) {
   return (
     <div
-      className="bg-[#1a1a1a] border-t border-[#2a2a2a] px-4 pt-4 shrink-0"
+      className="bg-[var(--surface)] border-t border-[var(--border)] px-4 pt-4 shrink-0"
       style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
     >
       {/* Current speed — big display */}
       <div className="text-center mb-4">
-        <span className="text-6xl font-bold text-[#c8f55a] tabular-nums">
+        <span className="text-6xl font-bold text-[var(--accent)] tabular-nums">
           {currentSpeed.toFixed(1)}
         </span>
-        <span className="text-xl text-gray-400 ml-1.5">km/h</span>
+        <span className="text-xl text-[var(--text-muted)] ml-1.5">km/h</span>
       </div>
 
       {/* Nav route distance */}
       {navDistance > 0 && (
-        <p className="text-gray-500 text-xs text-center -mt-2 mb-3">
+        <p className="text-[var(--text-muted)] text-xs text-center -mt-2 mb-3">
           ルート: {formatNavDistance(navDistance)}
         </p>
       )}
@@ -61,12 +61,12 @@ export default function SpeedPanel({
         ).map(({ label, value, unit }, i) => (
           <div
             key={i}
-            className="bg-[#2a2a2a] rounded-xl py-2.5 px-2 text-center"
+            className="bg-[var(--surface2)] rounded-xl py-2.5 px-2 text-center"
           >
-            <p className="text-gray-500 text-xs mb-1">{label}</p>
-            <p className="text-white font-semibold text-base tabular-nums leading-none">
+            <p className="text-[var(--text-muted)] text-xs mb-1">{label}</p>
+            <p className="text-[var(--text)] font-semibold text-base tabular-nums leading-none">
               {value}
-              <span className="text-gray-500 text-xs ml-0.5">{unit}</span>
+              <span className="text-[var(--text-muted)] text-xs ml-0.5">{unit}</span>
             </p>
           </div>
         ))}

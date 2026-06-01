@@ -13,16 +13,7 @@ import type { Tab, LatLng, RouteSegment, RouteType } from '@/types';
 
 const LIBRARIES: Libraries = ['geometry'];
 
-const darkMapStyles: google.maps.MapTypeStyle[] = [
-  { elementType: 'geometry', stylers: [{ color: '#212121' }] },
-  { elementType: 'labels.text.stroke', stylers: [{ color: '#212121' }] },
-  { elementType: 'labels.text.fill', stylers: [{ color: '#757575' }] },
-  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#383838' }] },
-  { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#9ca5b3' }] },
-  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#17263c' }] },
-  { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#2c2c2c' }] },
-  { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#2f3948' }] },
-];
+const darkMapStyles: google.maps.MapTypeStyle[] = [];
 
 const POLYLINE_COLORS: Record<RouteType, string> = {
   straight: '#c8f55a',
@@ -99,7 +90,7 @@ export default function CycleMap({
 
   if (loadError) {
     return (
-      <div className="w-full h-full flex items-center justify-center bg-[#1a1a1a] text-red-400 text-sm px-6 text-center">
+      <div className="w-full h-full flex items-center justify-center bg-[var(--surface)] text-[var(--red)] text-sm px-6 text-center">
         地図の読み込みに失敗しました。APIキーを確認してください。
       </div>
     );
@@ -107,8 +98,8 @@ export default function CycleMap({
 
   if (!isLoaded) {
     return (
-      <div className="w-full h-full flex items-center justify-center bg-[#1a1a1a]">
-        <span className="text-[#c8f55a] text-sm animate-pulse">地図を読み込み中…</span>
+      <div className="w-full h-full flex items-center justify-center bg-[var(--surface)]">
+        <span className="text-[var(--accent)] text-sm animate-pulse">地図を読み込み中…</span>
       </div>
     );
   }

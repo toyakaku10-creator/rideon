@@ -97,8 +97,10 @@ export default function BottomPanel({
 
   return (
     <>
-      <div className="bg-[#1a1a1a] border-t border-[#2a2a2a] px-4 pt-3 pb-safe shrink-0"
-        style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
+      <div
+        className="bg-[var(--surface)] border-t border-[var(--border)] px-4 pt-3 shrink-0"
+        style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
+      >
         {/* Route type selector */}
         <div className="flex gap-1.5 mb-3">
           {ROUTE_BUTTONS.map(({ type, icon, label }) => (
@@ -108,8 +110,8 @@ export default function BottomPanel({
               disabled={isLoading}
               className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                 routeType === type
-                  ? 'bg-[#c8f55a] text-black'
-                  : 'bg-[#2a2a2a] text-gray-400 hover:text-white active:bg-[#333]'
+                  ? 'bg-[var(--accent)] text-white'
+                  : 'bg-[var(--surface2)] text-[var(--text-muted)] hover:text-[var(--text)] active:bg-[var(--border)]'
               } disabled:opacity-50`}
             >
               <span className="flex items-center justify-center gap-1">
@@ -122,15 +124,13 @@ export default function BottomPanel({
 
         {/* Stats row */}
         <div className="flex items-center justify-between text-sm mb-3">
-          <span className="text-white font-semibold tabular-nums">
+          <span className="text-[var(--text)] font-semibold tabular-nums">
             {formatDistance(totalDistance)}
           </span>
-          <span className="text-gray-400">{waypoints.length}ポイント</span>
-          <span className="text-gray-400">
+          <span className="text-[var(--text-muted)]">{waypoints.length}ポイント</span>
+          <span className="text-[var(--text-muted)]">
             目安{' '}
-            {totalDistance > 0
-              ? formatTime(totalDistance, speedKmh)
-              : '--'}
+            {totalDistance > 0 ? formatTime(totalDistance, speedKmh) : '--'}
           </span>
         </div>
 
@@ -139,7 +139,11 @@ export default function BottomPanel({
           {[
             {
               key: 'undo',
-              content: <span className="flex items-center justify-center gap-1"><Undo2 size={13} />戻す</span>,
+              content: (
+                <span className="flex items-center justify-center gap-1">
+                  <Undo2 size={13} />戻す
+                </span>
+              ),
               onClick: onUndo,
               disabled: waypoints.length === 0,
             },
@@ -177,7 +181,7 @@ export default function BottomPanel({
               key={key}
               onClick={onClick}
               disabled={disabled}
-              className="flex-1 py-2 rounded-lg bg-[#2a2a2a] text-xs text-gray-300 disabled:opacity-40 hover:bg-[#333] active:bg-[#3a3a3a] transition-colors"
+              className="flex-1 py-2 rounded-lg bg-[var(--surface2)] text-xs text-[var(--text-muted)] disabled:opacity-40 hover:bg-[var(--border)] active:bg-[var(--border)] transition-colors"
             >
               {content}
             </button>
@@ -189,13 +193,15 @@ export default function BottomPanel({
       {showSave && (
         <div className="fixed inset-0 z-[1000] flex flex-col justify-end">
           <div
-            className="absolute inset-0 bg-black/60"
+            className="absolute inset-0 bg-black/40"
             onClick={() => setShowSave(false)}
           />
-          <div className="relative bg-[#1a1a1a] rounded-t-2xl px-4 pt-6 border-t border-[#2a2a2a]"
-            style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom))' }}>
-            <div className="w-10 h-1 bg-[#3a3a3a] rounded-full mx-auto mb-5" />
-            <h2 className="text-white font-semibold text-base mb-4">
+          <div
+            className="relative bg-[var(--surface)] rounded-t-2xl px-4 pt-6 border-t border-[var(--border)]"
+            style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom))' }}
+          >
+            <div className="w-10 h-1 bg-[var(--border)] rounded-full mx-auto mb-5" />
+            <h2 className="text-[var(--text)] font-semibold text-base mb-4">
               ルート名を入力
             </h2>
             <input
@@ -205,19 +211,19 @@ export default function BottomPanel({
               onChange={(e) => setSaveName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSaveConfirm()}
               placeholder="例：通勤ルート"
-              className="w-full bg-[#2a2a2a] text-white rounded-xl px-4 py-3 text-sm mb-4 outline-none focus:ring-2 focus:ring-[#c8f55a] placeholder-gray-600"
+              className="w-full bg-[var(--surface2)] text-[var(--text)] rounded-xl px-4 py-3 text-sm mb-4 outline-none focus:ring-2 focus:ring-[var(--accent)] placeholder:text-[var(--text-muted)]"
             />
             <div className="flex gap-3">
               <button
                 onClick={() => setShowSave(false)}
-                className="flex-1 py-3 rounded-xl bg-[#2a2a2a] text-gray-400 text-sm font-medium"
+                className="flex-1 py-3 rounded-xl bg-[var(--surface2)] text-[var(--text-muted)] text-sm font-medium"
               >
                 キャンセル
               </button>
               <button
                 onClick={handleSaveConfirm}
                 disabled={!saveName.trim()}
-                className="flex-1 py-3 rounded-xl bg-[#c8f55a] text-black font-bold text-sm disabled:opacity-40"
+                className="flex-1 py-3 rounded-xl bg-[var(--accent)] text-white font-bold text-sm disabled:opacity-40"
               >
                 保存する
               </button>
@@ -230,22 +236,22 @@ export default function BottomPanel({
       {showHistory && (
         <div className="fixed inset-0 z-[1000] flex flex-col justify-end">
           <div
-            className="absolute inset-0 bg-black/60"
+            className="absolute inset-0 bg-black/40"
             onClick={() => setShowHistory(false)}
           />
           <div
-            className="relative bg-[#1a1a1a] rounded-t-2xl border-t border-[#2a2a2a] flex flex-col"
+            className="relative bg-[var(--surface)] rounded-t-2xl border-t border-[var(--border)] flex flex-col"
             style={{ maxHeight: '70dvh' }}
           >
-            <div className="px-4 pt-4 pb-3 border-b border-[#2a2a2a]">
-              <div className="w-10 h-1 bg-[#3a3a3a] rounded-full mx-auto mb-4" />
+            <div className="px-4 pt-4 pb-3 border-b border-[var(--border)]">
+              <div className="w-10 h-1 bg-[var(--border)] rounded-full mx-auto mb-4" />
               <div className="flex items-center justify-between">
-                <h2 className="text-white font-semibold text-base">
+                <h2 className="text-[var(--text)] font-semibold text-base">
                   保存済みルート
                 </h2>
                 <button
                   onClick={() => setShowHistory(false)}
-                  className="text-gray-400 hover:text-white w-8 h-8 flex items-center justify-center"
+                  className="text-[var(--text-muted)] hover:text-[var(--text)] w-8 h-8 flex items-center justify-center"
                 >
                   <X size={18} />
                 </button>
@@ -253,14 +259,14 @@ export default function BottomPanel({
             </div>
             <div className="overflow-y-auto flex-1">
               {savedRoutes.length === 0 ? (
-                <p className="text-gray-500 text-sm text-center py-10">
+                <p className="text-[var(--text-muted)] text-sm text-center py-10">
                   保存済みルートはありません
                 </p>
               ) : (
                 [...savedRoutes].reverse().map((route) => (
                   <div
                     key={route.id}
-                    className="flex items-center px-4 py-3 border-b border-[#222]"
+                    className="flex items-center px-4 py-3 border-b border-[var(--border)]"
                   >
                     <button
                       className="flex-1 text-left min-w-0"
@@ -269,10 +275,10 @@ export default function BottomPanel({
                         setShowHistory(false);
                       }}
                     >
-                      <p className="text-white text-sm font-medium truncate">
+                      <p className="text-[var(--text)] text-sm font-medium truncate">
                         {route.name}
                       </p>
-                      <p className="text-gray-500 text-xs mt-0.5">
+                      <p className="text-[var(--text-muted)] text-xs mt-0.5">
                         {formatDistance(route.totalDistance)} ·{' '}
                         {route.waypoints.length}ポイント ·{' '}
                         {new Date(route.createdAt).toLocaleDateString('ja-JP')}
@@ -280,7 +286,7 @@ export default function BottomPanel({
                     </button>
                     <button
                       onClick={() => onDeleteRoute(route.id)}
-                      className="ml-3 text-xs text-gray-600 hover:text-red-400 transition-colors px-2 py-1 shrink-0"
+                      className="ml-3 text-xs text-[var(--text-muted)] hover:text-[var(--red)] transition-colors px-2 py-1 shrink-0"
                     >
                       削除
                     </button>
