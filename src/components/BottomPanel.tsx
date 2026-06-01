@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Ruler, Bike, Footprints, Undo2, X, Share2, Import } from 'lucide-react';
+import { Ruler, Bike, Footprints, Undo2, X, Share2, Upload } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
 import { encodeRoute } from '@/lib/routeShare';
 
@@ -44,7 +44,7 @@ interface BottomPanelProps {
   savedRoutes: SavedRoute[];
   onLoadRoute: (route: SavedRoute) => void;
   onDeleteRoute: (id: string) => void;
-  onImport: (text: string) => boolean;
+  onImportUrl: (url: string) => Promise<true | string>;
 }
 
 export default function BottomPanel({
@@ -60,12 +60,14 @@ export default function BottomPanel({
   savedRoutes,
   onLoadRoute,
   onDeleteRoute,
-  onImport,
+  onImportUrl,
 }: BottomPanelProps) {
   const [showSave, setShowSave] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showImport, setShowImport] = useState(false);
-  const [importText, setImportText] = useState('');
+  const [importUrl, setImportUrl] = useState('');
+  const [importLoading, setImportLoading] = useState(false);
+  const [importError, setImportError] = useState('');
   const [saveName, setSaveName] = useState('');
   const [copied, setCopied] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -90,13 +92,19 @@ export default function BottomPanel({
     }
   };
 
-  const handleImportConfirm = () => {
-    const ok = onImport(importText);
-    if (ok) {
+  const handleImportConfirm = async () => {
+    if (!importUrl.trim() || importLoading) return;
+    setImportLoading(true);
+    setImportError('');
+    const result = await onImportUrl(importUrl.trim());
+    setImportLoading(false);
+    if (result === true) {
       setShowImport(false);
-      setImportText('');
+      setImportUrl('');
       setSaveName('');
       setShowSave(true); // 保存ダイアログを開く
+    } else if (typeof result === 'string') {
+      setImportError(result);
     }
   };
 
@@ -182,10 +190,10 @@ export default function BottomPanel({
               key: 'import',
               content: (
                 <span className="flex items-center justify-center gap-1">
-                  <Import size={13} />インポート
+                  <Upload size={13} />インポート
                 </span>
               ),
-              onClick: () => { setImportText(''); setShowImport(true); },
+              onClick: () => { setImportUrl(''); setImportError(''); setShowImport(true); },
               disabled: false,
             },
             {
@@ -327,53 +335,63 @@ export default function BottomPanel({
         <div className="fixed inset-0 z-[1000] flex flex-col justify-end">
           <div
             className="absolute inset-0 bg-black/40"
-            onClick={() => setShowImport(false)}
+            onClick={() => !importLoading && setShowImport(false)}
           />
           <div
-            className="relative bg-[var(--surface)] rounded-t-2xl border-t border-[var(--border)] flex flex-col"
-            style={{ maxHeight: '85dvh', paddingBottom: 'max(24px, env(safe-area-inset-bottom))' }}
+            className="relative bg-[var(--surface)] rounded-t-2xl border-t border-[var(--border)]"
+            style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom))' }}
           >
             <div className="px-4 pt-4 pb-3 border-b border-[var(--border)]">
               <div className="w-10 h-1 bg-[var(--border)] rounded-full mx-auto mb-4" />
               <div className="flex items-center justify-between">
                 <h2 className="text-[var(--text)] font-semibold text-base">
-                  キョリ測データをインポート
+                  キョリ測からインポート
                 </h2>
                 <button
-                  onClick={() => setShowImport(false)}
+                  onClick={() => !importLoading && setShowImport(false)}
                   className="text-[var(--text-muted)] hover:text-[var(--text)] w-8 h-8 flex items-center justify-center"
                 >
                   <X size={18} />
                 </button>
               </div>
             </div>
-            <div className="overflow-y-auto flex-1 px-4 pt-4">
-              <p className="text-[var(--text-muted)] text-xs mb-2">
-                キョリ測のコンソールで以下を実行してコピーしたデータをペーストしてください
+            <div className="px-4 pt-4">
+              <p className="text-[var(--text-muted)] text-xs mb-3">
+                キョリ測のURLをペーストしてください
               </p>
-              <pre className="bg-[var(--surface2)] text-[var(--text)] text-xs p-3 rounded-lg overflow-x-auto font-mono leading-relaxed mb-4 select-all">
-                {`const sp = document.querySelector('#app').__vue__?.$children?.[0]?.$data?.sessionPolylines; JSON.stringify(sp.a._latlngs)`}
-              </pre>
-              <textarea
-                value={importText}
-                onChange={(e) => setImportText(e.target.value)}
-                placeholder="ここにJSONデータをペースト..."
-                rows={5}
-                className="w-full bg-[var(--surface2)] text-[var(--text)] rounded-xl px-4 py-3 text-xs font-mono mb-4 outline-none focus:ring-2 focus:ring-[var(--accent)] placeholder:text-[var(--text-muted)] resize-none"
+              <input
+                type="url"
+                value={importUrl}
+                onChange={(e) => { setImportUrl(e.target.value); setImportError(''); }}
+                onKeyDown={(e) => e.key === 'Enter' && handleImportConfirm()}
+                placeholder="https://mapzs.com/map/..."
+                disabled={importLoading}
+                className="w-full bg-[var(--surface2)] text-[var(--text)] rounded-xl px-4 py-3 text-sm mb-3 outline-none focus:ring-2 focus:ring-[var(--accent)] placeholder:text-[var(--text-muted)] disabled:opacity-50"
               />
+              {importError && (
+                <p className="text-[var(--red)] text-xs mb-3 px-1">{importError}</p>
+              )}
               <div className="flex gap-3">
                 <button
-                  onClick={() => setShowImport(false)}
-                  className="flex-1 py-3 rounded-xl bg-[var(--surface2)] text-[var(--text-muted)] text-sm font-medium"
+                  onClick={() => !importLoading && setShowImport(false)}
+                  disabled={importLoading}
+                  className="flex-1 py-3 rounded-xl bg-[var(--surface2)] text-[var(--text-muted)] text-sm font-medium disabled:opacity-50"
                 >
                   キャンセル
                 </button>
                 <button
                   onClick={handleImportConfirm}
-                  disabled={!importText.trim()}
-                  className="flex-1 py-3 rounded-xl bg-[var(--accent)] text-white font-bold text-sm disabled:opacity-40"
+                  disabled={!importUrl.trim() || importLoading}
+                  className="flex-1 py-3 rounded-xl bg-[var(--accent)] text-white font-bold text-sm disabled:opacity-40 flex items-center justify-center gap-2"
                 >
-                  インポート
+                  {importLoading ? (
+                    <>
+                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      取得中…
+                    </>
+                  ) : (
+                    '取得する'
+                  )}
                 </button>
               </div>
             </div>

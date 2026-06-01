@@ -234,24 +234,24 @@ export default function Home() {
     [savedRoutes]
   );
 
-  const handleImport = useCallback((text: string): boolean => {
+  const handleImportUrl = useCallback(async (url: string): Promise<true | string> => {
     try {
-      const parsed: unknown = JSON.parse(text);
-      if (!Array.isArray(parsed)) throw new Error();
+      const res = await fetch(`/api/kyorisoku?url=${encodeURIComponent(url)}`);
+      const data: unknown = await res.json();
 
-      // Support both flat [{lat,lng}] and nested [[{lat,lng}]] (Leaflet _latlngs format)
-      const flat: unknown[] = Array.isArray(parsed[0]) ? (parsed as unknown[][]).flat() : parsed;
+      if (!res.ok) {
+        const msg = (data as { error?: string }).error ?? '取得に失敗しました';
+        return msg;
+      }
 
-      const latlngs: LatLng[] = flat
-        .filter((p): p is { lat: number; lng: number } =>
-          p !== null &&
-          typeof p === 'object' &&
-          typeof (p as Record<string, unknown>).lat === 'number' &&
-          typeof (p as Record<string, unknown>).lng === 'number'
-        )
-        .map((p) => ({ lat: p.lat, lng: p.lng }));
+      if (!Array.isArray(data)) return 'データの形式が正しくありません';
 
-      if (latlngs.length < 2) throw new Error();
+      const latlngs: LatLng[] = (data as { lat: number; lng: number }[]).map((p) => ({
+        lat: p.lat,
+        lng: p.lng,
+      }));
+
+      if (latlngs.length < 2) return '座標データが不足しています';
 
       let distance = 0;
       for (let i = 0; i < latlngs.length - 1; i++) {
@@ -268,11 +268,10 @@ export default function Home() {
       setWaypoints([latlngs[0], latlngs[latlngs.length - 1]]);
       setSegments([seg]);
       setRouteType('straight');
-      setFitBoundsPoints([...latlngs]); // new array reference to always trigger effect
+      setFitBoundsPoints([...latlngs]);
       return true;
     } catch {
-      alert('データの形式が正しくありません');
-      return false;
+      return 'ネットワークエラーが発生しました';
     }
   }, []);
 
@@ -348,7 +347,7 @@ export default function Home() {
           savedRoutes={savedRoutes}
           onLoadRoute={handleLoadRoute}
           onDeleteRoute={handleDeleteRoute}
-          onImport={handleImport}
+          onImportUrl={handleImportUrl}
         />
       ) : (
         <SpeedPanel
