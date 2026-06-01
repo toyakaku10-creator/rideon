@@ -276,6 +276,7 @@ export default function Home() {
           tab={tab}
           waypoints={waypoints}
           segments={segments}
+          routeType={routeType}
           currentPosition={currentPosition}
           center={mapCenter}
           follow={mapFollow}

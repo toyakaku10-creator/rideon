@@ -1,84 +1,49 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import {
-  MapContainer,
-  TileLayer,
-  Polyline,
+  GoogleMap,
   Marker,
-  useMapEvents,
-  useMap,
-} from 'react-leaflet';
-import L from 'leaflet';
-import type { Tab, LatLng, RouteSegment } from '@/types';
+  Polyline,
+  Circle,
+  useJsApiLoader,
+  type Libraries,
+} from '@react-google-maps/api';
+import type { Tab, LatLng, RouteSegment, RouteType } from '@/types';
 
-// Fix default marker icon paths broken by webpack
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  shadowUrl:
-    'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-});
+const LIBRARIES: Libraries = ['geometry'];
 
-const waypointIcon = L.divIcon({
-  className: '',
-  html: '<div style="width:12px;height:12px;border-radius:50%;background:#c8f55a;border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,0.5)"></div>',
-  iconSize: [12, 12],
-  iconAnchor: [6, 6],
-});
+const darkMapStyles: google.maps.MapTypeStyle[] = [
+  { elementType: 'geometry', stylers: [{ color: '#212121' }] },
+  { elementType: 'labels.text.stroke', stylers: [{ color: '#212121' }] },
+  { elementType: 'labels.text.fill', stylers: [{ color: '#757575' }] },
+  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#383838' }] },
+  { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#9ca5b3' }] },
+  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#17263c' }] },
+  { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#2c2c2c' }] },
+  { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#2f3948' }] },
+];
 
-const positionIcon = L.divIcon({
-  className: '',
-  html: '<div style="width:28px;height:28px;border-radius:50%;background:#4090ff;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center"><svg xmlns=\'http://www.w3.org/2000/svg\' width=\'14\' height=\'14\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'white\' stroke-width=\'2.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><polygon points=\'3 11 22 2 13 21 11 13 3 11\'/></svg></div>',
-  iconSize: [28, 28],
-  iconAnchor: [14, 14],
-});
+const POLYLINE_COLORS: Record<RouteType, string> = {
+  straight: '#c8f55a',
+  cycling: '#5ab4ff',
+  walking: '#ffb45a',
+};
 
-function MapClickHandler({
-  onMapClick,
-  enabled,
-}: {
-  onMapClick: (latlng: LatLng) => void;
-  enabled: boolean;
-}) {
-  useMapEvents({
-    click(e) {
-      if (enabled) onMapClick({ lat: e.latlng.lat, lng: e.latlng.lng });
-    },
-  });
-  return null;
-}
+const DEFAULT_CENTER: google.maps.LatLngLiteral = { lat: 35.6762, lng: 139.6503 };
 
-function MapController({
-  center,
-  follow,
-}: {
-  center: LatLng | null;
-  follow: boolean;
-}) {
-  const map = useMap();
-  const initialized = useRef(false);
-
-  useEffect(() => {
-    if (!center) return;
-    if (!initialized.current) {
-      map.setView([center.lat, center.lng], 15);
-      initialized.current = true;
-    } else if (follow) {
-      map.panTo([center.lat, center.lng]);
-    }
-  }, [center, follow, map]);
-
-  return null;
-}
+const MAP_OPTIONS: google.maps.MapOptions = {
+  disableDefaultUI: true,
+  zoomControl: false,
+  gestureHandling: 'greedy',
+  clickableIcons: false,
+};
 
 interface CycleMapProps {
   tab: Tab;
   waypoints: LatLng[];
   segments: RouteSegment[];
+  routeType: RouteType;
   currentPosition: LatLng | null;
   center: LatLng | null;
   follow: boolean;
@@ -89,51 +54,122 @@ export default function CycleMap({
   tab,
   waypoints,
   segments,
+  routeType,
   currentPosition,
   center,
   follow,
   onMapClick,
 }: CycleMapProps) {
-  return (
-    <MapContainer
-      center={[35.6762, 139.6503]}
-      zoom={13}
-      style={{ width: '100%', height: '100%' }}
-      zoomControl={false}
-      className={tab === 'distance' ? 'cursor-crosshair' : ''}
-    >
-      <TileLayer
-        url="https://tile.openstreetmap.jp/styles/osm-bright/{z}/{x}/{y}.png"
-        attribution='&copy; OpenStreetMap contributors, &copy; MIERUNE'
-      />
-      <MapClickHandler onMapClick={onMapClick} enabled={tab === 'distance'} />
-      <MapController center={center} follow={follow} />
+  const { isLoaded, loadError } = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '',
+    libraries: LIBRARIES,
+  });
 
+  const [map, setMap] = useState<google.maps.Map | null>(null);
+  const initializedRef = useRef(false);
+
+  const handleLoad = useCallback((m: google.maps.Map) => {
+    setMap(m);
+  }, []);
+
+  const handleUnmount = useCallback(() => {
+    setMap(null);
+  }, []);
+
+  // Center / follow logic (mirrors Leaflet MapController behaviour)
+  useEffect(() => {
+    if (!map || !center) return;
+    if (!initializedRef.current) {
+      map.setCenter({ lat: center.lat, lng: center.lng });
+      map.setZoom(15);
+      initializedRef.current = true;
+    } else if (follow) {
+      map.panTo({ lat: center.lat, lng: center.lng });
+    }
+  }, [map, center, follow]);
+
+  const handleMapClick = useCallback(
+    (e: google.maps.MapMouseEvent) => {
+      if (tab !== 'distance' || !e.latLng) return;
+      onMapClick({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+    },
+    [tab, onMapClick]
+  );
+
+  if (loadError) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-[#1a1a1a] text-red-400 text-sm px-6 text-center">
+        地図の読み込みに失敗しました。APIキーを確認してください。
+      </div>
+    );
+  }
+
+  if (!isLoaded) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-[#1a1a1a]">
+        <span className="text-[#c8f55a] text-sm animate-pulse">地図を読み込み中…</span>
+      </div>
+    );
+  }
+
+  const strokeColor = POLYLINE_COLORS[routeType];
+
+  return (
+    <GoogleMap
+      mapContainerStyle={{ width: '100%', height: '100%' }}
+      center={DEFAULT_CENTER}
+      zoom={13}
+      options={{ ...MAP_OPTIONS, styles: darkMapStyles }}
+      onClick={handleMapClick}
+      onLoad={handleLoad}
+      onUnmount={handleUnmount}
+    >
+      {/* Route polylines */}
       {segments.map((seg, i) => (
         <Polyline
           key={i}
-          positions={seg.geometry.map((p) => [p.lat, p.lng] as [number, number])}
-          color="#c8f55a"
-          weight={tab === 'distance' ? 4 : 3}
-          opacity={tab === 'distance' ? 0.85 : 0.5}
+          path={seg.geometry.map((p) => ({ lat: p.lat, lng: p.lng }))}
+          options={{
+            strokeColor,
+            strokeWeight: tab === 'distance' ? 4 : 3,
+            strokeOpacity: tab === 'distance' ? 0.85 : 0.5,
+          }}
         />
       ))}
 
+      {/* Waypoint markers — first is green (start), rest are yellow-green */}
       {tab === 'distance' &&
         waypoints.map((wp, i) => (
           <Marker
             key={`wp-${i}`}
-            position={[wp.lat, wp.lng]}
-            icon={waypointIcon}
+            position={{ lat: wp.lat, lng: wp.lng }}
+            icon={{
+              path: google.maps.SymbolPath.CIRCLE,
+              scale: i === 0 ? 8 : 6,
+              fillColor: i === 0 ? '#00c853' : '#c8f55a',
+              fillOpacity: 1,
+              strokeColor: '#ffffff',
+              strokeWeight: 2,
+            }}
           />
         ))}
 
+      {/* Current position circle (speed mode) */}
       {tab === 'speed' && currentPosition && (
-        <Marker
-          position={[currentPosition.lat, currentPosition.lng]}
-          icon={positionIcon}
+        <Circle
+          center={{ lat: currentPosition.lat, lng: currentPosition.lng }}
+          radius={15}
+          options={{
+            fillColor: '#4090ff',
+            fillOpacity: 0.9,
+            strokeColor: '#ffffff',
+            strokeWeight: 2.5,
+            strokeOpacity: 1,
+            zIndex: 10,
+          }}
         />
       )}
-    </MapContainer>
+    </GoogleMap>
   );
 }
