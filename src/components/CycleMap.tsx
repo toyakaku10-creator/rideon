@@ -103,8 +103,8 @@ export default function CycleMap({
       className={tab === 'distance' ? 'cursor-crosshair' : ''}
     >
       <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url="https://tile.openstreetmap.jp/styles/osm-bright/{z}/{x}/{y}.png"
+        attribution='&copy; OpenStreetMap contributors, &copy; MIERUNE'
       />
       <MapClickHandler onMapClick={onMapClick} enabled={tab === 'distance'} />
       <MapController center={center} follow={follow} />
