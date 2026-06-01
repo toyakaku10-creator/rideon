@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { Ruler, Bike, Footprints, Undo2, X } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
 
 function formatDistance(meters: number): string {
@@ -23,10 +24,10 @@ const ROUTE_SPEED: Record<RouteType, number> = {
   walking: 5,
 };
 
-const ROUTE_BUTTONS: { type: RouteType; label: string }[] = [
-  { type: 'straight', label: '📏直線' },
-  { type: 'cycling', label: '🚴自転車道なり' },
-  { type: 'walking', label: '🚶徒歩道なり' },
+const ROUTE_BUTTONS: { type: RouteType; icon: React.ReactNode; label: string }[] = [
+  { type: 'straight', icon: <Ruler size={13} />, label: '直線' },
+  { type: 'cycling', icon: <Bike size={13} />, label: '自転車道なり' },
+  { type: 'walking', icon: <Footprints size={13} />, label: '徒歩道なり' },
 ];
 
 interface BottomPanelProps {
@@ -82,7 +83,7 @@ export default function BottomPanel({
         style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
         {/* Route type selector */}
         <div className="flex gap-1.5 mb-3">
-          {ROUTE_BUTTONS.map(({ type, label }) => (
+          {ROUTE_BUTTONS.map(({ type, icon, label }) => (
             <button
               key={type}
               onClick={() => !isLoading && onRouteTypeChange(type)}
@@ -93,7 +94,10 @@ export default function BottomPanel({
                   : 'bg-[#2a2a2a] text-gray-400 hover:text-white active:bg-[#333]'
               } disabled:opacity-50`}
             >
-              {label}
+              <span className="flex items-center justify-center gap-1">
+                {icon}
+                {label}
+              </span>
             </button>
           ))}
         </div>
@@ -115,22 +119,38 @@ export default function BottomPanel({
         {/* Action buttons */}
         <div className="flex gap-2">
           {[
-            { label: '↩戻す', onClick: onUndo, disabled: waypoints.length === 0 },
             {
-              label: '保存',
+              key: 'undo',
+              content: <span className="flex items-center justify-center gap-1"><Undo2 size={14} />戻す</span>,
+              onClick: onUndo,
+              disabled: waypoints.length === 0,
+            },
+            {
+              key: 'save',
+              content: '保存',
               onClick: () => { setSaveName(''); setShowSave(true); },
               disabled: waypoints.length < 2,
             },
-            { label: '履歴', onClick: () => setShowHistory(true), disabled: false },
-            { label: 'クリア', onClick: onClear, disabled: waypoints.length === 0 },
-          ].map(({ label, onClick, disabled }) => (
+            {
+              key: 'history',
+              content: '履歴',
+              onClick: () => setShowHistory(true),
+              disabled: false,
+            },
+            {
+              key: 'clear',
+              content: 'クリア',
+              onClick: onClear,
+              disabled: waypoints.length === 0,
+            },
+          ].map(({ key, content, onClick, disabled }) => (
             <button
-              key={label}
+              key={key}
               onClick={onClick}
               disabled={disabled}
               className="flex-1 py-2 rounded-lg bg-[#2a2a2a] text-sm text-gray-300 disabled:opacity-40 hover:bg-[#333] active:bg-[#3a3a3a] transition-colors"
             >
-              {label}
+              {content}
             </button>
           ))}
         </div>
@@ -196,9 +216,9 @@ export default function BottomPanel({
                 </h2>
                 <button
                   onClick={() => setShowHistory(false)}
-                  className="text-gray-400 hover:text-white w-8 h-8 flex items-center justify-center text-xl leading-none"
+                  className="text-gray-400 hover:text-white w-8 h-8 flex items-center justify-center"
                 >
-                  ×
+                  <X size={18} />
                 </button>
               </div>
             </div>

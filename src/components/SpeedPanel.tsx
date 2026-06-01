@@ -1,5 +1,7 @@
 'use client';
 
+import { Navigation } from 'lucide-react';
+
 interface SpeedPanelProps {
   currentSpeed: number; // km/h
   maxSpeed: number;
@@ -28,17 +30,23 @@ export default function SpeedPanel({
 
       {/* Stats grid */}
       <div className="grid grid-cols-3 gap-2">
-        {[
-          { label: '最高速度', value: `${maxSpeed.toFixed(1)}`, unit: 'km/h' },
-          { label: '平均速度', value: `${avgSpeed.toFixed(1)}`, unit: 'km/h' },
-          {
-            label: 'GPS精度',
-            value: gpsAccuracy != null ? `${Math.round(gpsAccuracy)}` : '--',
-            unit: gpsAccuracy != null ? 'm' : '',
-          },
-        ].map(({ label, value, unit }) => (
+        {(
+          [
+            { label: '最高速度', value: `${maxSpeed.toFixed(1)}`, unit: 'km/h' },
+            { label: '平均速度', value: `${avgSpeed.toFixed(1)}`, unit: 'km/h' },
+            {
+              label: (
+                <span className="flex items-center justify-center gap-0.5">
+                  <Navigation size={10} />GPS精度
+                </span>
+              ),
+              value: gpsAccuracy != null ? `${Math.round(gpsAccuracy)}` : '--',
+              unit: gpsAccuracy != null ? 'm' : '',
+            },
+          ] as { label: React.ReactNode; value: string; unit: string }[]
+        ).map(({ label, value, unit }, i) => (
           <div
-            key={label}
+            key={i}
             className="bg-[#2a2a2a] rounded-xl py-2.5 px-2 text-center"
           >
             <p className="text-gray-500 text-xs mb-1">{label}</p>

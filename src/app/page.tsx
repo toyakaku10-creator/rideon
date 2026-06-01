@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback } from 'react';
+import { Bike } from 'lucide-react';
 import type { Tab, RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
 import BottomPanel from '@/components/BottomPanel';
 import SpeedPanel from '@/components/SpeedPanel';
@@ -227,8 +228,9 @@ export default function Home() {
         className="flex items-center justify-between px-4 shrink-0 bg-[#1a1a1a] border-b border-[#2a2a2a]"
         style={{ height: '48px' }}
       >
-        <span className="text-[#c8f55a] font-bold text-lg tracking-tight">
-          🚴 cycle-map
+        <span className="text-[#c8f55a] font-bold text-lg tracking-tight flex items-center gap-1.5">
+          <Bike size={20} />
+          cycle-map
         </span>
         <div className="flex gap-1">
           {(

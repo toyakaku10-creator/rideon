@@ -32,9 +32,9 @@ const waypointIcon = L.divIcon({
 
 const positionIcon = L.divIcon({
   className: '',
-  html: '<div style="width:16px;height:16px;border-radius:50%;background:#4090ff;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.6)"></div>',
-  iconSize: [16, 16],
-  iconAnchor: [8, 8],
+  html: '<div style="width:28px;height:28px;border-radius:50%;background:#4090ff;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center"><svg xmlns=\'http://www.w3.org/2000/svg\' width=\'14\' height=\'14\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'white\' stroke-width=\'2.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><polygon points=\'3 11 22 2 13 21 11 13 3 11\'/></svg></div>',
+  iconSize: [28, 28],
+  iconAnchor: [14, 14],
 });
 
 function MapClickHandler({
