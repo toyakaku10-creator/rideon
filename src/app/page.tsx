@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback } from 'react';
 import { Bike } from 'lucide-react';
 import type { Tab, RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
+import { decodeRoute } from '@/lib/routeShare';
 import BottomPanel from '@/components/BottomPanel';
 import SpeedPanel from '@/components/SpeedPanel';
 
@@ -86,6 +87,21 @@ export default function Home() {
       if (raw) setSavedRoutes(JSON.parse(raw) as SavedRoute[]);
     } catch {
       // ignore corrupt data
+    }
+  }, []);
+
+  // Restore route from ?route= URL param (shared link)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const encoded = params.get('route');
+    if (!encoded) return;
+    const result = decodeRoute(encoded);
+    if (!result) return;
+    setWaypoints(result.waypoints);
+    setSegments(result.segments);
+    setRouteType(result.routeType);
+    if (result.waypoints.length > 0) {
+      setInitialCenter(result.waypoints[0]);
     }
   }, []);
 
@@ -294,6 +310,7 @@ export default function Home() {
           maxSpeed={maxSpeed}
           avgSpeed={avgSpeed}
           gpsAccuracy={gpsAccuracy}
+          navDistance={totalDistance}
         />
       )}
     </div>

@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Ruler, Bike, Footprints, Undo2, X } from 'lucide-react';
+import { Ruler, Bike, Footprints, Undo2, X, Share2 } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
+import { encodeRoute } from '@/lib/routeShare';
 
 function formatDistance(meters: number): string {
   if (meters < 1000) return `${Math.round(meters)}m`;
@@ -62,11 +63,28 @@ export default function BottomPanel({
   const [showSave, setShowSave] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [saveName, setSaveName] = useState('');
+  const [copied, setCopied] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (showSave) setTimeout(() => inputRef.current?.focus(), 50);
   }, [showSave]);
+
+  const handleShare = async () => {
+    const encoded = encodeRoute(waypoints, segments, routeType);
+    const url = `${window.location.origin}${window.location.pathname}?route=${encodeURIComponent(encoded)}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: 'cycle-map ルート', url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }
+    } catch {
+      // user cancelled or clipboard unavailable
+    }
+  };
 
   const handleSaveConfirm = () => {
     if (!saveName.trim()) return;
@@ -121,7 +139,7 @@ export default function BottomPanel({
           {[
             {
               key: 'undo',
-              content: <span className="flex items-center justify-center gap-1"><Undo2 size={14} />戻す</span>,
+              content: <span className="flex items-center justify-center gap-1"><Undo2 size={13} />戻す</span>,
               onClick: onUndo,
               disabled: waypoints.length === 0,
             },
@@ -129,6 +147,17 @@ export default function BottomPanel({
               key: 'save',
               content: '保存',
               onClick: () => { setSaveName(''); setShowSave(true); },
+              disabled: waypoints.length < 2,
+            },
+            {
+              key: 'share',
+              content: (
+                <span className="flex items-center justify-center gap-1">
+                  <Share2 size={13} />
+                  {copied ? 'コピー済' : 'シェア'}
+                </span>
+              ),
+              onClick: handleShare,
               disabled: waypoints.length < 2,
             },
             {
@@ -148,7 +177,7 @@ export default function BottomPanel({
               key={key}
               onClick={onClick}
               disabled={disabled}
-              className="flex-1 py-2 rounded-lg bg-[#2a2a2a] text-sm text-gray-300 disabled:opacity-40 hover:bg-[#333] active:bg-[#3a3a3a] transition-colors"
+              className="flex-1 py-2 rounded-lg bg-[#2a2a2a] text-xs text-gray-300 disabled:opacity-40 hover:bg-[#333] active:bg-[#3a3a3a] transition-colors"
             >
               {content}
             </button>

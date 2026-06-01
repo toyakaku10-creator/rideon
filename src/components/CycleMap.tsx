@@ -114,8 +114,8 @@ export default function CycleMap({
           key={i}
           positions={seg.geometry.map((p) => [p.lat, p.lng] as [number, number])}
           color="#c8f55a"
-          weight={4}
-          opacity={0.85}
+          weight={tab === 'distance' ? 4 : 3}
+          opacity={tab === 'distance' ? 0.85 : 0.5}
         />
       ))}
 

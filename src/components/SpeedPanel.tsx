@@ -7,6 +7,12 @@ interface SpeedPanelProps {
   maxSpeed: number;
   avgSpeed: number;
   gpsAccuracy: number | null;
+  navDistance: number; // meters — 0 means no nav route
+}
+
+function formatNavDistance(meters: number): string {
+  if (meters < 1000) return `${Math.round(meters)}m`;
+  return `${(meters / 1000).toFixed(2)}km`;
 }
 
 export default function SpeedPanel({
@@ -14,6 +20,7 @@ export default function SpeedPanel({
   maxSpeed,
   avgSpeed,
   gpsAccuracy,
+  navDistance,
 }: SpeedPanelProps) {
   return (
     <div
@@ -27,6 +34,13 @@ export default function SpeedPanel({
         </span>
         <span className="text-xl text-gray-400 ml-1.5">km/h</span>
       </div>
+
+      {/* Nav route distance */}
+      {navDistance > 0 && (
+        <p className="text-gray-500 text-xs text-center -mt-2 mb-3">
+          ルート: {formatNavDistance(navDistance)}
+        </p>
+      )}
 
       {/* Stats grid */}
       <div className="grid grid-cols-3 gap-2">
