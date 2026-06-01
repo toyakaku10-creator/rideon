@@ -1,65 +1,299 @@
-import Image from "next/image";
+'use client';
+
+import dynamic from 'next/dynamic';
+import { useState, useEffect, useCallback } from 'react';
+import type { Tab, RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
+import BottomPanel from '@/components/BottomPanel';
+import SpeedPanel from '@/components/SpeedPanel';
+
+// react-leaflet must not run on the server
+const CycleMap = dynamic(() => import('@/components/CycleMap'), { ssr: false });
+
+const STORAGE_KEY = 'cycle-map-routes';
+
+function haversineDistance(a: LatLng, b: LatLng): number {
+  const R = 6371000;
+  const dLat = ((b.lat - a.lat) * Math.PI) / 180;
+  const dLng = ((b.lng - a.lng) * Math.PI) / 180;
+  const lat1 = (a.lat * Math.PI) / 180;
+  const lat2 = (b.lat * Math.PI) / 180;
+  const sinDLat = Math.sin(dLat / 2);
+  const sinDLng = Math.sin(dLng / 2);
+  const c =
+    sinDLat * sinDLat +
+    Math.cos(lat1) * Math.cos(lat2) * sinDLng * sinDLng;
+  return R * 2 * Math.atan2(Math.sqrt(c), Math.sqrt(1 - c));
+}
+
+async function fetchOSRMRoute(
+  from: LatLng,
+  to: LatLng,
+  mode: 'cycling' | 'walking'
+): Promise<{ geometry: LatLng[]; distance: number }> {
+  const url = `https://router.project-osrm.org/route/v1/${mode}/${from.lng},${from.lat};${to.lng},${to.lat}?overview=full&geometries=geojson`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`OSRM ${res.status}`);
+  const data = await res.json();
+  const route = data.routes[0];
+  const coords: [number, number][] = route.geometry.coordinates;
+  return {
+    geometry: coords.map(([lng, lat]) => ({ lat, lng })),
+    distance: route.distance,
+  };
+}
+
+function makeStraightSegment(from: LatLng, to: LatLng): RouteSegment {
+  return { from, to, geometry: [from, to], distance: haversineDistance(from, to) };
+}
 
 export default function Home() {
+  const [tab, setTab] = useState<Tab>('distance');
+
+  // Distance measurement
+  const [waypoints, setWaypoints] = useState<LatLng[]>([]);
+  const [segments, setSegments] = useState<RouteSegment[]>([]);
+  const [routeType, setRouteType] = useState<RouteType>('cycling');
+  const [isLoading, setIsLoading] = useState(false);
+  const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([]);
+
+  // Positioning
+  const [initialCenter, setInitialCenter] = useState<LatLng | null>(null);
+  const [currentPosition, setCurrentPosition] = useState<LatLng | null>(null);
+
+  // Speed stats
+  const [currentSpeed, setCurrentSpeed] = useState(0);
+  const [maxSpeed, setMaxSpeed] = useState(0);
+  const [speedSum, setSpeedSum] = useState(0);
+  const [speedCount, setSpeedCount] = useState(0);
+  const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
+
+  // Center map on device location at startup
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setInitialCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+      },
+      (err) => console.warn('getCurrentPosition:', err),
+      { enableHighAccuracy: true }
+    );
+  }, []);
+
+  // Load saved routes
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) setSavedRoutes(JSON.parse(raw) as SavedRoute[]);
+    } catch {
+      // ignore corrupt data
+    }
+  }, []);
+
+  // GPS speed tracking — only active in speed tab
+  useEffect(() => {
+    if (tab !== 'speed') return;
+    const watchId = navigator.geolocation.watchPosition(
+      (pos) => {
+        const { latitude, longitude, speed, accuracy } = pos.coords;
+        const kmh = speed != null ? speed * 3.6 : 0;
+        setCurrentPosition({ lat: latitude, lng: longitude });
+        setCurrentSpeed(kmh);
+        setGpsAccuracy(accuracy);
+        setMaxSpeed((prev) => Math.max(prev, kmh));
+        setSpeedSum((prev) => prev + kmh);
+        setSpeedCount((prev) => prev + 1);
+      },
+      (err) => console.warn('watchPosition:', err),
+      { enableHighAccuracy: true, maximumAge: 1000 }
+    );
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, [tab]);
+
+  const totalDistance = segments.reduce((sum, s) => sum + s.distance, 0);
+  const avgSpeed = speedCount > 0 ? speedSum / speedCount : 0;
+
+  // Map tap handler — adds waypoint and fetches route segment
+  const handleMapClick = useCallback(
+    (latlng: LatLng) => {
+      if (isLoading) return;
+
+      setWaypoints((prevWps) => {
+        const newWps = [...prevWps, latlng];
+
+        if (prevWps.length === 0) return newWps; // first point, no segment yet
+
+        const from = prevWps[prevWps.length - 1];
+        const to = latlng;
+
+        if (routeType === 'straight') {
+          setSegments((prev) => [...prev, makeStraightSegment(from, to)]);
+        } else {
+          setIsLoading(true);
+          fetchOSRMRoute(from, to, routeType)
+            .then(({ geometry, distance }) => {
+              setSegments((prev) => [...prev, { from, to, geometry, distance }]);
+            })
+            .catch(() => {
+              setSegments((prev) => [...prev, makeStraightSegment(from, to)]);
+            })
+            .finally(() => setIsLoading(false));
+        }
+
+        return newWps;
+      });
+    },
+    [isLoading, routeType]
+  );
+
+  // Re-fetch all segments when route type changes
+  const handleRouteTypeChange = useCallback(
+    async (type: RouteType) => {
+      setRouteType(type);
+      if (waypoints.length < 2) return;
+
+      setIsLoading(true);
+      try {
+        const newSegs: RouteSegment[] = [];
+        for (let i = 0; i < waypoints.length - 1; i++) {
+          const from = waypoints[i];
+          const to = waypoints[i + 1];
+          if (type === 'straight') {
+            newSegs.push(makeStraightSegment(from, to));
+          } else {
+            const { geometry, distance } = await fetchOSRMRoute(from, to, type);
+            newSegs.push({ from, to, geometry, distance });
+          }
+        }
+        setSegments(newSegs);
+      } catch {
+        // keep existing segments on failure
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [waypoints]
+  );
+
+  const handleUndo = useCallback(() => {
+    setWaypoints((prev) => prev.slice(0, -1));
+    setSegments((prev) => prev.slice(0, -1));
+  }, []);
+
+  const handleClear = useCallback(() => {
+    setWaypoints([]);
+    setSegments([]);
+  }, []);
+
+  const handleSave = useCallback(
+    (name: string) => {
+      const route: SavedRoute = {
+        id: Date.now().toString(),
+        name,
+        waypoints,
+        routeType,
+        segments,
+        totalDistance,
+        createdAt: new Date().toISOString(),
+      };
+      const updated = [...savedRoutes, route];
+      setSavedRoutes(updated);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    },
+    [waypoints, routeType, segments, totalDistance, savedRoutes]
+  );
+
+  const handleLoadRoute = useCallback((route: SavedRoute) => {
+    setWaypoints(route.waypoints);
+    setSegments(route.segments);
+    setRouteType(route.routeType);
+  }, []);
+
+  const handleDeleteRoute = useCallback(
+    (id: string) => {
+      const updated = savedRoutes.filter((r) => r.id !== id);
+      setSavedRoutes(updated);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    },
+    [savedRoutes]
+  );
+
+  const mapCenter =
+    tab === 'speed' ? (currentPosition ?? initialCenter) : initialCenter;
+  const mapFollow = tab === 'speed' && currentPosition !== null;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="flex flex-col bg-[#0f0f0f]" style={{ height: '100dvh' }}>
+      {/* Header */}
+      <header
+        className="flex items-center justify-between px-4 shrink-0 bg-[#1a1a1a] border-b border-[#2a2a2a]"
+        style={{ height: '48px' }}
+      >
+        <span className="text-[#c8f55a] font-bold text-lg tracking-tight">
+          🚴 cycle-map
+        </span>
+        <div className="flex gap-1">
+          {(
+            [
+              { key: 'distance', label: '距離測定' },
+              { key: 'speed', label: '速度' },
+            ] as { key: Tab; label: string }[]
+          ).map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => setTab(key)}
+              className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                tab === key
+                  ? 'bg-[#c8f55a] text-black'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </header>
+
+      {/* Map */}
+      <div className="flex-1 relative min-h-0">
+        <CycleMap
+          tab={tab}
+          waypoints={waypoints}
+          segments={segments}
+          currentPosition={currentPosition}
+          center={mapCenter}
+          follow={mapFollow}
+          onMapClick={handleMapClick}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+        {isLoading && (
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[900] bg-black/75 text-[#c8f55a] text-xs px-4 py-1.5 rounded-full pointer-events-none">
+            ルート取得中…
+          </div>
+        )}
+      </div>
+
+      {/* Bottom panel */}
+      {tab === 'distance' ? (
+        <BottomPanel
+          waypoints={waypoints}
+          segments={segments}
+          routeType={routeType}
+          totalDistance={totalDistance}
+          isLoading={isLoading}
+          onRouteTypeChange={handleRouteTypeChange}
+          onUndo={handleUndo}
+          onClear={handleClear}
+          onSave={handleSave}
+          savedRoutes={savedRoutes}
+          onLoadRoute={handleLoadRoute}
+          onDeleteRoute={handleDeleteRoute}
+        />
+      ) : (
+        <SpeedPanel
+          currentSpeed={currentSpeed}
+          maxSpeed={maxSpeed}
+          avgSpeed={avgSpeed}
+          gpsAccuracy={gpsAccuracy}
+        />
+      )}
     </div>
   );
 }
