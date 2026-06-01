@@ -39,6 +39,7 @@ interface CycleMapProps {
   center: LatLng | null;
   follow: boolean;
   onMapClick: (latlng: LatLng) => void;
+  fitBoundsPoints?: LatLng[] | null;
 }
 
 export default function CycleMap({
@@ -50,6 +51,7 @@ export default function CycleMap({
   center,
   follow,
   onMapClick,
+  fitBoundsPoints,
 }: CycleMapProps) {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
@@ -67,6 +69,15 @@ export default function CycleMap({
   const handleUnmount = useCallback(() => {
     setMap(null);
   }, []);
+
+  // fitBounds when import data arrives
+  useEffect(() => {
+    if (!map || !fitBoundsPoints || fitBoundsPoints.length < 2) return;
+    const bounds = new google.maps.LatLngBounds();
+    fitBoundsPoints.forEach((p) => bounds.extend({ lat: p.lat, lng: p.lng }));
+    map.fitBounds(bounds, 50);
+    initializedRef.current = true; // prevent subsequent center effect from overriding
+  }, [map, fitBoundsPoints]);
 
   // Center / follow logic (mirrors Leaflet MapController behaviour)
   useEffect(() => {

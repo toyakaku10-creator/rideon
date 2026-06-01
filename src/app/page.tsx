@@ -57,6 +57,7 @@ export default function Home() {
   const [routeType, setRouteType] = useState<RouteType>('cycling');
   const [isLoading, setIsLoading] = useState(false);
   const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([]);
+  const [fitBoundsPoints, setFitBoundsPoints] = useState<LatLng[] | null>(null);
 
   // Positioning
   const [initialCenter, setInitialCenter] = useState<LatLng | null>(null);
@@ -233,6 +234,48 @@ export default function Home() {
     [savedRoutes]
   );
 
+  const handleImport = useCallback((text: string): boolean => {
+    try {
+      const parsed: unknown = JSON.parse(text);
+      if (!Array.isArray(parsed)) throw new Error();
+
+      // Support both flat [{lat,lng}] and nested [[{lat,lng}]] (Leaflet _latlngs format)
+      const flat: unknown[] = Array.isArray(parsed[0]) ? (parsed as unknown[][]).flat() : parsed;
+
+      const latlngs: LatLng[] = flat
+        .filter((p): p is { lat: number; lng: number } =>
+          p !== null &&
+          typeof p === 'object' &&
+          typeof (p as Record<string, unknown>).lat === 'number' &&
+          typeof (p as Record<string, unknown>).lng === 'number'
+        )
+        .map((p) => ({ lat: p.lat, lng: p.lng }));
+
+      if (latlngs.length < 2) throw new Error();
+
+      let distance = 0;
+      for (let i = 0; i < latlngs.length - 1; i++) {
+        distance += haversineDistance(latlngs[i], latlngs[i + 1]);
+      }
+
+      const seg: RouteSegment = {
+        from: latlngs[0],
+        to: latlngs[latlngs.length - 1],
+        geometry: latlngs,
+        distance,
+      };
+
+      setWaypoints([latlngs[0], latlngs[latlngs.length - 1]]);
+      setSegments([seg]);
+      setRouteType('straight');
+      setFitBoundsPoints([...latlngs]); // new array reference to always trigger effect
+      return true;
+    } catch {
+      alert('データの形式が正しくありません');
+      return false;
+    }
+  }, []);
+
   const mapCenter =
     tab === 'speed' ? (currentPosition ?? initialCenter) : initialCenter;
   const mapFollow = tab === 'speed' && currentPosition !== null;
@@ -281,6 +324,7 @@ export default function Home() {
           center={mapCenter}
           follow={mapFollow}
           onMapClick={handleMapClick}
+          fitBoundsPoints={fitBoundsPoints}
         />
         {isLoading && (
           <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[900] bg-black/50 text-white text-xs px-4 py-1.5 rounded-full pointer-events-none">
@@ -304,6 +348,7 @@ export default function Home() {
           savedRoutes={savedRoutes}
           onLoadRoute={handleLoadRoute}
           onDeleteRoute={handleDeleteRoute}
+          onImport={handleImport}
         />
       ) : (
         <SpeedPanel
