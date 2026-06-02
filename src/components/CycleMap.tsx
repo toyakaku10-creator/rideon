@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   GoogleMap,
   Marker,
@@ -144,18 +144,32 @@ export default function CycleMap({
       onLoad={handleLoad}
       onUnmount={handleUnmount}
     >
-      {/* Route polylines */}
-      {segments.map((seg, i) => (
-        <Polyline
-          key={i}
-          path={seg.geometry.map((p) => ({ lat: p.lat, lng: p.lng }))}
-          options={{
-            strokeColor: POLYLINE_COLOR,
-            strokeWeight: tab === 'distance' ? 4 : 3,
-            strokeOpacity: tab === 'distance' ? 0.85 : 0.5,
-          }}
-        />
-      ))}
+      {/* Route polylines — outline then main line for each segment */}
+      {segments.map((seg, i) => {
+        const path = seg.geometry.map((p) => ({ lat: p.lat, lng: p.lng }));
+        return (
+          <React.Fragment key={i}>
+            <Polyline
+              path={path}
+              options={{
+                strokeColor: '#ffffff',
+                strokeWeight: tab === 'distance' ? 7 : 5,
+                strokeOpacity: 0.8,
+                zIndex: 1,
+              }}
+            />
+            <Polyline
+              path={path}
+              options={{
+                strokeColor: POLYLINE_COLOR,
+                strokeWeight: tab === 'distance' ? 4 : 3,
+                strokeOpacity: tab === 'distance' ? 1 : 0.6,
+                zIndex: 2,
+              }}
+            />
+          </React.Fragment>
+        );
+      })}
 
       {/* Waypoint markers — S (start), G (goal), dot (intermediate) */}
       {tab === 'distance' &&
