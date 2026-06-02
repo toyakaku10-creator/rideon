@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback } from 'react';
-import { Bike } from 'lucide-react';
+import { Bike, Route } from 'lucide-react';
 import type { Tab, RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
 import { decodeRoute } from '@/lib/routeShare';
 import BottomPanel from '@/components/BottomPanel';
@@ -307,19 +307,20 @@ export default function Home() {
         <div className="flex gap-1">
           {(
             [
-              { key: 'distance', label: 'ルート作成' },
-              { key: 'speed', label: 'GO' },
-            ] as { key: Tab; label: string }[]
-          ).map(({ key, label }) => (
+              { key: 'distance', label: 'ルート作成', icon: <Route size={14} /> },
+              { key: 'speed', label: 'GO', icon: <Bike size={14} /> },
+            ] as { key: Tab; label: string; icon: React.ReactNode }[]
+          ).map(({ key, label, icon }) => (
             <button
               key={key}
               onClick={() => setTab(key)}
-              className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors flex items-center gap-1 ${
                 tab === key
                   ? 'bg-[var(--accent)] text-white'
                   : 'text-[var(--text-muted)] hover:text-[var(--text)]'
               }`}
             >
+              {icon}
               {label}
             </button>
           ))}
