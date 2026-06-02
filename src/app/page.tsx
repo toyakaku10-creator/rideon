@@ -60,6 +60,8 @@ export default function Home() {
   const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([]);
   const [fitBoundsPoints, setFitBoundsPoints] = useState<LatLng[] | null>(null);
   const [isImported, setIsImported] = useState(false);
+  const [isAdjustingImport, setIsAdjustingImport] = useState(false);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
 
   // Positioning
   const [initialCenter, setInitialCenter] = useState<LatLng | null>(null);
@@ -193,6 +195,8 @@ export default function Home() {
       setSavedRoutes(updated);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
       setIsImported(false);
+      setIsAdjustingImport(false);
+      setShowSaveDialog(false);
     },
     [waypoints, routeType, segments, totalDistance, savedRoutes]
   );
@@ -249,6 +253,7 @@ export default function Home() {
       setSegments([seg]);
       setFitBoundsPoints([...latlngs]);
       setIsImported(true);
+      setIsAdjustingImport(true);
       return true;
     } catch {
       return 'ネットワークエラーが発生しました';
@@ -324,6 +329,22 @@ export default function Home() {
             ルート取得中…
           </div>
         )}
+        {isAdjustingImport && (
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[900] w-[calc(100%-32px)] max-w-sm">
+            <div className="bg-white rounded-2xl shadow-lg px-4 py-3 flex flex-col gap-2">
+              <p className="text-xs text-center text-gray-600">
+                📍 スタート地点をドラッグして位置を補正してください
+              </p>
+              <button
+                onClick={() => setShowSaveDialog(true)}
+                className="w-full py-2 rounded-xl text-sm font-bold text-white"
+                style={{ background: '#D4AF37' }}
+              >
+                完了・保存する
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Bottom panel */}
@@ -345,6 +366,8 @@ export default function Home() {
           onImportUrl={handleImportUrl}
           isImported={isImported}
           onImportedSaved={() => setIsImported(false)}
+          showSaveDialog={showSaveDialog}
+          onShowSaveDialogChange={(open) => setShowSaveDialog(open)}
         />
       ) : (
         <SpeedPanel

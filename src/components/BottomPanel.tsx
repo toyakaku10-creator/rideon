@@ -46,6 +46,8 @@ interface BottomPanelProps {
   onImportUrl: (url: string) => Promise<true | string>;
   isImported: boolean;
   onImportedSaved: () => void;
+  showSaveDialog?: boolean;
+  onShowSaveDialogChange?: (open: boolean) => void;
 }
 
 export default function BottomPanel({
@@ -64,6 +66,8 @@ export default function BottomPanel({
   onImportUrl,
   isImported,
   onImportedSaved,
+  showSaveDialog,
+  onShowSaveDialogChange,
 }: BottomPanelProps) {
   const [showSave, setShowSave] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
@@ -79,6 +83,14 @@ export default function BottomPanel({
   useEffect(() => {
     if (showSave) setTimeout(() => inputRef.current?.focus(), 50);
   }, [showSave]);
+
+  useEffect(() => {
+    if (showSaveDialog) {
+      setSaveName('');
+      setShowSave(true);
+      onShowSaveDialogChange?.(false);
+    }
+  }, [showSaveDialog, onShowSaveDialogChange]);
 
   const handleShare = async () => {
     const encoded = encodeRoute(waypoints, segments, routeType);
@@ -105,8 +117,6 @@ export default function BottomPanel({
     if (result === true) {
       setShowImport(false);
       setImportUrl('');
-      setSaveName('');
-      setShowSave(true);
     } else if (typeof result === 'string') {
       setImportError(result);
     }
