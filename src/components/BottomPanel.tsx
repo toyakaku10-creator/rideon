@@ -197,7 +197,7 @@ export default function BottomPanel({
             },
             {
               icon: <MoreHorizontal size={24} />,
-              label: 'その他',
+              label: '外部',
               onClick: () => setShowMore(true),
               disabled: false,
             },
