@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Undo2, Save, Trash2, X, Share2, Upload, MoreHorizontal, BookMarked, Flag, Minus, Road } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
 import { encodeRoute } from '@/lib/routeShare';
@@ -30,6 +30,75 @@ const ROUTE_BUTTONS: { type: RouteType; icon: React.ReactNode; label: string }[]
   { type: 'cycling', icon: <Road size={13} />, label: '道なり' },
   { type: 'straight', icon: <Minus size={13} />, label: '直線' },
 ];
+
+function SwipeableRouteItem({
+  route,
+  onLoad,
+  onDelete,
+}: {
+  route: SavedRoute;
+  onLoad: () => void;
+  onDelete: () => void;
+}) {
+  const [offset, setOffset] = useState(0);
+  const startXRef = useRef<number | null>(null);
+  const revealed = offset <= -80;
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    startXRef.current = e.touches[0].clientX;
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (startXRef.current === null) return;
+    const dx = e.touches[0].clientX - startXRef.current;
+    if (dx < 0) {
+      e.preventDefault();
+      setOffset(Math.max(dx, -80));
+    } else if (dx > 0 && offset < 0) {
+      e.preventDefault();
+      setOffset(Math.min(0, offset + dx));
+    }
+  }, [offset]);
+
+  const handleTouchEnd = useCallback(() => {
+    startXRef.current = null;
+    setOffset(offset <= -40 ? -80 : 0);
+  }, [offset]);
+
+  return (
+    <div className="relative overflow-hidden border-b border-[var(--border)]">
+      {/* Delete button */}
+      <div
+        className="absolute right-0 top-0 bottom-0 w-20 flex items-center justify-center text-white text-sm font-bold"
+        style={{ background: '#E53935' }}
+        onClick={onDelete}
+      >
+        削除
+      </div>
+      {/* Row content */}
+      <div
+        className="flex items-center px-4 py-3 bg-[var(--surface)]"
+        style={{
+          transform: `translateX(${offset}px)`,
+          transition: startXRef.current === null ? 'transform 0.2s' : 'none',
+        }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onClick={() => { if (!revealed) onLoad(); }}
+      >
+        <div className="flex-1 min-w-0">
+          <p className="text-[var(--text)] text-sm font-medium truncate">{route.name}</p>
+          <p className="text-[var(--text-muted)] text-xs mt-0.5">
+            {formatDistance(route.totalDistance)} ·{' '}
+            {route.waypoints.length}ポイント ·{' '}
+            {new Date(route.createdAt).toLocaleDateString('ja-JP')}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 interface BottomPanelProps {
   waypoints: LatLng[];
@@ -342,33 +411,12 @@ export default function BottomPanel({
                 </p>
               ) : (
                 [...savedRoutes].reverse().map((route) => (
-                  <div
+                  <SwipeableRouteItem
                     key={route.id}
-                    className="flex items-center px-4 py-3 border-b border-[var(--border)]"
-                  >
-                    <button
-                      className="flex-1 text-left min-w-0"
-                      onClick={() => {
-                        onLoadRoute(route);
-                        setShowHistory(false);
-                      }}
-                    >
-                      <p className="text-[var(--text)] text-sm font-medium truncate">
-                        {route.name}
-                      </p>
-                      <p className="text-[var(--text-muted)] text-xs mt-0.5">
-                        {formatDistance(route.totalDistance)} ·{' '}
-                        {route.waypoints.length}ポイント ·{' '}
-                        {new Date(route.createdAt).toLocaleDateString('ja-JP')}
-                      </p>
-                    </button>
-                    <button
-                      onClick={() => onDeleteRoute(route.id)}
-                      className="ml-3 text-xs text-[var(--text-muted)] hover:text-[var(--red)] transition-colors px-2 py-1 shrink-0"
-                    >
-                      削除
-                    </button>
-                  </div>
+                    route={route}
+                    onLoad={() => { onLoadRoute(route); setShowHistory(false); }}
+                    onDelete={() => onDeleteRoute(route.id)}
+                  />
                 ))
               )}
               <div style={{ height: 'env(safe-area-inset-bottom)' }} />
