@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Undo2, Save, Trash2, Share2, Upload, MoreHorizontal, Flag, Ruler, Road } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
 import { encodeRoute } from '@/lib/routeShare';
@@ -109,7 +109,9 @@ interface BottomPanelProps {
   onRouteTypeChange: (type: RouteType) => void;
   onUndo: () => void;
   onClear: () => void;
-  onSaveClick: () => void;
+  onSave: (name: string) => void | Promise<void>;
+  openSaveSheet?: boolean;
+  onSaveSheetClose?: () => void;
   savedRoutes: SavedRoute[];
   onLoadRoute: (route: SavedRoute) => void;
   onDeleteRoute: (id: string) => void;
@@ -127,7 +129,9 @@ export default function BottomPanel({
   onRouteTypeChange,
   onUndo,
   onClear,
-  onSaveClick,
+  onSave,
+  openSaveSheet,
+  onSaveSheetClose,
   savedRoutes,
   onLoadRoute,
   onDeleteRoute,
@@ -137,7 +141,19 @@ export default function BottomPanel({
 }: BottomPanelProps) {
   const [showHistory, setShowHistory] = useState(false);
   const [showMore, setShowMore] = useState(false);
+  const [showSaveSheet, setShowSaveSheet] = useState(false);
+  const [routeName, setRouteName] = useState('');
   const [copied, setCopied] = useState(false);
+
+  // 外部から保存シートを開く（インポート完了後など）
+  const prevOpenSaveSheet = useRef(false);
+  useEffect(() => {
+    if (openSaveSheet && !prevOpenSaveSheet.current) {
+      setRouteName('');
+      setShowSaveSheet(true);
+    }
+    prevOpenSaveSheet.current = !!openSaveSheet;
+  }, [openSaveSheet]);
 
   const handleShare = async () => {
     const encoded = encodeRoute(waypoints, segments, routeType);
@@ -223,7 +239,7 @@ export default function BottomPanel({
             {
               icon: <Save size={24} />,
               label: '保存',
-              onClick: onSaveClick,
+              onClick: () => { setRouteName(''); setShowSaveSheet(true); },
               disabled: waypoints.length < 2,
             },
             {
@@ -280,6 +296,33 @@ export default function BottomPanel({
             >
               <Share2 size={18} />{copied ? 'コピー済み' : 'シェア'}
             </button>
+          </div>
+        </>
+      )}
+
+      {/* 保存ボトムシート */}
+      {showSaveSheet && (
+        <>
+          <div
+            onClick={() => { setShowSaveSheet(false); onSaveSheetClose?.(); }}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000 }}
+          />
+          <div style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '480px', background: '#fff', borderRadius: '16px 16px 0 0', padding: '20px 16px', paddingBottom: 'calc(20px + env(safe-area-inset-bottom))', zIndex: 1001, boxSizing: 'border-box' }}>
+            <h3 style={{ margin: '0 0 16px', fontSize: '16px', fontWeight: '600' }}>ルートを保存</h3>
+            <input
+              type="text"
+              placeholder="ルート名（例：自宅→駅）"
+              value={routeName}
+              onChange={(e) => setRouteName(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && routeName.trim() && (onSave(routeName.trim()), setShowSaveSheet(false), setRouteName(''))}
+              autoFocus
+              style={{ display: 'block', width: '100%', boxSizing: 'border-box', padding: '12px', fontSize: '16px', border: '1px solid #ddd', borderRadius: '10px', marginBottom: '12px', WebkitAppearance: 'none' } as React.CSSProperties}
+            />
+            <button
+              onClick={() => { if (!routeName.trim()) return; onSave(routeName.trim()); setShowSaveSheet(false); setRouteName(''); }}
+              disabled={!routeName.trim()}
+              style={{ display: 'block', width: '100%', padding: '14px', background: '#D4AF37', color: '#000', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', opacity: !routeName.trim() ? 0.4 : 1 }}
+            >保存する</button>
           </div>
         </>
       )}

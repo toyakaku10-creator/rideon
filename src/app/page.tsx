@@ -77,6 +77,7 @@ export default function Home() {
   const [fitBoundsPoints, setFitBoundsPoints] = useState<LatLng[] | null>(null);
   const [isImported, setIsImported] = useState(false);
   const [isAdjustingImport, setIsAdjustingImport] = useState(false);
+  const [openSaveSheet, setOpenSaveSheet] = useState(false);
 
   // Elevation
   const [elevations, setElevations] = useState<number[]>([]);
@@ -346,34 +347,27 @@ export default function Home() {
     );
   }, []);
 
-  const navigateToSave = useCallback(async () => {
-    let finalElevations = elevations;
-    if (finalElevations.length < 2 && segments.length > 0) {
-      const points = segments.flatMap((s) => s.geometry);
-      if (points.length >= 2) {
-        try {
-          const res = await fetch('/api/elevation', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ points }),
-          });
-          const data = await res.json();
-          if (data.elevations) {
-            finalElevations = data.elevations;
-            setElevations(data.elevations);
-          }
-        } catch { /* silent fail */ }
-      }
-    }
-    sessionStorage.setItem('cycle-map-save-pending', JSON.stringify({
-      waypoints,
-      routeType,
-      segments,
-      totalDistance,
-      elevations: finalElevations.length >= 2 ? finalElevations : undefined,
-    }));
-    router.push('/save');
-  }, [elevations, segments, waypoints, routeType, totalDistance, router]);
+  const handleSave = useCallback(
+    (name: string) => {
+      const route: SavedRoute = {
+        id: Date.now().toString(),
+        name,
+        waypoints,
+        routeType,
+        segments,
+        totalDistance,
+        createdAt: new Date().toISOString(),
+        elevations: elevations.length >= 2 ? elevations : undefined,
+      };
+      const updated = [...savedRoutes, route];
+      setSavedRoutes(updated);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      setIsImported(false);
+      setIsAdjustingImport(false);
+      setOpenSaveSheet(false);
+    },
+    [waypoints, routeType, segments, totalDistance, savedRoutes, elevations]
+  );
 
   const handleImportSave = useCallback(async () => {
     if (isImported) {
@@ -388,8 +382,8 @@ export default function Home() {
         if (data.elevations) setElevations(data.elevations);
       } catch { /* silent fail */ }
     }
-    await navigateToSave();
-  }, [isImported, segments, navigateToSave]);
+    setOpenSaveSheet(true);
+  }, [isImported, segments]);
 
   const mapCenter =
     tab === 'speed' ? (currentPosition ?? initialCenter) : initialCenter;
@@ -482,7 +476,9 @@ export default function Home() {
           onRouteTypeChange={handleRouteTypeChange}
           onUndo={handleUndo}
           onClear={handleClear}
-          onSaveClick={navigateToSave}
+          onSave={handleSave}
+          openSaveSheet={openSaveSheet}
+          onSaveSheetClose={() => setOpenSaveSheet(false)}
           savedRoutes={savedRoutes}
           onLoadRoute={handleLoadRoute}
           onDeleteRoute={handleDeleteRoute}
