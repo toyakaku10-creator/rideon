@@ -307,8 +307,8 @@ export default function Home() {
         <div className="flex gap-1">
           {(
             [
-              { key: 'distance', label: '距離測定' },
-              { key: 'speed', label: '速度' },
+              { key: 'distance', label: 'ルート作成' },
+              { key: 'speed', label: 'GO' },
             ] as { key: Tab; label: string }[]
           ).map(({ key, label }) => (
             <button
