@@ -12,6 +12,14 @@
   --red: #e53935;
 }
 
+html {
+  touch-action: pan-x pan-y;
+}
+
+body {
+  touch-action: pan-x pan-y;
+}
+
 html,
 body {
   height: 100%;
