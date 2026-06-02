@@ -33,6 +33,12 @@ export async function GET(request: NextRequest) {
     points = allPoints.filter((_, i) => i % step === 0 || i === allPoints.length - 1)
   }
 
+  const KYORISOKU_OFFSET = { lat: 0.00290, lng: -0.00019 }
+  points = points.map((p) => ({
+    lat: p.lat + KYORISOKU_OFFSET.lat,
+    lng: p.lng + KYORISOKU_OFFSET.lng,
+  }))
+
   return NextResponse.json({
     points,
     title: titleMatch?.[1] || '無題のルート',
