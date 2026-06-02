@@ -27,9 +27,10 @@ export default function SpeedPanel({
 }: SpeedPanelProps) {
   return (
     <div
-      className="bg-[var(--surface)] border-t border-[var(--border)] px-4 pt-4 shrink-0"
+      className="bg-[var(--surface)] border-t border-[var(--border)] shrink-0"
       style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
     >
+      <div className="px-4 pt-4" style={{ maxWidth: '480px', margin: '0 auto' }}>
       {/* Nav route name */}
       {navRoute && (
         <div className="mb-3 bg-[var(--surface2)] rounded-xl px-3 py-2">
@@ -82,6 +83,7 @@ export default function SpeedPanel({
             </p>
           </div>
         ))}
+      </div>
       </div>
     </div>
   );

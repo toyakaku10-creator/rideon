@@ -138,6 +138,7 @@ export default function BottomPanel({
         className="bg-[var(--surface)] border-t border-[var(--border)] shrink-0"
         style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}
       >
+        <div style={{ maxWidth: '480px', margin: '0 auto' }}>
         {/* Route type selector */}
         <div className="flex gap-1.5 px-4 pt-3 mb-2">
           {ROUTE_BUTTONS.map(({ type, icon, label }) => (
@@ -222,6 +223,7 @@ export default function BottomPanel({
               <span style={{ fontSize: '10px' }}>{label}</span>
             </button>
           ))}
+        </div>
         </div>
       </div>
 

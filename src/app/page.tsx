@@ -335,34 +335,36 @@ export default function Home() {
     <div className="flex flex-col bg-[var(--bg)]" style={{ height: '100dvh' }}>
       {/* Header */}
       <header
-        className="flex items-center justify-between px-4 shrink-0 bg-[var(--surface)] border-b border-[var(--border)]"
+        className="shrink-0 bg-[var(--surface)] border-b border-[var(--border)]"
         style={{ height: '48px' }}
       >
-        <span className="text-[var(--accent)] text-xl flex items-center gap-1.5" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 700 }}>
-          <Bike size={20} />
-          cycle-map
-        </span>
-        <div className="flex gap-1">
-          {(
-            [
-              { key: 'distance', label: 'ルート', icon: <Route size={14} /> },
-              { key: 'speed', label: 'ライド', icon: <Bike size={14} /> },
-            ] as { key: Tab; label: string; icon: React.ReactNode }[]
-          ).map(({ key, label, icon }) => (
-            <button
-              key={key}
-              onClick={() => setTab(key)}
-              className={`flex-1 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1 ${
-                tab === key
-                  ? 'bg-[var(--accent)] text-white'
-                  : 'text-[var(--text-muted)] hover:text-[var(--text)]'
-              }`}
-              style={{ padding: '6px 20px' }}
-            >
-              {icon}
-              {label}
-            </button>
-          ))}
+        <div className="flex items-center justify-between px-4 h-full" style={{ maxWidth: '480px', margin: '0 auto' }}>
+          <span className="text-[var(--accent)] text-xl flex items-center gap-1.5" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 700 }}>
+            <Bike size={20} />
+            cycle-map
+          </span>
+          <div className="flex gap-1">
+            {(
+              [
+                { key: 'distance', label: 'ルート', icon: <Route size={14} /> },
+                { key: 'speed', label: 'ライド', icon: <Bike size={14} /> },
+              ] as { key: Tab; label: string; icon: React.ReactNode }[]
+            ).map(({ key, label, icon }) => (
+              <button
+                key={key}
+                onClick={() => setTab(key)}
+                className={`flex-1 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1 ${
+                  tab === key
+                    ? 'bg-[var(--accent)] text-white'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text)]'
+                }`}
+                style={{ padding: '6px 20px' }}
+              >
+                {icon}
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
       </header>
 
