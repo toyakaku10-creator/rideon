@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback } from 'react';
-import { Bike, Route, Gauge } from 'lucide-react';
+import { Bike, Route } from 'lucide-react';
 import type { Tab, RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
 import { decodeRoute } from '@/lib/routeShare';
 import BottomPanel from '@/components/BottomPanel';
@@ -138,9 +138,11 @@ export default function Home() {
         setCurrentPosition({ lat: latitude, lng: longitude });
         setCurrentSpeed(kmh);
         setGpsAccuracy(accuracy);
-        setMaxSpeed((prev) => Math.max(prev, kmh));
-        setSpeedSum((prev) => prev + kmh);
-        setSpeedCount((prev) => prev + 1);
+        if (kmh > 3) {
+          setMaxSpeed((prev) => Math.max(prev, kmh));
+          setSpeedSum((prev) => prev + kmh);
+          setSpeedCount((prev) => prev + 1);
+        }
       },
       (err) => console.warn('watchPosition:', err),
       { enableHighAccuracy: true, maximumAge: 1000 }
@@ -344,7 +346,7 @@ export default function Home() {
           {(
             [
               { key: 'distance', label: 'ルート', icon: <Route size={14} /> },
-              { key: 'speed', label: 'ライド', icon: <Gauge size={14} /> },
+              { key: 'speed', label: 'ライド', icon: <Bike size={14} /> },
             ] as { key: Tab; label: string; icon: React.ReactNode }[]
           ).map(({ key, label, icon }) => (
             <button

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Undo2, Save, Trash2, X, Share2, Upload, MoreHorizontal, BookMarked, Bike, Ruler, Road } from 'lucide-react';
+import { Undo2, Save, Trash2, X, Share2, Upload, MoreHorizontal, BookMarked, Flag, Ruler, Road } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
 import { encodeRoute } from '@/lib/routeShare';
 
@@ -200,7 +200,7 @@ export default function BottomPanel({
               disabled: waypoints.length === 0,
             },
             {
-              icon: <Bike size={24} />,
+              icon: <Flag size={24} />,
               label: 'マイルート',
               onClick: () => setShowHistory(true),
               disabled: false,

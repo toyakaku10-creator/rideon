@@ -84,7 +84,7 @@ export default function SpeedPanel({
       {/* Current speed — big display */}
       <div className="text-center mb-4">
         <span className="text-6xl font-bold text-[var(--accent)] tabular-nums">
-          {currentSpeed.toFixed(1)}
+          {currentSpeed > 3 ? currentSpeed.toFixed(1) : '0.0'}
         </span>
         <span className="text-xl text-[var(--text-muted)] ml-1.5">km/h</span>
       </div>
