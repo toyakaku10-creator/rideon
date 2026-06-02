@@ -308,11 +308,10 @@ export default function BottomPanel({
 
       {/* More menu bottom sheet — import & share only */}
       {showMore && (
-        <div className="fixed inset-0 z-[1000] flex flex-col justify-end">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setShowMore(false)} />
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }} onClick={() => setShowMore(false)}>
           <div
-            className="relative bg-[var(--surface)] rounded-t-2xl border-t border-[var(--border)]"
-            style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom))' }}
+            style={{ width: '100%', maxWidth: '480px', background: 'var(--surface)', borderRadius: '16px 16px 0 0', paddingBottom: 'calc(20px + env(safe-area-inset-bottom))' }}
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="w-10 h-1 bg-[var(--border)] rounded-full mx-auto mt-4 mb-2" />
             <div className="px-4 py-2 flex flex-col gap-1">
@@ -338,14 +337,10 @@ export default function BottomPanel({
 
       {/* Save bottom sheet */}
       {showSave && (
-        <div className="fixed inset-0 z-[1000] flex flex-col justify-end">
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }} onClick={() => setShowSave(false)}>
           <div
-            className="absolute inset-0 bg-black/40"
-            onClick={() => setShowSave(false)}
-          />
-          <div
-            className="relative bg-[var(--surface)] rounded-t-2xl px-4 pt-6 border-t border-[var(--border)]"
-            style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom))' }}
+            style={{ width: '100%', maxWidth: '480px', background: 'var(--surface)', borderRadius: '16px 16px 0 0', padding: '20px 16px', paddingBottom: 'calc(20px + env(safe-area-inset-bottom))' }}
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="w-10 h-1 bg-[var(--border)] rounded-full mx-auto mb-5" />
             <h2 className="text-[var(--text)] font-semibold text-base mb-4">
@@ -381,14 +376,10 @@ export default function BottomPanel({
 
       {/* History bottom sheet */}
       {showHistory && (
-        <div className="fixed inset-0 z-[1000] flex flex-col justify-end">
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }} onClick={() => setShowHistory(false)}>
           <div
-            className="absolute inset-0 bg-black/40"
-            onClick={() => setShowHistory(false)}
-          />
-          <div
-            className="relative bg-[var(--surface)] rounded-t-2xl border-t border-[var(--border)] flex flex-col"
-            style={{ maxHeight: '70dvh' }}
+            style={{ width: '100%', maxWidth: '480px', background: 'var(--surface)', borderRadius: '16px 16px 0 0', display: 'flex', flexDirection: 'column', maxHeight: '70dvh' }}
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="px-4 pt-4 pb-3 border-b border-[var(--border)]">
               <div className="w-10 h-1 bg-[var(--border)] rounded-full mx-auto mb-4" />
@@ -427,68 +418,60 @@ export default function BottomPanel({
 
       {/* Import bottom sheet */}
       {showImport && (
-        <div className="fixed inset-0 z-[1000] flex flex-col justify-end">
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }} onClick={() => !importLoading && setShowImport(false)}>
           <div
-            className="absolute inset-0 bg-black/40"
-            onClick={() => !importLoading && setShowImport(false)}
-          />
-          <div
-            className="relative bg-[var(--surface)] rounded-t-2xl border-t border-[var(--border)]"
-            style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom))', maxWidth: '480px', margin: '0 auto', width: '100%' }}
+            style={{ width: '100%', maxWidth: '480px', background: 'var(--surface)', borderRadius: '16px 16px 0 0', padding: '20px 16px', paddingBottom: 'calc(20px + env(safe-area-inset-bottom))' }}
+            onClick={(e) => e.stopPropagation()}
           >
-            <div className="px-4 pt-4 pb-3 border-b border-[var(--border)]">
-              <div className="w-10 h-1 bg-[var(--border)] rounded-full mx-auto mb-4" />
-              <div className="flex items-center justify-between">
-                <h2 className="text-[var(--text)] font-semibold text-base">
-                  キョリ測からインポート
-                </h2>
-                <button
-                  onClick={() => !importLoading && setShowImport(false)}
-                  className="text-[var(--text-muted)] hover:text-[var(--text)] w-8 h-8 flex items-center justify-center"
-                >
-                  <X size={18} />
-                </button>
-              </div>
+            <div className="w-10 h-1 bg-[var(--border)] rounded-full mx-auto mb-4" />
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-[var(--text)] font-semibold text-base">
+                キョリ測からインポート
+              </h2>
+              <button
+                onClick={() => !importLoading && setShowImport(false)}
+                className="text-[var(--text-muted)] hover:text-[var(--text)] w-8 h-8 flex items-center justify-center"
+              >
+                <X size={18} />
+              </button>
             </div>
-            <div className="px-4 pt-4">
-              <p className="text-[var(--text-muted)] text-xs mb-3">
-                キョリ測のURLをペーストしてください
-              </p>
-              <input
-                type="url"
-                value={importUrl}
-                onChange={(e) => { setImportUrl(e.target.value); setImportError(''); }}
-                onKeyDown={(e) => e.key === 'Enter' && handleImportConfirm()}
-                placeholder="https://mapzs.com/map/..."
+            <p className="text-[var(--text-muted)] text-xs mb-3">
+              キョリ測のURLをペーストしてください
+            </p>
+            <input
+              type="url"
+              value={importUrl}
+              onChange={(e) => { setImportUrl(e.target.value); setImportError(''); }}
+              onKeyDown={(e) => e.key === 'Enter' && handleImportConfirm()}
+              placeholder="https://mapzs.com/map/..."
+              disabled={importLoading}
+              className="w-full bg-[var(--surface2)] text-[var(--text)] rounded-xl px-4 py-3 text-sm mb-3 outline-none focus:ring-2 focus:ring-[var(--accent)] placeholder:text-[var(--text-muted)] disabled:opacity-50"
+            />
+            {importError && (
+              <p className="text-[var(--red)] text-xs mb-3 px-1">{importError}</p>
+            )}
+            <div className="flex gap-3">
+              <button
+                onClick={() => !importLoading && setShowImport(false)}
                 disabled={importLoading}
-                className="w-full bg-[var(--surface2)] text-[var(--text)] rounded-xl px-4 py-3 text-sm mb-3 outline-none focus:ring-2 focus:ring-[var(--accent)] placeholder:text-[var(--text-muted)] disabled:opacity-50"
-              />
-              {importError && (
-                <p className="text-[var(--red)] text-xs mb-3 px-1">{importError}</p>
-              )}
-              <div className="flex gap-3">
-                <button
-                  onClick={() => !importLoading && setShowImport(false)}
-                  disabled={importLoading}
-                  className="flex-1 py-3 rounded-xl bg-[var(--surface2)] text-[var(--text-muted)] text-sm font-medium disabled:opacity-50"
-                >
-                  キャンセル
-                </button>
-                <button
-                  onClick={handleImportConfirm}
-                  disabled={!importUrl.trim() || importLoading}
-                  className="flex-1 py-3 rounded-xl bg-[var(--accent)] text-white font-bold text-sm disabled:opacity-40 flex items-center justify-center gap-2"
-                >
-                  {importLoading ? (
-                    <>
-                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      取得中…
-                    </>
-                  ) : (
-                    '取得する'
-                  )}
-                </button>
-              </div>
+                className="flex-1 py-3 rounded-xl bg-[var(--surface2)] text-[var(--text-muted)] text-sm font-medium disabled:opacity-50"
+              >
+                キャンセル
+              </button>
+              <button
+                onClick={handleImportConfirm}
+                disabled={!importUrl.trim() || importLoading}
+                className="flex-1 py-3 rounded-xl bg-[var(--accent)] text-white font-bold text-sm disabled:opacity-40 flex items-center justify-center gap-2"
+              >
+                {importLoading ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    取得中…
+                  </>
+                ) : (
+                  '取得する'
+                )}
+              </button>
             </div>
           </div>
         </div>
