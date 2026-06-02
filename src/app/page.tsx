@@ -392,6 +392,22 @@ export default function Home() {
     );
   }, []);
 
+  const handleImportSave = useCallback(async () => {
+    if (isImported) {
+      const points = segments.flatMap((s) => s.geometry);
+      try {
+        const res = await fetch('/api/elevation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ points }),
+        });
+        const data = await res.json();
+        if (data.elevations) setElevations(data.elevations);
+      } catch { /* silent fail */ }
+    }
+    setShowSaveDialog(true);
+  }, [isImported, segments]);
+
   const mapCenter =
     tab === 'speed' ? (currentPosition ?? initialCenter) : initialCenter;
   const mapFollow = tab === 'speed' && currentPosition !== null;
@@ -464,7 +480,7 @@ export default function Home() {
                 📍 スタート地点をドラッグして位置を補正してください
               </p>
               <button
-                onClick={() => setShowSaveDialog(true)}
+                onClick={handleImportSave}
                 className="w-full py-2 rounded-xl text-sm font-bold text-white"
                 style={{ background: '#D4AF37' }}
               >
