@@ -292,7 +292,7 @@ export default function Home() {
             <button
               key={key}
               onClick={() => setTab(key)}
-              className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors flex items-center gap-1 ${
+              className={`flex-1 py-1 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1 ${
                 tab === key
                   ? 'bg-[var(--accent)] text-white'
                   : 'text-[var(--text-muted)] hover:text-[var(--text)]'
