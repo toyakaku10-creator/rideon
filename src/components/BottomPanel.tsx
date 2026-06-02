@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Ruler, Bike, Footprints, Undo2, X, Share2, Upload, MoreHorizontal } from 'lucide-react';
-import type { RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
+import { Undo2, X, Share2, Upload, MoreHorizontal } from 'lucide-react';
+import type { LatLng, RouteSegment, SavedRoute } from '@/types';
 import { encodeRoute } from '@/lib/routeShare';
 
 function formatDistance(meters: number): string {
@@ -19,25 +19,13 @@ function formatTime(meters: number, speedKmh: number): string {
   return `${h}時間${m > 0 ? `${m}分` : ''}`;
 }
 
-const ROUTE_SPEED: Record<RouteType, number> = {
-  straight: 15,
-  cycling: 15,
-  walking: 5,
-};
-
-const ROUTE_BUTTONS: { type: RouteType; icon: React.ReactNode; label: string }[] = [
-  { type: 'straight', icon: <Ruler size={13} />, label: '直線' },
-  { type: 'cycling', icon: <Bike size={13} />, label: '自転車道なり' },
-  { type: 'walking', icon: <Footprints size={13} />, label: '徒歩道なり' },
-];
+const CYCLING_SPEED_KMH = 15;
 
 interface BottomPanelProps {
   waypoints: LatLng[];
   segments: RouteSegment[];
-  routeType: RouteType;
   totalDistance: number;
   isLoading: boolean;
-  onRouteTypeChange: (type: RouteType) => void;
   onUndo: () => void;
   onClear: () => void;
   onSave: (name: string) => void;
@@ -52,10 +40,8 @@ interface BottomPanelProps {
 export default function BottomPanel({
   waypoints,
   segments,
-  routeType,
   totalDistance,
   isLoading,
-  onRouteTypeChange,
   onUndo,
   onClear,
   onSave,
@@ -82,7 +68,7 @@ export default function BottomPanel({
   }, [showSave]);
 
   const handleShare = async () => {
-    const encoded = encodeRoute(waypoints, segments, routeType);
+    const encoded = encodeRoute(waypoints, segments, 'cycling');
     const url = `${window.location.origin}${window.location.pathname}?route=${encodeURIComponent(encoded)}`;
     try {
       if (navigator.share) {
@@ -121,35 +107,12 @@ export default function BottomPanel({
     onImportedSaved();
   };
 
-  const speedKmh = ROUTE_SPEED[routeType];
-
   return (
     <>
       <div
         className="bg-[var(--surface)] border-t border-[var(--border)] px-4 pt-3 shrink-0"
         style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
       >
-        {/* Route type selector */}
-        <div className="flex gap-1.5 mb-3">
-          {ROUTE_BUTTONS.map(({ type, icon, label }) => (
-            <button
-              key={type}
-              onClick={() => !isLoading && onRouteTypeChange(type)}
-              disabled={isLoading}
-              className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                routeType === type
-                  ? 'bg-[var(--accent)] text-white'
-                  : 'bg-[var(--surface2)] text-[var(--text-muted)] hover:text-[var(--text)] active:bg-[var(--border)]'
-              } disabled:opacity-50`}
-            >
-              <span className="flex items-center justify-center gap-1">
-                {icon}
-                {label}
-              </span>
-            </button>
-          ))}
-        </div>
-
         {/* Stats row */}
         <div className="flex items-center justify-between text-sm mb-3">
           <span className="text-[var(--text)] font-semibold tabular-nums">
@@ -158,7 +121,7 @@ export default function BottomPanel({
           <span className="text-[var(--text-muted)]">{waypoints.length}ポイント</span>
           <span className="text-[var(--text-muted)]">
             目安{' '}
-            {totalDistance > 0 ? formatTime(totalDistance, speedKmh) : '--'}
+            {totalDistance > 0 ? formatTime(totalDistance, CYCLING_SPEED_KMH) : '--'}
           </span>
         </div>
 

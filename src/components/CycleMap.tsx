@@ -9,17 +9,13 @@ import {
   useJsApiLoader,
   type Libraries,
 } from '@react-google-maps/api';
-import type { Tab, LatLng, RouteSegment, RouteType } from '@/types';
+import type { Tab, LatLng, RouteSegment } from '@/types';
 
 const LIBRARIES: Libraries = ['geometry'];
 
 const darkMapStyles: google.maps.MapTypeStyle[] = [];
 
-const POLYLINE_COLORS: Record<RouteType, string> = {
-  straight: '#c8f55a',
-  cycling: '#5ab4ff',
-  walking: '#ffb45a',
-};
+const POLYLINE_COLOR = '#5ab4ff';
 
 const DEFAULT_CENTER: google.maps.LatLngLiteral = { lat: 35.6762, lng: 139.6503 };
 
@@ -34,7 +30,6 @@ interface CycleMapProps {
   tab: Tab;
   waypoints: LatLng[];
   segments: RouteSegment[];
-  routeType: RouteType;
   currentPosition: LatLng | null;
   center: LatLng | null;
   follow: boolean;
@@ -47,7 +42,6 @@ export default function CycleMap({
   tab,
   waypoints,
   segments,
-  routeType,
   currentPosition,
   center,
   follow,
@@ -117,8 +111,6 @@ export default function CycleMap({
     );
   }
 
-  const strokeColor = POLYLINE_COLORS[routeType];
-
   return (
     <GoogleMap
       mapContainerStyle={{ width: '100%', height: '100%' }}
@@ -135,7 +127,7 @@ export default function CycleMap({
           key={i}
           path={seg.geometry.map((p) => ({ lat: p.lat, lng: p.lng }))}
           options={{
-            strokeColor,
+            strokeColor: POLYLINE_COLOR,
             strokeWeight: tab === 'distance' ? 4 : 3,
             strokeOpacity: tab === 'distance' ? 0.85 : 0.5,
           }}

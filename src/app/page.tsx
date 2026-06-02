@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback } from 'react';
 import { Bike } from 'lucide-react';
-import type { Tab, RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
+import type { Tab, LatLng, RouteSegment, SavedRoute } from '@/types';
 import { decodeRoute } from '@/lib/routeShare';
 import BottomPanel from '@/components/BottomPanel';
 import SpeedPanel from '@/components/SpeedPanel';
@@ -55,7 +55,6 @@ export default function Home() {
   // Distance measurement
   const [waypoints, setWaypoints] = useState<LatLng[]>([]);
   const [segments, setSegments] = useState<RouteSegment[]>([]);
-  const [routeType, setRouteType] = useState<RouteType>('cycling');
   const [isLoading, setIsLoading] = useState(false);
   const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([]);
   const [fitBoundsPoints, setFitBoundsPoints] = useState<LatLng[] | null>(null);
@@ -102,7 +101,6 @@ export default function Home() {
     if (!result) return;
     setWaypoints(result.waypoints);
     setSegments(result.segments);
-    setRouteType(result.routeType);
     if (result.waypoints.length > 0) {
       setInitialCenter(result.waypoints[0]);
     }
@@ -144,53 +142,20 @@ export default function Home() {
         const from = prevWps[prevWps.length - 1];
         const to = latlng;
 
-        if (routeType === 'straight') {
-          setSegments((prev) => [...prev, makeStraightSegment(from, to)]);
-        } else {
-          setIsLoading(true);
-          fetchOSRMRoute(from, to, routeType)
-            .then(({ geometry, distance }) => {
-              setSegments((prev) => [...prev, { from, to, geometry, distance }]);
-            })
-            .catch(() => {
-              setSegments((prev) => [...prev, makeStraightSegment(from, to)]);
-            })
-            .finally(() => setIsLoading(false));
-        }
+        setIsLoading(true);
+        fetchOSRMRoute(from, to, 'cycling')
+          .then(({ geometry, distance }) => {
+            setSegments((prev) => [...prev, { from, to, geometry, distance }]);
+          })
+          .catch(() => {
+            setSegments((prev) => [...prev, makeStraightSegment(from, to)]);
+          })
+          .finally(() => setIsLoading(false));
 
         return newWps;
       });
     },
-    [isLoading, routeType]
-  );
-
-  // Re-fetch all segments when route type changes
-  const handleRouteTypeChange = useCallback(
-    async (type: RouteType) => {
-      setRouteType(type);
-      if (waypoints.length < 2) return;
-
-      setIsLoading(true);
-      try {
-        const newSegs: RouteSegment[] = [];
-        for (let i = 0; i < waypoints.length - 1; i++) {
-          const from = waypoints[i];
-          const to = waypoints[i + 1];
-          if (type === 'straight') {
-            newSegs.push(makeStraightSegment(from, to));
-          } else {
-            const { geometry, distance } = await fetchOSRMRoute(from, to, type);
-            newSegs.push({ from, to, geometry, distance });
-          }
-        }
-        setSegments(newSegs);
-      } catch {
-        // keep existing segments on failure
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [waypoints]
+    [isLoading]
   );
 
   const handleUndo = useCallback(() => {
@@ -209,7 +174,7 @@ export default function Home() {
         id: Date.now().toString(),
         name,
         waypoints,
-        routeType,
+        routeType: 'cycling',
         segments,
         totalDistance,
         createdAt: new Date().toISOString(),
@@ -219,13 +184,12 @@ export default function Home() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
       setIsImported(false);
     },
-    [waypoints, routeType, segments, totalDistance, savedRoutes]
+    [waypoints, segments, totalDistance, savedRoutes]
   );
 
   const handleLoadRoute = useCallback((route: SavedRoute) => {
     setWaypoints(route.waypoints);
     setSegments(route.segments);
-    setRouteType(route.routeType);
   }, []);
 
   const handleDeleteRoute = useCallback(
@@ -271,7 +235,6 @@ export default function Home() {
 
       setWaypoints([latlngs[0], latlngs[latlngs.length - 1]]);
       setSegments([seg]);
-      setRouteType('straight');
       setFitBoundsPoints([...latlngs]);
       setIsImported(true);
       return true;
@@ -335,7 +298,6 @@ export default function Home() {
           tab={tab}
           waypoints={waypoints}
           segments={segments}
-          routeType={routeType}
           currentPosition={currentPosition}
           center={mapCenter}
           follow={mapFollow}
@@ -355,10 +317,8 @@ export default function Home() {
         <BottomPanel
           waypoints={waypoints}
           segments={segments}
-          routeType={routeType}
           totalDistance={totalDistance}
           isLoading={isLoading}
-          onRouteTypeChange={handleRouteTypeChange}
           onUndo={handleUndo}
           onClear={handleClear}
           onSave={handleSave}
