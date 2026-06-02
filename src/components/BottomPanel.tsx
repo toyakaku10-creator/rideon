@@ -47,6 +47,8 @@ interface BottomPanelProps {
   onImportUrl: (url: string) => Promise<true | string>;
   isImported: boolean;
   onImportedSaved: () => void;
+  onSaveRequest: (openSaveDialog: () => void) => Promise<void>;
+  isSnapping: boolean;
 }
 
 export default function BottomPanel({
@@ -65,6 +67,8 @@ export default function BottomPanel({
   onImportUrl,
   isImported,
   onImportedSaved,
+  onSaveRequest,
+  isSnapping,
 }: BottomPanelProps) {
   const [showSave, setShowSave] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
@@ -183,9 +187,9 @@ export default function BottomPanel({
             },
             {
               key: 'save',
-              content: '保存',
-              onClick: () => { setSaveName(''); setShowSave(true); },
-              disabled: waypoints.length < 2,
+              content: isSnapping ? '調整中...' : '保存',
+              onClick: () => { setSaveName(''); onSaveRequest(() => setShowSave(true)); },
+              disabled: waypoints.length < 2 || isSnapping,
             },
             {
               key: 'share',

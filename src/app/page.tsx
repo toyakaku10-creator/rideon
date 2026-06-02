@@ -48,6 +48,25 @@ function makeStraightSegment(from: LatLng, to: LatLng): RouteSegment {
   return { from, to, geometry: [from, to], distance: haversineDistance(from, to) };
 }
 
+async function snapRouteToRoad(pts: [number, number][]): Promise<[number, number][]> {
+  const step = Math.max(1, Math.floor(pts.length / 100));
+  const wps = pts.filter((_, i) => i % step === 0 || i === pts.length - 1);
+  const coords = wps.map(([lat, lng]) => `${lng},${lat}`).join(';');
+  const url = `https://router.project-osrm.org/route/v1/cycling/${coords}?overview=full&geometries=geojson`;
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.code === 'Ok' && data.routes.length > 0) {
+      return (data.routes[0].geometry.coordinates as [number, number][]).map(
+        ([lng, lat]) => [lat, lng]
+      );
+    }
+  } catch {
+    // フォールバック
+  }
+  return pts;
+}
+
 export default function Home() {
   const [tab, setTab] = useState<Tab>('distance');
 
@@ -59,6 +78,7 @@ export default function Home() {
   const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([]);
   const [fitBoundsPoints, setFitBoundsPoints] = useState<LatLng[] | null>(null);
   const [isImported, setIsImported] = useState(false);
+  const [isSnapping, setIsSnapping] = useState(false);
 
   // Positioning
   const [initialCenter, setInitialCenter] = useState<LatLng | null>(null);
@@ -221,6 +241,37 @@ export default function Home() {
     [waypoints, routeType, segments, totalDistance, savedRoutes]
   );
 
+  // インポートルートをOSRMでスナップしてから保存ダイアログを開く
+  const handleSaveRequest = useCallback(
+    async (openSaveDialog: () => void) => {
+      if (!isImported || segments.length === 0) {
+        openSaveDialog();
+        return;
+      }
+      setIsSnapping(true);
+      try {
+        const pts: [number, number][] = segments[0].geometry.map((p) => [p.lat, p.lng]);
+        const snapped = await snapRouteToRoad(pts);
+        const geometry: LatLng[] = snapped.map(([lat, lng]) => ({ lat, lng }));
+        const distance = geometry
+          .slice(1)
+          .reduce((sum, p, i) => sum + haversineDistance(geometry[i], p), 0);
+        setSegments((prev) => [
+          { ...prev[0], geometry, distance },
+          ...prev.slice(1),
+        ]);
+        setWaypoints((prev) => [geometry[0], ...prev.slice(1)]);
+      } catch {
+        // スナップ失敗時はそのまま続行
+      } finally {
+        setIsSnapping(false);
+        setIsImported(false);
+      }
+      openSaveDialog();
+    },
+    [isImported, segments]
+  );
+
   const handleLoadRoute = useCallback((route: SavedRoute) => {
     setWaypoints(route.waypoints);
     setSegments(route.segments);
@@ -361,6 +412,8 @@ export default function Home() {
           onUndo={handleUndo}
           onClear={handleClear}
           onSave={handleSave}
+          onSaveRequest={handleSaveRequest}
+          isSnapping={isSnapping}
           savedRoutes={savedRoutes}
           onLoadRoute={handleLoadRoute}
           onDeleteRoute={handleDeleteRoute}
