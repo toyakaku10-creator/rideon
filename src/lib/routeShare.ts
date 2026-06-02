@@ -35,6 +35,7 @@ export function decodeRoute(encoded: string): {
       to: waypoints[i + 1],
       geometry: seg.g.map(([lat, lng]) => ({ lat, lng })),
       distance: seg.d,
+      routeType: 'cycling' as const,
     }));
     return { waypoints, segments, routeType: data.t };
   } catch {

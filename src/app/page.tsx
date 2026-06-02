@@ -45,7 +45,7 @@ async function fetchOSRMRoute(
 }
 
 function makeStraightSegment(from: LatLng, to: LatLng): RouteSegment {
-  return { from, to, geometry: [from, to], distance: haversineDistance(from, to) };
+  return { from, to, geometry: [from, to], distance: haversineDistance(from, to), routeType: 'straight' };
 }
 
 
@@ -145,15 +145,15 @@ export default function Home() {
         const to = latlng;
 
         if (routeType === 'straight') {
-          setSegments((prev) => [...prev, makeStraightSegment(from, to)]);
+          setSegments((prev) => [...prev, { ...makeStraightSegment(from, to), routeType: 'straight' }]);
         } else {
           setIsLoading(true);
           fetchOSRMRoute(from, to, 'cycling')
             .then(({ geometry, distance }) => {
-              setSegments((prev) => [...prev, { from, to, geometry, distance }]);
+              setSegments((prev) => [...prev, { from, to, geometry, distance, routeType: 'cycling' }]);
             })
             .catch(() => {
-              setSegments((prev) => [...prev, makeStraightSegment(from, to)]);
+              setSegments((prev) => [...prev, { ...makeStraightSegment(from, to), routeType: 'cycling' }]);
             })
             .finally(() => setIsLoading(false));
         }
@@ -164,32 +164,9 @@ export default function Home() {
     [isLoading, routeType]
   );
 
-  const handleRouteTypeChange = useCallback(
-    async (type: RouteType) => {
-      setRouteType(type);
-      if (waypoints.length < 2) return;
-      setIsLoading(true);
-      try {
-        const newSegs: RouteSegment[] = [];
-        for (let i = 0; i < waypoints.length - 1; i++) {
-          const from = waypoints[i];
-          const to = waypoints[i + 1];
-          if (type === 'straight') {
-            newSegs.push(makeStraightSegment(from, to));
-          } else {
-            const { geometry, distance } = await fetchOSRMRoute(from, to, 'cycling');
-            newSegs.push({ from, to, geometry, distance });
-          }
-        }
-        setSegments(newSegs);
-      } catch {
-        // keep existing segments on failure
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [waypoints]
-  );
+  const handleRouteTypeChange = useCallback((type: RouteType) => {
+    setRouteType(type);
+  }, []);
 
   const handleUndo = useCallback(() => {
     setWaypoints((prev) => prev.slice(0, -1));
@@ -265,6 +242,7 @@ export default function Home() {
         to: latlngs[latlngs.length - 1],
         geometry: latlngs,
         distance,
+        routeType: 'straight',
       };
 
       setWaypoints([latlngs[0], latlngs[latlngs.length - 1]]);

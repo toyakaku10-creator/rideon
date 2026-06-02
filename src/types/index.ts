@@ -11,6 +11,7 @@ export interface RouteSegment {
   to: LatLng;
   geometry: LatLng[];
   distance: number; // meters
+  routeType: 'cycling' | 'straight';
 }
 
 export interface SavedRoute {
