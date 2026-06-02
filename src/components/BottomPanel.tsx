@@ -233,7 +233,7 @@ export default function BottomPanel({
                 className="flex items-center gap-3 w-full px-3 py-3 rounded-xl text-sm text-[var(--text)] hover:bg-[var(--surface2)] active:bg-[var(--surface2)] transition-colors"
               >
                 <span className="w-4 h-4 flex items-center justify-center text-[var(--text-muted)] text-base leading-none">☰</span>
-                履歴
+                マイルート
               </button>
             </div>
           </div>
@@ -298,7 +298,7 @@ export default function BottomPanel({
               <div className="w-10 h-1 bg-[var(--border)] rounded-full mx-auto mb-4" />
               <div className="flex items-center justify-between">
                 <h2 className="text-[var(--text)] font-semibold text-base">
-                  保存済みルート
+                  マイルート
                 </h2>
                 <button
                   onClick={() => setShowHistory(false)}
