@@ -15,7 +15,7 @@ const LIBRARIES: Libraries = ['geometry'];
 
 const darkMapStyles: google.maps.MapTypeStyle[] = [];
 
-const POLYLINE_COLOR = '#D4AF37';
+const POLYLINE_COLOR = '#FF6B00';
 
 function makeLabelIcon(label: string, bg: string, size = 28): google.maps.Icon {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
@@ -153,7 +153,7 @@ export default function CycleMap({
               path={path}
               options={{
                 strokeColor: '#ffffff',
-                strokeWeight: 6,
+                strokeWeight: 7,
                 strokeOpacity: 0.9,
                 zIndex: 1,
               }}
@@ -162,7 +162,7 @@ export default function CycleMap({
               path={path}
               options={{
                 strokeColor: POLYLINE_COLOR,
-                strokeWeight: 3,
+                strokeWeight: 4,
                 strokeOpacity: 1,
                 zIndex: 2,
               }}
