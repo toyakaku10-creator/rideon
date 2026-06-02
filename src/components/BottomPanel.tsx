@@ -391,7 +391,7 @@ export default function BottomPanel({
 
       {/* Import modal */}
       {showImport && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', minHeight: '-webkit-fill-available', background: '#ffffff', zIndex: 2000, display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100dvh', background: '#ffffff', zIndex: 2000, display: 'flex', flexDirection: 'column', boxSizing: 'border-box', overflowY: 'auto' }}>
           {/* ヘッダー */}
           <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '56px 20px 16px', borderBottom: '1px solid #eee' }}>
             <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '600' }}>キョリ測からインポート</h2>
@@ -419,7 +419,7 @@ export default function BottomPanel({
           </div>
 
           {/* フッターボタン */}
-          <div style={{ flexShrink: 0, padding: '16px 20px', paddingBottom: 'calc(16px + env(safe-area-inset-bottom))', borderTop: '1px solid #eee', boxSizing: 'border-box' }}>
+          <div style={{ position: 'sticky', bottom: 0, flexShrink: 0, padding: '16px 20px', paddingBottom: 'calc(16px + env(safe-area-inset-bottom))', background: '#ffffff', borderTop: '1px solid #eee', boxSizing: 'border-box' }}>
             <button
               onClick={handleImportConfirm}
               disabled={importLoading}
