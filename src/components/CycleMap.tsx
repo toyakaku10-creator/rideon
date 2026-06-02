@@ -157,7 +157,7 @@ export default function CycleMap({
                 strokeColor: '#ffffff',
                 strokeWeight: 7,
                 strokeOpacity: 0.9,
-                zIndex: 1,
+                zIndex: i * 2,
               }}
             />
             <Polyline
@@ -166,7 +166,7 @@ export default function CycleMap({
                 strokeColor: POLYLINE_COLOR,
                 strokeWeight: 4,
                 strokeOpacity: 1,
-                zIndex: 2,
+                zIndex: i * 2 + 1,
               }}
             />
           </React.Fragment>
