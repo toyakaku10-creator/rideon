@@ -306,82 +306,72 @@ export default function BottomPanel({
         </div>
       </div>
 
-      {/* More menu full-screen modal */}
+      {/* More menu modal */}
       {showMore && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#ffffff', zIndex: 2000, display: 'flex', flexDirection: 'column', padding: '60px 24px 24px', boxSizing: 'border-box', maxWidth: '480px', margin: '0 auto' }}>
-          <button
-            style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: 'var(--text-muted)' }}
-            onClick={() => setShowMore(false)}
-          >✕</button>
-
-          <h2 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '24px', color: 'var(--text)' }}>外部</h2>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#ffffff', zIndex: 2000, display: 'flex', flexDirection: 'column', maxWidth: '480px', width: '100%', margin: '0 auto', boxSizing: 'border-box', overflowY: 'auto', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
+          <div style={{ flexShrink: 0, padding: '16px 16px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <h2 style={{ fontSize: '18px', fontWeight: '600', margin: 0, color: 'var(--text)' }}>外部</h2>
+            <button style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: 'var(--text-muted)', lineHeight: 1 }} onClick={() => setShowMore(false)}>✕</button>
+          </div>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '16px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <button
               onClick={() => { setImportUrl(''); setImportError(''); setShowMore(false); setShowImport(true); }}
-              style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '14px 16px', background: 'var(--surface2)', border: 'none', borderRadius: '12px', fontSize: '15px', color: 'var(--text)', cursor: 'pointer', textAlign: 'left' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', boxSizing: 'border-box', minWidth: 0, padding: '14px 16px', background: 'var(--surface2)', border: 'none', borderRadius: '12px', fontSize: '15px', color: 'var(--text)', cursor: 'pointer', textAlign: 'left' }}
             >
-              <Upload size={18} />
-              インポート
+              <Upload size={18} />インポート
             </button>
             <button
               onClick={() => { setShowMore(false); handleShare(); }}
               disabled={waypoints.length < 2}
-              style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '14px 16px', background: 'var(--surface2)', border: 'none', borderRadius: '12px', fontSize: '15px', color: 'var(--text)', cursor: 'pointer', textAlign: 'left', opacity: waypoints.length < 2 ? 0.4 : 1 }}
+              style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', boxSizing: 'border-box', minWidth: 0, padding: '14px 16px', background: 'var(--surface2)', border: 'none', borderRadius: '12px', fontSize: '15px', color: 'var(--text)', cursor: 'pointer', textAlign: 'left', opacity: waypoints.length < 2 ? 0.4 : 1 }}
             >
-              <Share2 size={18} />
-              {copied ? 'コピー済み' : 'シェア'}
+              <Share2 size={18} />{copied ? 'コピー済み' : 'シェア'}
+            </button>
+          </div>
+          <div style={{ flexShrink: 0, padding: '16px', paddingBottom: 'calc(16px + env(safe-area-inset-bottom))', boxSizing: 'border-box' }} />
+        </div>
+      )}
+
+      {/* Save modal */}
+      {showSave && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#ffffff', zIndex: 2000, display: 'flex', flexDirection: 'column', maxWidth: '480px', width: '100%', margin: '0 auto', boxSizing: 'border-box', overflowY: 'auto', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
+          <div style={{ flexShrink: 0, padding: '16px 16px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <h2 style={{ fontSize: '18px', fontWeight: '600', margin: 0, color: 'var(--text)' }}>ルートを保存</h2>
+            <button style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: 'var(--text-muted)', lineHeight: 1 }} onClick={() => setShowSave(false)}>✕</button>
+          </div>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '16px', boxSizing: 'border-box' }}>
+            <input
+              ref={inputRef}
+              type="text"
+              value={saveName}
+              onChange={(e) => setSaveName(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSaveConfirm()}
+              placeholder="ルート名（例：自宅→駅）"
+              style={{ width: '100%', boxSizing: 'border-box', minWidth: 0, display: 'block', padding: '12px', fontSize: '15px', border: '1px solid #ddd', borderRadius: '10px', outline: 'none' }}
+            />
+          </div>
+          <div style={{ flexShrink: 0, padding: '16px', paddingBottom: 'calc(16px + env(safe-area-inset-bottom))', boxSizing: 'border-box' }}>
+            <button
+              onClick={handleSaveConfirm}
+              disabled={!saveName.trim()}
+              style={{ width: '100%', padding: '14px', background: '#D4AF37', color: '#000', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', opacity: !saveName.trim() ? 0.4 : 1 }}
+            >
+              保存する
             </button>
           </div>
         </div>
       )}
 
-      {/* Save bottom sheet */}
-      {/* Save full-screen modal */}
-      {showSave && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#ffffff', zIndex: 2000, display: 'flex', flexDirection: 'column', padding: '60px 24px 24px', boxSizing: 'border-box', maxWidth: '480px', margin: '0 auto' }}>
-          <button
-            style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: 'var(--text-muted)' }}
-            onClick={() => setShowSave(false)}
-          >✕</button>
-
-          <h2 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '24px', color: 'var(--text)' }}>
-            ルートを保存
-          </h2>
-
-          <input
-            ref={inputRef}
-            type="text"
-            value={saveName}
-            onChange={(e) => setSaveName(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSaveConfirm()}
-            placeholder="ルート名（例：自宅→駅）"
-            style={{ width: '100%', boxSizing: 'border-box', padding: '12px', fontSize: '15px', border: '1px solid #ddd', borderRadius: '10px', marginBottom: '16px', outline: 'none' }}
-          />
-
-          <button
-            onClick={handleSaveConfirm}
-            disabled={!saveName.trim()}
-            style={{ width: '100%', padding: '14px', background: '#D4AF37', color: '#000', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', opacity: !saveName.trim() ? 0.4 : 1 }}
-          >
-            保存する
-          </button>
-        </div>
-      )}
-
-      {/* History full-screen modal */}
+      {/* History modal */}
       {showHistory && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#ffffff', zIndex: 2000, display: 'flex', flexDirection: 'column', maxWidth: '480px', margin: '0 auto', boxSizing: 'border-box' }}>
-          <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
-            <h2 style={{ fontSize: '18px', fontWeight: '600', color: 'var(--text)', margin: 0 }}>マイルート</h2>
-            <button
-              style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: 'var(--text-muted)', lineHeight: 1 }}
-              onClick={() => setShowHistory(false)}
-            >✕</button>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#ffffff', zIndex: 2000, display: 'flex', flexDirection: 'column', maxWidth: '480px', width: '100%', margin: '0 auto', boxSizing: 'border-box', overflowY: 'auto', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
+          <div style={{ flexShrink: 0, padding: '16px 16px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border)', paddingBottom: '16px' }}>
+            <h2 style={{ fontSize: '18px', fontWeight: '600', margin: 0, color: 'var(--text)' }}>マイルート</h2>
+            <button style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: 'var(--text-muted)', lineHeight: 1 }} onClick={() => setShowHistory(false)}>✕</button>
           </div>
-          <div style={{ overflowY: 'auto', flex: 1 }}>
+          <div style={{ flex: 1, overflowY: 'auto', boxSizing: 'border-box' }}>
             {savedRoutes.length === 0 ? (
-              <p className="text-[var(--text-muted)] text-sm text-center py-10">
+              <p style={{ color: 'var(--text-muted)', fontSize: '14px', textAlign: 'center', padding: '40px 16px' }}>
                 保存済みルートはありません
               </p>
             ) : (
@@ -399,46 +389,41 @@ export default function BottomPanel({
         </div>
       )}
 
-      {/* Import full-screen modal */}
+      {/* Import modal */}
       {showImport && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#ffffff', zIndex: 2000, display: 'flex', flexDirection: 'column', padding: '60px 24px 24px', boxSizing: 'border-box', maxWidth: '480px', margin: '0 auto' }}>
-          <button
-            style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: 'var(--text-muted)' }}
-            onClick={() => !importLoading && setShowImport(false)}
-          >✕</button>
-
-          <h2 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '24px', color: 'var(--text)' }}>
-            キョリ測からインポート
-          </h2>
-
-          <label style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>
-            キョリ測のURL
-          </label>
-          <input
-            type="url"
-            value={importUrl}
-            onChange={(e) => { setImportUrl(e.target.value); setImportError(''); }}
-            onKeyDown={(e) => e.key === 'Enter' && handleImportConfirm()}
-            placeholder="https://mapzs.com/map/..."
-            disabled={importLoading}
-            style={{ width: '100%', boxSizing: 'border-box', padding: '12px', fontSize: '15px', border: '1px solid #ddd', borderRadius: '10px', marginBottom: '12px', outline: 'none' }}
-          />
-          {importError && (
-            <p style={{ color: 'var(--red)', fontSize: '12px', marginBottom: '12px' }}>{importError}</p>
-          )}
-
-          <button
-            onClick={handleImportConfirm}
-            disabled={!importUrl.trim() || importLoading}
-            style={{ width: '100%', padding: '14px', background: '#D4AF37', color: '#000', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', opacity: (!importUrl.trim() || importLoading) ? 0.4 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-          >
-            {importLoading ? (
-              <>
-                <span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
-                取得中…
-              </>
-            ) : '取得する'}
-          </button>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#ffffff', zIndex: 2000, display: 'flex', flexDirection: 'column', maxWidth: '480px', width: '100%', margin: '0 auto', boxSizing: 'border-box', overflowY: 'auto', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
+          <div style={{ flexShrink: 0, padding: '16px 16px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <h2 style={{ fontSize: '18px', fontWeight: '600', margin: 0, color: 'var(--text)' }}>キョリ測からインポート</h2>
+            <button style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: 'var(--text-muted)', lineHeight: 1 }} onClick={() => !importLoading && setShowImport(false)}>✕</button>
+          </div>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '16px', boxSizing: 'border-box' }}>
+            <label style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>
+              キョリ測のURL
+            </label>
+            <input
+              type="url"
+              value={importUrl}
+              onChange={(e) => { setImportUrl(e.target.value); setImportError(''); }}
+              onKeyDown={(e) => e.key === 'Enter' && handleImportConfirm()}
+              placeholder="https://mapzs.com/map/..."
+              disabled={importLoading}
+              style={{ width: '100%', boxSizing: 'border-box', minWidth: 0, display: 'block', padding: '12px', fontSize: '15px', border: '1px solid #ddd', borderRadius: '10px', marginBottom: '12px', outline: 'none' }}
+            />
+            {importError && (
+              <p style={{ color: 'var(--red)', fontSize: '12px', marginBottom: '12px' }}>{importError}</p>
+            )}
+          </div>
+          <div style={{ flexShrink: 0, padding: '16px', paddingBottom: 'calc(16px + env(safe-area-inset-bottom))', boxSizing: 'border-box' }}>
+            <button
+              onClick={handleImportConfirm}
+              disabled={!importUrl.trim() || importLoading}
+              style={{ width: '100%', padding: '14px', background: '#D4AF37', color: '#000', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', opacity: (!importUrl.trim() || importLoading) ? 0.4 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+            >
+              {importLoading ? (
+                <><span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />取得中…</>
+              ) : '取得する'}
+            </button>
+          </div>
         </div>
       )}
     </>
