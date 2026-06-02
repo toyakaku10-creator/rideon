@@ -49,6 +49,20 @@ function makeStraightSegment(from: LatLng, to: LatLng): RouteSegment {
 }
 
 
+function bearingDeg(a: LatLng, b: LatLng): number {
+  const dLng = (b.lng - a.lng) * Math.PI / 180;
+  const lat1 = a.lat * Math.PI / 180;
+  const lat2 = b.lat * Math.PI / 180;
+  const y = Math.sin(dLng) * Math.cos(lat2);
+  const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
+  return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+}
+
+function angleDiff(a: number, b: number): number {
+  const d = ((b - a + 540) % 360) - 180;
+  return d; // positive = right, negative = left
+}
+
 export default function Home() {
   const [tab, setTab] = useState<Tab>('distance');
 
@@ -62,6 +76,10 @@ export default function Home() {
   const [isImported, setIsImported] = useState(false);
   const [isAdjustingImport, setIsAdjustingImport] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
+
+  // Navigation
+  const [navRoute, setNavRoute] = useState<SavedRoute | null>(null);
+  const [navInstruction, setNavInstruction] = useState<string>('');
 
   // Positioning
   const [initialCenter, setInitialCenter] = useState<LatLng | null>(null);
@@ -129,6 +147,41 @@ export default function Home() {
     );
     return () => navigator.geolocation.clearWatch(watchId);
   }, [tab]);
+
+  // Navigation turn detection
+  useEffect(() => {
+    if (!currentPosition || !navRoute) { setNavInstruction(''); return; }
+    const pts = navRoute.segments.flatMap(s => s.geometry);
+    if (pts.length < 2) return;
+
+    // find closest point index
+    let closestIdx = 0, minDist = Infinity;
+    pts.forEach((p, i) => {
+      const d = haversineDistance(currentPosition, p);
+      if (d < minDist) { minDist = d; closestIdx = i; }
+    });
+
+    // check if near goal
+    const distToGoal = haversineDistance(currentPosition, pts[pts.length - 1]);
+    if (distToGoal < 100) { setNavInstruction('まもなくゴール！'); return; }
+
+    // find next turn ahead
+    for (let i = closestIdx + 1; i < pts.length - 1; i++) {
+      const b1 = bearingDeg(pts[i - 1], pts[i]);
+      const b2 = bearingDeg(pts[i], pts[i + 1]);
+      const diff = angleDiff(b1, b2);
+      if (Math.abs(diff) > 30) {
+        const dist = haversineDistance(currentPosition, pts[i]);
+        if (dist < 200) {
+          const distStr = `${Math.round(dist)}m`;
+          setNavInstruction(diff > 0 ? `まもなく右折 (${distStr})` : `まもなく左折 (${distStr})`);
+          return;
+        }
+        break;
+      }
+    }
+    setNavInstruction('');
+  }, [currentPosition, navRoute]);
 
   const totalDistance = segments.reduce((sum, s) => sum + s.distance, 0);
   const avgSpeed = speedCount > 0 ? speedSum / speedCount : 0;
@@ -323,7 +376,13 @@ export default function Home() {
           onMapClick={handleMapClick}
           fitBoundsPoints={fitBoundsPoints}
           onStartPointDragged={handleStartPointDragged}
+          navSegments={navRoute?.segments}
         />
+        {tab === 'speed' && navInstruction && (
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[900] bg-[#D4AF37] text-white text-sm font-bold px-5 py-2 rounded-full shadow-lg pointer-events-none">
+            {navInstruction}
+          </div>
+        )}
         {isLoading && (
           <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[900] bg-black/50 text-white text-xs px-4 py-1.5 rounded-full pointer-events-none">
             ルート取得中…
@@ -375,7 +434,10 @@ export default function Home() {
           maxSpeed={maxSpeed}
           avgSpeed={avgSpeed}
           gpsAccuracy={gpsAccuracy}
-          navDistance={totalDistance}
+          navDistance={navRoute?.totalDistance ?? 0}
+          navRoute={navRoute}
+          savedRoutes={savedRoutes}
+          onSelectNavRoute={setNavRoute}
         />
       )}
     </div>

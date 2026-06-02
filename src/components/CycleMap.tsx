@@ -59,6 +59,7 @@ interface CycleMapProps {
   onMapClick: (latlng: LatLng) => void;
   fitBoundsPoints?: LatLng[] | null;
   onStartPointDragged?: (deltaLat: number, deltaLng: number) => void;
+  navSegments?: RouteSegment[];
 }
 
 export default function CycleMap({
@@ -71,6 +72,7 @@ export default function CycleMap({
   onMapClick,
   fitBoundsPoints,
   onStartPointDragged,
+  navSegments,
 }: CycleMapProps) {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
@@ -202,6 +204,20 @@ export default function CycleMap({
             />
           );
         })}
+
+      {/* Nav route polyline (speed mode) */}
+      {tab === 'speed' && navSegments && navSegments.map((seg, i) => (
+        <Polyline
+          key={`nav-${i}`}
+          path={seg.geometry.map((p) => ({ lat: p.lat, lng: p.lng }))}
+          options={{
+            strokeColor: '#4090ff',
+            strokeWeight: 3,
+            strokeOpacity: 0.7,
+            zIndex: 3,
+          }}
+        />
+      ))}
 
       {/* Current position circle (speed mode) */}
       {tab === 'speed' && currentPosition && (
