@@ -434,7 +434,7 @@ export default function BottomPanel({
           />
           <div
             className="relative bg-[var(--surface)] rounded-t-2xl border-t border-[var(--border)]"
-            style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom))' }}
+            style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom))', maxWidth: '480px', margin: '0 auto', width: '100%' }}
           >
             <div className="px-4 pt-4 pb-3 border-b border-[var(--border)]">
               <div className="w-10 h-1 bg-[var(--border)] rounded-full mx-auto mb-4" />
