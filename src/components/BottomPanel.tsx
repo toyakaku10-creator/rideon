@@ -45,6 +45,8 @@ interface BottomPanelProps {
   onLoadRoute: (route: SavedRoute) => void;
   onDeleteRoute: (id: string) => void;
   onImportUrl: (url: string) => Promise<true | string>;
+  isImported: boolean;
+  onImportedSaved: () => void;
 }
 
 export default function BottomPanel({
@@ -61,6 +63,8 @@ export default function BottomPanel({
   onLoadRoute,
   onDeleteRoute,
   onImportUrl,
+  isImported,
+  onImportedSaved,
 }: BottomPanelProps) {
   const [showSave, setShowSave] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
@@ -113,6 +117,7 @@ export default function BottomPanel({
     onSave(saveName.trim());
     setSaveName('');
     setShowSave(false);
+    onImportedSaved();
   };
 
   const speedKmh = ROUTE_SPEED[routeType];
@@ -155,6 +160,13 @@ export default function BottomPanel({
             {totalDistance > 0 ? formatTime(totalDistance, speedKmh) : '--'}
           </span>
         </div>
+
+        {/* Import hint */}
+        {isImported && (
+          <p className="text-[var(--text-muted)] text-xs text-center mb-2">
+            📍 スタート地点をドラッグして修正できます
+          </p>
+        )}
 
         {/* Action buttons */}
         <div className="flex gap-2">

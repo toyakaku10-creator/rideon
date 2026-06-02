@@ -58,6 +58,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([]);
   const [fitBoundsPoints, setFitBoundsPoints] = useState<LatLng[] | null>(null);
+  const [isImported, setIsImported] = useState(false);
 
   // Positioning
   const [initialCenter, setInitialCenter] = useState<LatLng | null>(null);
@@ -215,6 +216,7 @@ export default function Home() {
       const updated = [...savedRoutes, route];
       setSavedRoutes(updated);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      setIsImported(false);
     },
     [waypoints, routeType, segments, totalDistance, savedRoutes]
   );
@@ -270,10 +272,26 @@ export default function Home() {
       setSegments([seg]);
       setRouteType('straight');
       setFitBoundsPoints([...latlngs]);
+      setIsImported(true);
       return true;
     } catch {
       return 'ネットワークエラーが発生しました';
     }
+  }, []);
+
+  const handleStartPointChanged = useCallback((lat: number, lng: number) => {
+    const newStart: LatLng = { lat, lng };
+    setWaypoints((prev) => [newStart, ...prev.slice(1)]);
+    setSegments((prev) => {
+      if (prev.length === 0) return prev;
+      const first = prev[0];
+      const newGeometry = [newStart, ...first.geometry.slice(1)];
+      const newDistance = newGeometry.slice(1).reduce(
+        (sum, p, i) => sum + haversineDistance(newGeometry[i], p),
+        0
+      );
+      return [{ ...first, from: newStart, geometry: newGeometry, distance: newDistance }, ...prev.slice(1)];
+    });
   }, []);
 
   const mapCenter =
@@ -325,6 +343,7 @@ export default function Home() {
           follow={mapFollow}
           onMapClick={handleMapClick}
           fitBoundsPoints={fitBoundsPoints}
+          onStartPointChanged={handleStartPointChanged}
         />
         {isLoading && (
           <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[900] bg-black/50 text-white text-xs px-4 py-1.5 rounded-full pointer-events-none">
@@ -349,6 +368,8 @@ export default function Home() {
           onLoadRoute={handleLoadRoute}
           onDeleteRoute={handleDeleteRoute}
           onImportUrl={handleImportUrl}
+          isImported={isImported}
+          onImportedSaved={() => setIsImported(false)}
         />
       ) : (
         <SpeedPanel
