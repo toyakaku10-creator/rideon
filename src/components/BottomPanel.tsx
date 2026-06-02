@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Undo2, Save, Trash2, X, Share2, Upload, MoreHorizontal, BookMarked, Flag, Ruler, Road } from 'lucide-react';
+import { Undo2, Save, Trash2, X, Share2, Upload, MoreHorizontal, BookMarked, Flag, Minus, Road } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
 import { encodeRoute } from '@/lib/routeShare';
 
@@ -27,7 +27,7 @@ const ROUTE_SPEED: Record<RouteType, number> = {
 
 const ROUTE_BUTTONS: { type: RouteType; icon: React.ReactNode; label: string }[] = [
   { type: 'cycling', icon: <Road size={13} />, label: '道なり' },
-  { type: 'straight', icon: <Ruler size={13} />, label: '直線' },
+  { type: 'straight', icon: <Minus size={13} />, label: '直線' },
 ];
 
 interface BottomPanelProps {
