@@ -40,7 +40,7 @@ interface CycleMapProps {
   follow: boolean;
   onMapClick: (latlng: LatLng) => void;
   fitBoundsPoints?: LatLng[] | null;
-  onStartPointChanged?: (lat: number, lng: number) => void;
+  onStartPointDragged?: (deltaLat: number, deltaLng: number) => void;
 }
 
 export default function CycleMap({
@@ -53,7 +53,7 @@ export default function CycleMap({
   follow,
   onMapClick,
   fitBoundsPoints,
-  onStartPointChanged,
+  onStartPointDragged,
 }: CycleMapProps) {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
@@ -148,11 +148,16 @@ export default function CycleMap({
           <Marker
             key={`wp-${i}`}
             position={{ lat: wp.lat, lng: wp.lng }}
-            draggable={i === 0 && !!onStartPointChanged}
+            draggable={i === 0 && !!onStartPointDragged}
             onDragEnd={
-              i === 0 && onStartPointChanged
+              i === 0 && onStartPointDragged
                 ? (e) => {
-                    if (e.latLng) onStartPointChanged(e.latLng.lat(), e.latLng.lng());
+                    if (e.latLng) {
+                      onStartPointDragged(
+                        e.latLng.lat() - wp.lat,
+                        e.latLng.lng() - wp.lng
+                      );
+                    }
                   }
                 : undefined
             }

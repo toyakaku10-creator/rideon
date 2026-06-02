@@ -279,19 +279,16 @@ export default function Home() {
     }
   }, []);
 
-  const handleStartPointChanged = useCallback((lat: number, lng: number) => {
-    const newStart: LatLng = { lat, lng };
-    setWaypoints((prev) => [newStart, ...prev.slice(1)]);
-    setSegments((prev) => {
-      if (prev.length === 0) return prev;
-      const first = prev[0];
-      const newGeometry = [newStart, ...first.geometry.slice(1)];
-      const newDistance = newGeometry.slice(1).reduce(
-        (sum, p, i) => sum + haversineDistance(newGeometry[i], p),
-        0
-      );
-      return [{ ...first, from: newStart, geometry: newGeometry, distance: newDistance }, ...prev.slice(1)];
-    });
+  const handleStartPointDragged = useCallback((deltaLat: number, deltaLng: number) => {
+    setWaypoints((prev) => prev.map((wp) => ({ lat: wp.lat + deltaLat, lng: wp.lng + deltaLng })));
+    setSegments((prev) =>
+      prev.map((seg) => ({
+        ...seg,
+        from: { lat: seg.from.lat + deltaLat, lng: seg.from.lng + deltaLng },
+        to: { lat: seg.to.lat + deltaLat, lng: seg.to.lng + deltaLng },
+        geometry: seg.geometry.map((p) => ({ lat: p.lat + deltaLat, lng: p.lng + deltaLng })),
+      }))
+    );
   }, []);
 
   const mapCenter =
@@ -343,7 +340,7 @@ export default function Home() {
           follow={mapFollow}
           onMapClick={handleMapClick}
           fitBoundsPoints={fitBoundsPoints}
-          onStartPointChanged={handleStartPointChanged}
+          onStartPointDragged={handleStartPointDragged}
         />
         {isLoading && (
           <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[900] bg-black/50 text-white text-xs px-4 py-1.5 rounded-full pointer-events-none">

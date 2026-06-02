@@ -164,7 +164,7 @@ export default function BottomPanel({
         {/* Import hint */}
         {isImported && (
           <p className="text-[var(--text-muted)] text-xs text-center mb-2">
-            📍 スタート地点をドラッグして修正できます
+            📍 スタート地点をドラッグするとルート全体が移動します
           </p>
         )}
 
