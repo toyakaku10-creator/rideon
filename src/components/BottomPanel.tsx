@@ -391,18 +391,13 @@ export default function BottomPanel({
 
       {/* Import modal */}
       {showImport && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100dvh', background: '#ffffff', zIndex: 2000, display: 'flex', flexDirection: 'column', boxSizing: 'border-box', overflowY: 'auto' }}>
-          {/* ヘッダー */}
-          <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '56px 20px 16px', borderBottom: '1px solid #eee' }}>
-            <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '600' }}>キョリ測からインポート</h2>
-            <button
-              onClick={() => !importLoading && setShowImport(false)}
-              style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', padding: '4px' }}
-            >✕</button>
-          </div>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#ffffff', zIndex: 2000, overflowY: 'auto', WebkitOverflowScrolling: 'touch', boxSizing: 'border-box' } as React.CSSProperties}>
+          <div style={{ padding: '56px 20px 40px', boxSizing: 'border-box', minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '600' }}>キョリ測からインポート</h2>
+              <button onClick={() => !importLoading && setShowImport(false)} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer' }}>✕</button>
+            </div>
 
-          {/* コンテンツ */}
-          <div style={{ flex: 1, padding: '24px 20px', boxSizing: 'border-box' }}>
             <p style={{ fontSize: '13px', color: '#666', marginBottom: '8px' }}>キョリ測のURL</p>
             <input
               type="url"
@@ -411,19 +406,17 @@ export default function BottomPanel({
               onKeyDown={(e) => e.key === 'Enter' && handleImportConfirm()}
               placeholder="https://www.mapion.co.jp/m/route/..."
               disabled={importLoading}
-              style={{ display: 'block', width: '100%', boxSizing: 'border-box', padding: '12px', fontSize: '15px', border: '1px solid #ddd', borderRadius: '10px', marginBottom: '16px', WebkitAppearance: 'none', outline: 'none' } as React.CSSProperties}
+              style={{ display: 'block', width: '100%', boxSizing: 'border-box', padding: '12px', fontSize: '15px', border: '1px solid #ddd', borderRadius: '10px', marginBottom: '16px', WebkitAppearance: 'none' } as React.CSSProperties}
             />
+
             {importError && (
               <p style={{ color: '#E53935', fontSize: '13px', marginBottom: '12px' }}>{importError}</p>
             )}
-          </div>
 
-          {/* フッターボタン */}
-          <div style={{ position: 'sticky', bottom: 0, flexShrink: 0, padding: '16px 20px', paddingBottom: 'calc(16px + env(safe-area-inset-bottom))', background: '#ffffff', borderTop: '1px solid #eee', boxSizing: 'border-box' }}>
             <button
               onClick={handleImportConfirm}
               disabled={importLoading}
-              style={{ display: 'block', width: '100%', padding: '14px', background: '#D4AF37', color: '#000', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', opacity: importLoading ? 0.6 : 1 }}
+              style={{ display: 'block', width: '100%', padding: '14px', background: '#D4AF37', color: '#000', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', marginTop: '8px', opacity: importLoading ? 0.6 : 1 }}
             >
               {importLoading ? '取得中...' : '取得する'}
             </button>
