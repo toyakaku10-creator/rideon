@@ -416,65 +416,46 @@ export default function BottomPanel({
         </div>
       )}
 
-      {/* Import bottom sheet */}
+      {/* Import full-screen modal */}
       {showImport && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', overflowY: 'auto', WebkitOverflowScrolling: 'touch' } as React.CSSProperties} onClick={() => !importLoading && setShowImport(false)}>
-          <div
-            style={{ width: '100%', maxWidth: '480px', background: '#fff', borderRadius: '16px 16px 0 0', padding: '20px 16px', boxSizing: 'border-box', position: 'relative', marginTop: 'auto' }}
-            onClick={(e) => e.stopPropagation()}
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#ffffff', zIndex: 2000, display: 'flex', flexDirection: 'column', padding: '60px 24px 24px', boxSizing: 'border-box', maxWidth: '480px', margin: '0 auto' }}>
+          <button
+            style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: 'var(--text-muted)' }}
+            onClick={() => !importLoading && setShowImport(false)}
+          >✕</button>
+
+          <h2 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '24px', color: 'var(--text)' }}>
+            キョリ測からインポート
+          </h2>
+
+          <label style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>
+            キョリ測のURL
+          </label>
+          <input
+            type="url"
+            value={importUrl}
+            onChange={(e) => { setImportUrl(e.target.value); setImportError(''); }}
+            onKeyDown={(e) => e.key === 'Enter' && handleImportConfirm()}
+            placeholder="https://mapzs.com/map/..."
+            disabled={importLoading}
+            style={{ width: '100%', boxSizing: 'border-box', padding: '12px', fontSize: '15px', border: '1px solid #ddd', borderRadius: '10px', marginBottom: '12px', outline: 'none' }}
+          />
+          {importError && (
+            <p style={{ color: 'var(--red)', fontSize: '12px', marginBottom: '12px' }}>{importError}</p>
+          )}
+
+          <button
+            onClick={handleImportConfirm}
+            disabled={!importUrl.trim() || importLoading}
+            style={{ width: '100%', padding: '14px', background: '#D4AF37', color: '#000', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', opacity: (!importUrl.trim() || importLoading) ? 0.4 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
           >
-            <div className="w-10 h-1 bg-[var(--border)] rounded-full mx-auto mb-4" />
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-[var(--text)] font-semibold text-base">
-                キョリ測からインポート
-              </h2>
-              <button
-                onClick={() => !importLoading && setShowImport(false)}
-                className="text-[var(--text-muted)] hover:text-[var(--text)] w-8 h-8 flex items-center justify-center"
-              >
-                <X size={18} />
-              </button>
-            </div>
-            <p className="text-[var(--text-muted)] text-xs mb-3">
-              キョリ測のURLをペーストしてください
-            </p>
-            <input
-              type="url"
-              value={importUrl}
-              onChange={(e) => { setImportUrl(e.target.value); setImportError(''); }}
-              onKeyDown={(e) => e.key === 'Enter' && handleImportConfirm()}
-              placeholder="https://mapzs.com/map/..."
-              disabled={importLoading}
-              style={{ width: '100%', boxSizing: 'border-box', maxWidth: '100%', minWidth: 0 }}
-              className="bg-[var(--surface2)] text-[var(--text)] rounded-xl px-4 py-3 text-sm mb-3 outline-none focus:ring-2 focus:ring-[var(--accent)] placeholder:text-[var(--text-muted)] disabled:opacity-50"
-            />
-            {importError && (
-              <p className="text-[var(--red)] text-xs mb-3 px-1">{importError}</p>
-            )}
-            <div className="flex gap-3">
-              <button
-                onClick={() => !importLoading && setShowImport(false)}
-                disabled={importLoading}
-                className="flex-1 py-3 rounded-xl bg-[var(--surface2)] text-[var(--text-muted)] text-sm font-medium disabled:opacity-50"
-              >
-                キャンセル
-              </button>
-              <button
-                onClick={handleImportConfirm}
-                disabled={!importUrl.trim() || importLoading}
-                className="flex-1 py-3 rounded-xl bg-[var(--accent)] text-white font-bold text-sm disabled:opacity-40 flex items-center justify-center gap-2"
-              >
-                {importLoading ? (
-                  <>
-                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    取得中…
-                  </>
-                ) : (
-                  '取得する'
-                )}
-              </button>
-            </div>
-          </div>
+            {importLoading ? (
+              <>
+                <span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                取得中…
+              </>
+            ) : '取得する'}
+          </button>
         </div>
       )}
     </>
