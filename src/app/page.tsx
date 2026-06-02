@@ -278,7 +278,7 @@ export default function Home() {
         className="flex items-center justify-between px-4 shrink-0 bg-[var(--surface)] border-b border-[var(--border)]"
         style={{ height: '48px' }}
       >
-        <span className="text-[var(--accent)] font-bold text-lg tracking-tight flex items-center gap-1.5">
+        <span className="text-[var(--accent)] text-xl flex items-center gap-1.5" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 700 }}>
           <Bike size={20} />
           cycle-map
         </span>
