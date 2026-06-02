@@ -438,8 +438,6 @@ export default function Home() {
           gpsAccuracy={gpsAccuracy}
           navDistance={navRoute?.totalDistance ?? 0}
           navRoute={navRoute}
-          savedRoutes={savedRoutes}
-          onSelectNavRoute={setNavRoute}
         />
       )}
     </div>
