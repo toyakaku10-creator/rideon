@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Undo2, Save, Trash2, X, Share2, Upload, MoreHorizontal, BookMarked, Flag, Minus, Road } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
 import { encodeRoute } from '@/lib/routeShare';
+import ElevationChart from '@/components/ElevationChart';
 
 function formatDistance(meters: number): string {
   if (meters < 1000) return `${Math.round(meters)}m`;
@@ -48,6 +49,7 @@ interface BottomPanelProps {
   onImportedSaved: () => void;
   showSaveDialog?: boolean;
   onShowSaveDialogChange?: (open: boolean) => void;
+  elevations?: number[];
 }
 
 export default function BottomPanel({
@@ -68,6 +70,7 @@ export default function BottomPanel({
   onImportedSaved,
   showSaveDialog,
   onShowSaveDialogChange,
+  elevations = [],
 }: BottomPanelProps) {
   const [showSave, setShowSave] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
@@ -171,6 +174,13 @@ export default function BottomPanel({
             {totalDistance > 0 ? formatTime(totalDistance, speedKmh) : '--'}
           </span>
         </div>
+
+        {/* Elevation chart */}
+        {elevations.length >= 2 && (
+          <div className="px-4">
+            <ElevationChart elevations={elevations} totalDistance={totalDistance} />
+          </div>
+        )}
 
         {/* Import hint */}
         {isImported && (

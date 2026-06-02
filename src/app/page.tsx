@@ -7,6 +7,7 @@ import type { Tab, RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
 import { decodeRoute } from '@/lib/routeShare';
 import BottomPanel from '@/components/BottomPanel';
 import SpeedPanel from '@/components/SpeedPanel';
+import ElevationChart from '@/components/ElevationChart';
 
 // react-leaflet must not run on the server
 const CycleMap = dynamic(() => import('@/components/CycleMap'), { ssr: false });
@@ -77,6 +78,9 @@ export default function Home() {
   const [isAdjustingImport, setIsAdjustingImport] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
 
+  // Elevation
+  const [elevations, setElevations] = useState<number[]>([]);
+
   // Navigation
   const [navRoute, setNavRoute] = useState<SavedRoute | null>(null);
   const [navInstruction, setNavInstruction] = useState<string>('');
@@ -127,6 +131,22 @@ export default function Home() {
       setInitialCenter(result.waypoints[0]);
     }
   }, []);
+
+  // Fetch elevation data whenever segments change
+  useEffect(() => {
+    const points = segments.flatMap((s) => s.geometry);
+    if (points.length < 2) { setElevations([]); return; }
+    let cancelled = false;
+    fetch('/api/elevation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ points }),
+    })
+      .then((r) => r.json())
+      .then((data) => { if (!cancelled && data.elevations) setElevations(data.elevations); })
+      .catch(() => { /* silent fail */ });
+    return () => { cancelled = true; };
+  }, [segments]);
 
   // GPS speed tracking — only active in speed tab
   useEffect(() => {
@@ -422,7 +442,6 @@ export default function Home() {
           onUndo={handleUndo}
           onClear={handleClear}
           onSave={handleSave}
-
           savedRoutes={savedRoutes}
           onLoadRoute={handleLoadRoute}
           onDeleteRoute={handleDeleteRoute}
@@ -431,6 +450,7 @@ export default function Home() {
           onImportedSaved={() => setIsImported(false)}
           showSaveDialog={showSaveDialog}
           onShowSaveDialogChange={(open) => setShowSaveDialog(open)}
+          elevations={elevations}
         />
       ) : (
         <SpeedPanel
