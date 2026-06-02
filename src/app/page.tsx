@@ -486,7 +486,8 @@ export default function Home() {
           gpsAccuracy={gpsAccuracy}
           navDistance={navRoute?.totalDistance ?? 0}
           navRoute={navRoute}
-          navElevations={navElevations}
+          navElevations={elevations}
+          navTotalDistance={totalDistance}
         />
       )}
     </div>

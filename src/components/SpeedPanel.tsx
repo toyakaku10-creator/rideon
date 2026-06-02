@@ -12,6 +12,7 @@ interface SpeedPanelProps {
   navDistance: number; // meters — 0 means no nav route
   navRoute: SavedRoute | null;
   navElevations?: number[];
+  navTotalDistance?: number;
 }
 
 function formatNavDistance(meters: number): string {
@@ -27,6 +28,7 @@ export default function SpeedPanel({
   navDistance,
   navRoute,
   navElevations = [],
+  navTotalDistance = 0,
 }: SpeedPanelProps) {
   return (
     <div
@@ -88,9 +90,11 @@ export default function SpeedPanel({
         ))}
       </div>
 
-      {/* Elevation chart for nav route */}
-      {navRoute && navElevations.length >= 2 && (
-        <ElevationChart elevations={navElevations} totalDistance={navRoute.totalDistance} />
+      {/* Elevation chart for loaded route */}
+      {navElevations.length >= 2 && (
+        <div style={{ padding: '0 0 8px' }}>
+          <ElevationChart elevations={navElevations} totalDistance={navTotalDistance} />
+        </div>
       )}
       </div>
     </div>
