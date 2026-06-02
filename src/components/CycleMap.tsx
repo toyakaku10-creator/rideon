@@ -17,6 +17,29 @@ const darkMapStyles: google.maps.MapTypeStyle[] = [];
 
 const POLYLINE_COLOR = '#FFB300';
 
+function makeLabelIcon(label: string, bg: string, size = 28): google.maps.Icon {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
+    <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2 - 1}" fill="${bg}" stroke="white" stroke-width="2"/>
+    <text x="${size / 2}" y="${size / 2 + 5}" text-anchor="middle" fill="white" font-size="13" font-weight="bold" font-family="sans-serif">${label}</text>
+  </svg>`;
+  return {
+    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
+    scaledSize: new google.maps.Size(size, size),
+    anchor: new google.maps.Point(size / 2, size / 2),
+  };
+}
+
+function makeDotIcon(): google.maps.Icon {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+    <circle cx="7" cy="7" r="5" fill="#D4AF37" stroke="white" stroke-width="2"/>
+  </svg>`;
+  return {
+    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
+    scaledSize: new google.maps.Size(14, 14),
+    anchor: new google.maps.Point(7, 7),
+  };
+}
+
 const DEFAULT_CENTER: google.maps.LatLngLiteral = { lat: 35.6762, lng: 139.6503 };
 
 const MAP_OPTIONS: google.maps.MapOptions = {
@@ -134,35 +157,37 @@ export default function CycleMap({
         />
       ))}
 
-      {/* Waypoint markers — first is green (start), rest are yellow-green */}
+      {/* Waypoint markers — S (start), G (goal), dot (intermediate) */}
       {tab === 'distance' &&
-        waypoints.map((wp, i) => (
-          <Marker
-            key={`wp-${i}`}
-            position={{ lat: wp.lat, lng: wp.lng }}
-            draggable={i === 0 && !!onStartPointDragged}
-            onDragEnd={
-              i === 0 && onStartPointDragged
-                ? (e) => {
-                    if (e.latLng) {
-                      onStartPointDragged(
-                        e.latLng.lat() - wp.lat,
-                        e.latLng.lng() - wp.lng
-                      );
+        waypoints.map((wp, i) => {
+          const isStart = i === 0;
+          const isGoal = i === waypoints.length - 1 && waypoints.length > 1;
+          const icon = isStart
+            ? makeLabelIcon('S', '#4CAF50')
+            : isGoal
+              ? makeLabelIcon('G', '#E53935')
+              : makeDotIcon();
+          return (
+            <Marker
+              key={`wp-${i}`}
+              position={{ lat: wp.lat, lng: wp.lng }}
+              icon={icon}
+              draggable={isStart && !!onStartPointDragged}
+              onDragEnd={
+                isStart && onStartPointDragged
+                  ? (e) => {
+                      if (e.latLng) {
+                        onStartPointDragged(
+                          e.latLng.lat() - wp.lat,
+                          e.latLng.lng() - wp.lng
+                        );
+                      }
                     }
-                  }
-                : undefined
-            }
-            icon={{
-              path: google.maps.SymbolPath.CIRCLE,
-              scale: i === 0 ? 8 : 6,
-              fillColor: i === 0 ? '#00c853' : '#c8f55a',
-              fillOpacity: 1,
-              strokeColor: '#ffffff',
-              strokeWeight: 2,
-            }}
-          />
-        ))}
+                  : undefined
+              }
+            />
+          );
+        })}
 
       {/* Current position circle (speed mode) */}
       {tab === 'speed' && currentPosition && (
