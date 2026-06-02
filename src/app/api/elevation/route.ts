@@ -15,10 +15,20 @@ export async function POST(request: NextRequest) {
   const url = `https://maps.googleapis.com/maps/api/elevation/json?locations=${locations}&key=${apiKey}`
 
   const res = await fetch(url)
-  const data = await res.json()
+  const text = await res.text()
+  console.log('Elevation API response:', text.substring(0, 200))
+
+  let data
+  try {
+    data = JSON.parse(text)
+  } catch (e) {
+    console.error('Failed to parse elevation response:', text.substring(0, 500))
+    return NextResponse.json({ error: 'Invalid API response' }, { status: 500 })
+  }
 
   if (data.status !== 'OK') {
-    return NextResponse.json({ error: 'Elevation API error' }, { status: 500 })
+    console.error('Elevation API status:', data.status, data.error_message)
+    return NextResponse.json({ error: 'Elevation API error', status: data.status }, { status: 500 })
   }
 
   return NextResponse.json({
