@@ -22,6 +22,11 @@ body {
 
 html,
 body {
+  min-height: -webkit-fill-available;
+}
+
+html,
+body {
   height: 100%;
   margin: 0;
   background: var(--bg);
