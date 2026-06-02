@@ -15,7 +15,7 @@ const LIBRARIES: Libraries = ['geometry'];
 
 const darkMapStyles: google.maps.MapTypeStyle[] = [];
 
-const POLYLINE_COLOR = '#5ab4ff';
+const POLYLINE_COLOR = '#FF6B00';
 
 const DEFAULT_CENTER: google.maps.LatLngLiteral = { lat: 35.6762, lng: 139.6503 };
 

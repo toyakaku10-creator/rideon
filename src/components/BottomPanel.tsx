@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Undo2, X, Share2, Upload, MoreHorizontal } from 'lucide-react';
-import type { LatLng, RouteSegment, SavedRoute } from '@/types';
+import { Undo2, Save, Trash2, X, Share2, Upload, MoreHorizontal, BookMarked, Bike, Ruler } from 'lucide-react';
+import type { RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
 import { encodeRoute } from '@/lib/routeShare';
 
 function formatDistance(meters: number): string {
@@ -19,13 +19,24 @@ function formatTime(meters: number, speedKmh: number): string {
   return `${h}時間${m > 0 ? `${m}分` : ''}`;
 }
 
-const CYCLING_SPEED_KMH = 15;
+const ROUTE_SPEED: Record<RouteType, number> = {
+  straight: 15,
+  cycling: 15,
+  walking: 15,
+};
+
+const ROUTE_BUTTONS: { type: RouteType; icon: React.ReactNode; label: string }[] = [
+  { type: 'cycling', icon: <Bike size={13} />, label: '道なり' },
+  { type: 'straight', icon: <Ruler size={13} />, label: '直線' },
+];
 
 interface BottomPanelProps {
   waypoints: LatLng[];
   segments: RouteSegment[];
+  routeType: RouteType;
   totalDistance: number;
   isLoading: boolean;
+  onRouteTypeChange: (type: RouteType) => void;
   onUndo: () => void;
   onClear: () => void;
   onSave: (name: string) => void;
@@ -40,8 +51,10 @@ interface BottomPanelProps {
 export default function BottomPanel({
   waypoints,
   segments,
+  routeType,
   totalDistance,
   isLoading,
+  onRouteTypeChange,
   onUndo,
   onClear,
   onSave,
@@ -68,7 +81,7 @@ export default function BottomPanel({
   }, [showSave]);
 
   const handleShare = async () => {
-    const encoded = encodeRoute(waypoints, segments, 'cycling');
+    const encoded = encodeRoute(waypoints, segments, routeType);
     const url = `${window.location.origin}${window.location.pathname}?route=${encodeURIComponent(encoded)}`;
     try {
       if (navigator.share) {
@@ -107,12 +120,35 @@ export default function BottomPanel({
     onImportedSaved();
   };
 
+  const speedKmh = ROUTE_SPEED[routeType];
+
   return (
     <>
       <div
         className="bg-[var(--surface)] border-t border-[var(--border)] px-4 pt-3 shrink-0"
         style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
       >
+        {/* Route type selector */}
+        <div className="flex gap-1.5 mb-3">
+          {ROUTE_BUTTONS.map(({ type, icon, label }) => (
+            <button
+              key={type}
+              onClick={() => !isLoading && onRouteTypeChange(type)}
+              disabled={isLoading}
+              className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                routeType === type
+                  ? 'bg-[var(--accent)] text-white'
+                  : 'bg-[var(--surface2)] text-[var(--text-muted)] hover:text-[var(--text)] active:bg-[var(--border)]'
+              } disabled:opacity-50`}
+            >
+              <span className="flex items-center justify-center gap-1">
+                {icon}
+                {label}
+              </span>
+            </button>
+          ))}
+        </div>
+
         {/* Stats row */}
         <div className="flex items-center justify-between text-sm mb-3">
           <span className="text-[var(--text)] font-semibold tabular-nums">
@@ -121,7 +157,7 @@ export default function BottomPanel({
           <span className="text-[var(--text-muted)]">{waypoints.length}ポイント</span>
           <span className="text-[var(--text-muted)]">
             目安{' '}
-            {totalDistance > 0 ? formatTime(totalDistance, CYCLING_SPEED_KMH) : '--'}
+            {totalDistance > 0 ? formatTime(totalDistance, speedKmh) : '--'}
           </span>
         </div>
 
@@ -137,31 +173,39 @@ export default function BottomPanel({
           <button
             onClick={onUndo}
             disabled={waypoints.length === 0}
-            className="flex-1 py-2 rounded-lg bg-[var(--surface2)] text-xs text-[var(--text-muted)] disabled:opacity-40 hover:bg-[var(--border)] active:bg-[var(--border)] transition-colors"
+            className="flex-1 py-3.5 rounded-lg bg-[var(--surface2)] text-xs text-[var(--text-muted)] disabled:opacity-40 hover:bg-[var(--border)] active:bg-[var(--border)] transition-colors"
           >
-            <span className="flex items-center justify-center gap-1">
-              <Undo2 size={13} />戻す
+            <span className="flex flex-col items-center gap-1">
+              <Undo2 size={15} />
+              戻す
             </span>
           </button>
           <button
             onClick={() => { setSaveName(''); setShowSave(true); }}
             disabled={waypoints.length < 2}
-            className="flex-1 py-2 rounded-lg bg-[var(--surface2)] text-xs text-[var(--text-muted)] disabled:opacity-40 hover:bg-[var(--border)] active:bg-[var(--border)] transition-colors"
+            className="flex-1 py-3.5 rounded-lg bg-[var(--surface2)] text-xs text-[var(--text-muted)] disabled:opacity-40 hover:bg-[var(--border)] active:bg-[var(--border)] transition-colors"
           >
-            保存
+            <span className="flex flex-col items-center gap-1">
+              <Save size={15} />
+              保存
+            </span>
           </button>
           <button
             onClick={onClear}
             disabled={waypoints.length === 0}
-            className="flex-1 py-2 rounded-lg bg-[var(--surface2)] text-xs text-[var(--text-muted)] disabled:opacity-40 hover:bg-[var(--border)] active:bg-[var(--border)] transition-colors"
+            className="flex-1 py-3.5 rounded-lg bg-[var(--surface2)] text-xs text-[var(--text-muted)] disabled:opacity-40 hover:bg-[var(--border)] active:bg-[var(--border)] transition-colors"
           >
-            クリア
+            <span className="flex flex-col items-center gap-1">
+              <Trash2 size={15} />
+              クリア
+            </span>
           </button>
           <button
             onClick={() => setShowMore(true)}
-            className="w-10 py-2 rounded-lg bg-[var(--surface2)] text-xs text-[var(--text-muted)] hover:bg-[var(--border)] active:bg-[var(--border)] transition-colors flex items-center justify-center"
+            className="w-14 py-3.5 rounded-lg bg-[var(--surface2)] text-xs text-[var(--text-muted)] hover:bg-[var(--border)] active:bg-[var(--border)] transition-colors flex flex-col items-center justify-center gap-1"
           >
             <MoreHorizontal size={15} />
+            <span>もっと</span>
           </button>
         </div>
       </div>
@@ -195,7 +239,7 @@ export default function BottomPanel({
                 onClick={() => { setShowMore(false); setShowHistory(true); }}
                 className="flex items-center gap-3 w-full px-3 py-3 rounded-xl text-sm text-[var(--text)] hover:bg-[var(--surface2)] active:bg-[var(--surface2)] transition-colors"
               >
-                <span className="w-4 h-4 flex items-center justify-center text-[var(--text-muted)] text-base leading-none">☰</span>
+                <BookMarked size={16} className="text-[var(--text-muted)]" />
                 マイルート
               </button>
             </div>
