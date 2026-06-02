@@ -306,31 +306,32 @@ export default function BottomPanel({
         </div>
       </div>
 
-      {/* More menu bottom sheet — import & share only */}
+      {/* More menu full-screen modal */}
       {showMore && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }} onClick={() => setShowMore(false)}>
-          <div
-            style={{ width: '100%', maxWidth: '480px', background: 'var(--surface)', borderRadius: '16px 16px 0 0', paddingBottom: 'calc(20px + env(safe-area-inset-bottom))' }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="w-10 h-1 bg-[var(--border)] rounded-full mx-auto mt-4 mb-2" />
-            <div className="px-4 py-2 flex flex-col gap-1">
-              <button
-                onClick={() => { setImportUrl(''); setImportError(''); setShowMore(false); setShowImport(true); }}
-                className="flex items-center gap-3 w-full px-3 py-3 rounded-xl text-sm text-[var(--text)] hover:bg-[var(--surface2)] active:bg-[var(--surface2)] transition-colors"
-              >
-                <Upload size={16} className="text-[var(--text-muted)]" />
-                インポート
-              </button>
-              <button
-                onClick={() => { setShowMore(false); handleShare(); }}
-                disabled={waypoints.length < 2}
-                className="flex items-center gap-3 w-full px-3 py-3 rounded-xl text-sm text-[var(--text)] hover:bg-[var(--surface2)] active:bg-[var(--surface2)] transition-colors disabled:opacity-40"
-              >
-                <Share2 size={16} className="text-[var(--text-muted)]" />
-                {copied ? 'コピー済' : 'シェア'}
-              </button>
-            </div>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#ffffff', zIndex: 2000, display: 'flex', flexDirection: 'column', padding: '60px 24px 24px', boxSizing: 'border-box', maxWidth: '480px', margin: '0 auto' }}>
+          <button
+            style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: 'var(--text-muted)' }}
+            onClick={() => setShowMore(false)}
+          >✕</button>
+
+          <h2 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '24px', color: 'var(--text)' }}>外部</h2>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <button
+              onClick={() => { setImportUrl(''); setImportError(''); setShowMore(false); setShowImport(true); }}
+              style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '14px 16px', background: 'var(--surface2)', border: 'none', borderRadius: '12px', fontSize: '15px', color: 'var(--text)', cursor: 'pointer', textAlign: 'left' }}
+            >
+              <Upload size={18} />
+              インポート
+            </button>
+            <button
+              onClick={() => { setShowMore(false); handleShare(); }}
+              disabled={waypoints.length < 2}
+              style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '14px 16px', background: 'var(--surface2)', border: 'none', borderRadius: '12px', fontSize: '15px', color: 'var(--text)', cursor: 'pointer', textAlign: 'left', opacity: waypoints.length < 2 ? 0.4 : 1 }}
+            >
+              <Share2 size={18} />
+              {copied ? 'コピー済み' : 'シェア'}
+            </button>
           </div>
         </div>
       )}
@@ -368,44 +369,32 @@ export default function BottomPanel({
         </div>
       )}
 
-      {/* History bottom sheet */}
+      {/* History full-screen modal */}
       {showHistory && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }} onClick={() => setShowHistory(false)}>
-          <div
-            style={{ width: '100%', maxWidth: '480px', background: 'var(--surface)', borderRadius: '16px 16px 0 0', display: 'flex', flexDirection: 'column', maxHeight: '70dvh' }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="px-4 pt-4 pb-3 border-b border-[var(--border)]">
-              <div className="w-10 h-1 bg-[var(--border)] rounded-full mx-auto mb-4" />
-              <div className="flex items-center justify-between">
-                <h2 className="text-[var(--text)] font-semibold text-base">
-                  マイルート
-                </h2>
-                <button
-                  onClick={() => setShowHistory(false)}
-                  className="text-[var(--text-muted)] hover:text-[var(--text)] w-8 h-8 flex items-center justify-center"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-            </div>
-            <div className="overflow-y-auto flex-1">
-              {savedRoutes.length === 0 ? (
-                <p className="text-[var(--text-muted)] text-sm text-center py-10">
-                  保存済みルートはありません
-                </p>
-              ) : (
-                [...savedRoutes].reverse().map((route) => (
-                  <SwipeableRouteItem
-                    key={route.id}
-                    route={route}
-                    onLoad={() => { onLoadRoute(route); setShowHistory(false); }}
-                    onDelete={() => onDeleteRoute(route.id)}
-                  />
-                ))
-              )}
-              <div style={{ height: 'env(safe-area-inset-bottom)' }} />
-            </div>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#ffffff', zIndex: 2000, display: 'flex', flexDirection: 'column', boxSizing: 'border-box', maxWidth: '480px', margin: '0 auto' }}>
+          <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+            <h2 style={{ fontSize: '18px', fontWeight: '600', color: 'var(--text)', margin: 0 }}>マイルート</h2>
+            <button
+              style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: 'var(--text-muted)', lineHeight: 1 }}
+              onClick={() => setShowHistory(false)}
+            >✕</button>
+          </div>
+          <div style={{ overflowY: 'auto', flex: 1 }}>
+            {savedRoutes.length === 0 ? (
+              <p className="text-[var(--text-muted)] text-sm text-center py-10">
+                保存済みルートはありません
+              </p>
+            ) : (
+              [...savedRoutes].reverse().map((route) => (
+                <SwipeableRouteItem
+                  key={route.id}
+                  route={route}
+                  onLoad={() => { onLoadRoute(route); setShowHistory(false); }}
+                  onDelete={() => onDeleteRoute(route.id)}
+                />
+              ))
+            )}
+            <div style={{ height: 'env(safe-area-inset-bottom)' }} />
           </div>
         </div>
       )}
