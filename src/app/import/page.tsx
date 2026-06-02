@@ -57,7 +57,7 @@ export default function ImportPage() {
           placeholder="https://www.mapion.co.jp/m/route/..."
           disabled={loading}
           autoFocus
-          style={{ display: 'block', width: '100%', boxSizing: 'border-box', padding: '12px', fontSize: '15px', border: '1px solid #ddd', borderRadius: '10px', outline: 'none', WebkitAppearance: 'none' } as React.CSSProperties}
+          style={{ display: 'block', width: '100%', boxSizing: 'border-box', padding: '12px', fontSize: '16px', border: '1px solid #ddd', borderRadius: '10px', outline: 'none', WebkitAppearance: 'none' } as React.CSSProperties}
         />
         {error && (
           <p style={{ color: '#E53935', fontSize: '13px', margin: '10px 0 0' }}>{error}</p>

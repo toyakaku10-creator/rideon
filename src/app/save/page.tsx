@@ -72,7 +72,7 @@ export default function SavePage() {
           onChange={(e) => setName(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleConfirm()}
           placeholder="ルート名（例：自宅→駅）"
-          style={{ display: 'block', width: '100%', boxSizing: 'border-box', padding: '12px', fontSize: '15px', border: '1px solid #ddd', borderRadius: '10px', outline: 'none' }}
+          style={{ display: 'block', width: '100%', boxSizing: 'border-box', padding: '12px', fontSize: '16px', border: '1px solid #ddd', borderRadius: '10px', outline: 'none' }}
         />
       </div>
 
