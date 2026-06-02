@@ -240,23 +240,24 @@ export default function Home() {
       const data: unknown = await res.json();
 
       if (!res.ok) {
-        const msg = (data as { error?: string }).error ?? '取得に失敗しました';
-        return msg;
+        return (data as { error?: string }).error ?? '取得に失敗しました';
       }
 
-      if (!Array.isArray(data)) return 'データの形式が正しくありません';
+      const { points, distance: apiDistance } = data as {
+        points: { lat: number; lng: number }[];
+        title: string;
+        distance: number;
+      };
 
-      const latlngs: LatLng[] = (data as { lat: number; lng: number }[]).map((p) => ({
-        lat: p.lat,
-        lng: p.lng,
-      }));
+      if (!Array.isArray(points) || points.length < 2) return '座標データが不足しています';
 
-      if (latlngs.length < 2) return '座標データが不足しています';
+      const latlngs: LatLng[] = points.map((p) => ({ lat: p.lat, lng: p.lng }));
 
-      let distance = 0;
-      for (let i = 0; i < latlngs.length - 1; i++) {
-        distance += haversineDistance(latlngs[i], latlngs[i + 1]);
-      }
+      // API が返す distance (m) を優先、取得できなければ haversine で計算
+      const distance =
+        apiDistance > 0
+          ? apiDistance
+          : latlngs.slice(1).reduce((sum, p, i) => sum + haversineDistance(latlngs[i], p), 0);
 
       const seg: RouteSegment = {
         from: latlngs[0],

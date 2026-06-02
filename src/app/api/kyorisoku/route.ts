@@ -1,72 +1,31 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
-  const kyorisokuUrl = request.nextUrl.searchParams.get('url');
+  const url = request.nextUrl.searchParams.get('url');
+  if (!url) return NextResponse.json({ error: 'URLを指定してください' }, { status: 400 });
 
-  if (!kyorisokuUrl) {
-    return Response.json({ error: 'URLが指定されていません' }, { status: 400 });
+  // aidを抽出（aid=xxxxxx または /aid=xxxxxx/）
+  const aidMatch = url.match(/aid=([a-zA-Z0-9]+)/);
+  if (!aidMatch) return NextResponse.json({ error: 'ルートIDが見つかりません' }, { status: 400 });
+  const aid = aidMatch[1];
+
+  const apiUrl = `https://www.mapion.co.jp/f/route/web-api/route_alias/get.html?aid=${aid}`;
+  const res = await fetch(apiUrl);
+  const xml = await res.text();
+
+  // XMLから座標を抽出
+  const points: { lat: number; lng: number }[] = [];
+  const pointMatches = xml.matchAll(/<point>\s*<x>([\d.]+)<\/x>\s*<y>([\d.]+)<\/y>\s*<\/point>/g);
+  for (const match of pointMatches) {
+    points.push({ lat: parseFloat(match[2]), lng: parseFloat(match[1]) });
   }
 
-  let html: string;
-  try {
-    const res = await fetch(kyorisokuUrl, {
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
-      },
-    });
-    if (!res.ok) {
-      return Response.json(
-        { error: `ページの取得に失敗しました (HTTP ${res.status})` },
-        { status: 502 }
-      );
-    }
-    html = await res.text();
-  } catch (err) {
-    return Response.json(
-      { error: `ネットワークエラー: ${err instanceof Error ? err.message : '不明なエラー'}` },
-      { status: 502 }
-    );
-  }
+  const titleMatch = xml.match(/<title>(.*?)<\/title>/);
+  const distanceMatch = xml.match(/<distance>([\d.]+)<\/distance>/);
 
-  // Extract _latlngs array from the Vue app state embedded in HTML
-  const match = html.match(
-    /"_latlngs"\s*:\s*(\[[\s\S]*?\])\s*,\s*"_initHooksCalled"/
-  );
-  if (!match) {
-    return Response.json(
-      { error: 'ルートデータが見つかりませんでした。URLを確認してください。' },
-      { status: 404 }
-    );
-  }
-
-  let raw: unknown;
-  try {
-    raw = JSON.parse(match[1]);
-  } catch {
-    return Response.json({ error: 'ルートデータの解析に失敗しました' }, { status: 500 });
-  }
-
-  if (!Array.isArray(raw)) {
-    return Response.json({ error: 'ルートデータの形式が不正です' }, { status: 500 });
-  }
-
-  // Support both flat [{lat,lng}] and nested [[{lat,lng}]] (Leaflet multi-polyline)
-  const flat: unknown[] = Array.isArray(raw[0]) ? (raw as unknown[][]).flat() : raw;
-
-  const points = flat
-    .filter(
-      (p): p is { lat: number; lng: number } =>
-        p !== null &&
-        typeof p === 'object' &&
-        typeof (p as Record<string, unknown>).lat === 'number' &&
-        typeof (p as Record<string, unknown>).lng === 'number'
-    )
-    .map((p) => ({ lat: p.lat, lng: p.lng }));
-
-  if (points.length < 2) {
-    return Response.json({ error: 'ルートの座標が不足しています' }, { status: 404 });
-  }
-
-  return Response.json(points);
+  return NextResponse.json({
+    points,
+    title: titleMatch?.[1] || '無題のルート',
+    distance: distanceMatch ? parseFloat(distanceMatch[1]) : 0,
+  });
 }
