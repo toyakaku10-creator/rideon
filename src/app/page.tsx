@@ -80,6 +80,7 @@ export default function Home() {
 
   // Elevation
   const [elevations, setElevations] = useState<number[]>([]);
+  const [navElevations, setNavElevations] = useState<number[]>([]);
 
   // Navigation
   const [navRoute, setNavRoute] = useState<SavedRoute | null>(null);
@@ -147,6 +148,23 @@ export default function Home() {
       .catch(() => { /* silent fail */ });
     return () => { cancelled = true; };
   }, [segments]);
+
+  // Fetch elevation data for nav route
+  useEffect(() => {
+    if (!navRoute) { setNavElevations([]); return; }
+    const points = navRoute.segments.flatMap((s) => s.geometry);
+    if (points.length < 2) { setNavElevations([]); return; }
+    let cancelled = false;
+    fetch('/api/elevation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ points }),
+    })
+      .then((r) => r.json())
+      .then((data) => { if (!cancelled && data.elevations) setNavElevations(data.elevations); })
+      .catch(() => { /* silent fail */ });
+    return () => { cancelled = true; };
+  }, [navRoute]);
 
   // GPS speed tracking — only active in speed tab
   useEffect(() => {
@@ -460,6 +478,7 @@ export default function Home() {
           gpsAccuracy={gpsAccuracy}
           navDistance={navRoute?.totalDistance ?? 0}
           navRoute={navRoute}
+          navElevations={navElevations}
         />
       )}
     </div>

@@ -2,6 +2,7 @@
 
 import { Navigation } from 'lucide-react';
 import type { SavedRoute } from '@/types';
+import ElevationChart from '@/components/ElevationChart';
 
 interface SpeedPanelProps {
   currentSpeed: number; // km/h
@@ -10,6 +11,7 @@ interface SpeedPanelProps {
   gpsAccuracy: number | null;
   navDistance: number; // meters — 0 means no nav route
   navRoute: SavedRoute | null;
+  navElevations?: number[];
 }
 
 function formatNavDistance(meters: number): string {
@@ -24,6 +26,7 @@ export default function SpeedPanel({
   gpsAccuracy,
   navDistance,
   navRoute,
+  navElevations = [],
 }: SpeedPanelProps) {
   return (
     <div
@@ -84,6 +87,11 @@ export default function SpeedPanel({
           </div>
         ))}
       </div>
+
+      {/* Elevation chart for nav route */}
+      {navRoute && navElevations.length >= 2 && (
+        <ElevationChart elevations={navElevations} totalDistance={navRoute.totalDistance} />
+      )}
       </div>
     </div>
   );
