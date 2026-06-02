@@ -336,41 +336,35 @@ export default function BottomPanel({
       )}
 
       {/* Save bottom sheet */}
+      {/* Save full-screen modal */}
       {showSave && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }} onClick={() => setShowSave(false)}>
-          <div
-            style={{ width: '100%', maxWidth: '480px', background: 'var(--surface)', borderRadius: '16px 16px 0 0', padding: '20px 16px', paddingBottom: 'calc(20px + env(safe-area-inset-bottom))' }}
-            onClick={(e) => e.stopPropagation()}
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#ffffff', zIndex: 2000, display: 'flex', flexDirection: 'column', padding: '60px 24px 24px', boxSizing: 'border-box', maxWidth: '480px', margin: '0 auto' }}>
+          <button
+            style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: 'var(--text-muted)' }}
+            onClick={() => setShowSave(false)}
+          >✕</button>
+
+          <h2 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '24px', color: 'var(--text)' }}>
+            ルートを保存
+          </h2>
+
+          <input
+            ref={inputRef}
+            type="text"
+            value={saveName}
+            onChange={(e) => setSaveName(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSaveConfirm()}
+            placeholder="ルート名（例：自宅→駅）"
+            style={{ width: '100%', boxSizing: 'border-box', padding: '12px', fontSize: '15px', border: '1px solid #ddd', borderRadius: '10px', marginBottom: '16px', outline: 'none' }}
+          />
+
+          <button
+            onClick={handleSaveConfirm}
+            disabled={!saveName.trim()}
+            style={{ width: '100%', padding: '14px', background: '#D4AF37', color: '#000', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', opacity: !saveName.trim() ? 0.4 : 1 }}
           >
-            <div className="w-10 h-1 bg-[var(--border)] rounded-full mx-auto mb-5" />
-            <h2 className="text-[var(--text)] font-semibold text-base mb-4">
-              ルート名を入力
-            </h2>
-            <input
-              ref={inputRef}
-              type="text"
-              value={saveName}
-              onChange={(e) => setSaveName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSaveConfirm()}
-              placeholder="例：通勤ルート"
-              className="w-full bg-[var(--surface2)] text-[var(--text)] rounded-xl px-4 py-3 text-sm mb-4 outline-none focus:ring-2 focus:ring-[var(--accent)] placeholder:text-[var(--text-muted)]"
-            />
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowSave(false)}
-                className="flex-1 py-3 rounded-xl bg-[var(--surface2)] text-[var(--text-muted)] text-sm font-medium"
-              >
-                キャンセル
-              </button>
-              <button
-                onClick={handleSaveConfirm}
-                disabled={!saveName.trim()}
-                className="flex-1 py-3 rounded-xl bg-[var(--accent)] text-white font-bold text-sm disabled:opacity-40"
-              >
-                保存する
-              </button>
-            </div>
-          </div>
+            保存する
+          </button>
         </div>
       )}
 
