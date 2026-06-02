@@ -144,7 +144,11 @@ export default function Home() {
       body: JSON.stringify({ points }),
     })
       .then((r) => r.json())
-      .then((data) => { if (!cancelled && data.elevations) setElevations(data.elevations); })
+      .then((data) => {
+        console.log('elevation response (segments):', data);
+        console.log('elevations length (segments):', data.elevations?.length);
+        if (!cancelled && data.elevations) setElevations(data.elevations);
+      })
       .catch(() => { /* silent fail */ });
     return () => { cancelled = true; };
   }, [segments]);
@@ -161,7 +165,11 @@ export default function Home() {
       body: JSON.stringify({ points }),
     })
       .then((r) => r.json())
-      .then((data) => { if (!cancelled && data.elevations) setNavElevations(data.elevations); })
+      .then((data) => {
+        console.log('elevation response (navRoute):', data);
+        console.log('elevations length (navRoute):', data.elevations?.length);
+        if (!cancelled && data.elevations) setNavElevations(data.elevations);
+      })
       .catch(() => { /* silent fail */ });
     return () => { cancelled = true; };
   }, [navRoute]);
