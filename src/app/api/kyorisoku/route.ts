@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
   const titleMatch = xml.match(/<title>(.*?)<\/title>/)
   const distanceMatch = xml.match(/<distance>([\d.]+)<\/distance>/)
 
-  const KYORISOKU_OFFSET = { lat: 0.00290, lng: -0.00389 }
+  const KYORISOKU_OFFSET = { lat: 0.00245, lng: -0.00372 }
   let points = allPoints.map((p) => ({
     lat: p.lat + KYORISOKU_OFFSET.lat,
     lng: p.lng + KYORISOKU_OFFSET.lng,
