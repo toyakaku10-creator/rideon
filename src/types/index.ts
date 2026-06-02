@@ -22,4 +22,5 @@ export interface SavedRoute {
   segments: RouteSegment[];
   totalDistance: number;
   createdAt: string;
+  elevations?: number[];
 }

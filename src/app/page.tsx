@@ -291,6 +291,7 @@ export default function Home() {
         segments,
         totalDistance,
         createdAt: new Date().toISOString(),
+        elevations: elevations.length >= 2 ? elevations : undefined,
       };
       const updated = [...savedRoutes, route];
       setSavedRoutes(updated);
@@ -299,13 +300,17 @@ export default function Home() {
       setIsAdjustingImport(false);
       setShowSaveDialog(false);
     },
-    [waypoints, routeType, segments, totalDistance, savedRoutes]
+    [waypoints, routeType, segments, totalDistance, savedRoutes, elevations]
   );
 
   const handleLoadRoute = useCallback((route: SavedRoute) => {
     setWaypoints(route.waypoints);
     setSegments(route.segments);
     setRouteType(route.routeType);
+    if (route.elevations && route.elevations.length >= 2) {
+      setElevations(route.elevations);
+    }
+    // else: segments change will trigger the elevation fetch effect
   }, []);
 
   const handleDeleteRoute = useCallback(
