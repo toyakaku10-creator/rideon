@@ -125,11 +125,11 @@ export default function BottomPanel({
   return (
     <>
       <div
-        className="bg-[var(--surface)] border-t border-[var(--border)] px-4 pt-3 shrink-0"
-        style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
+        className="bg-[var(--surface)] border-t border-[var(--border)] shrink-0"
+        style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}
       >
         {/* Route type selector */}
-        <div className="flex gap-1.5 mb-3">
+        <div className="flex gap-1.5 px-4 pt-3 mb-2">
           {ROUTE_BUTTONS.map(({ type, icon, label }) => (
             <button
               key={type}
@@ -150,7 +150,7 @@ export default function BottomPanel({
         </div>
 
         {/* Stats row */}
-        <div className="flex items-center justify-between text-sm mb-3">
+        <div className="flex items-center justify-between text-sm px-4 mb-2">
           <span className="text-[var(--text)] font-semibold tabular-nums">
             {formatDistance(totalDistance)}
           </span>
@@ -163,53 +163,59 @@ export default function BottomPanel({
 
         {/* Import hint */}
         {isImported && (
-          <p className="text-[var(--text-muted)] text-xs text-center mb-2">
+          <p className="text-[var(--text-muted)] text-xs text-center mb-1 px-4">
             📍 スタート地点をドラッグするとルート全体が移動します
           </p>
         )}
 
-        {/* Action buttons */}
-        <div className="flex gap-2">
-          <button
-            onClick={onUndo}
-            disabled={waypoints.length === 0}
-            className="flex-1 py-3.5 rounded-lg bg-[var(--surface2)] text-xs text-[var(--text-muted)] disabled:opacity-40 hover:bg-[var(--border)] active:bg-[var(--border)] transition-colors"
-          >
-            <span className="flex flex-col items-center gap-1">
-              <Undo2 size={15} />
-              戻す
-            </span>
-          </button>
-          <button
-            onClick={() => { setSaveName(''); setShowSave(true); }}
-            disabled={waypoints.length < 2}
-            className="flex-1 py-3.5 rounded-lg bg-[var(--surface2)] text-xs text-[var(--text-muted)] disabled:opacity-40 hover:bg-[var(--border)] active:bg-[var(--border)] transition-colors"
-          >
-            <span className="flex flex-col items-center gap-1">
-              <Save size={15} />
-              保存
-            </span>
-          </button>
-          <button
-            onClick={onClear}
-            disabled={waypoints.length === 0}
-            className="flex-1 py-3.5 rounded-lg bg-[var(--surface2)] text-xs text-[var(--text-muted)] disabled:opacity-40 hover:bg-[var(--border)] active:bg-[var(--border)] transition-colors"
-          >
-            <span className="flex flex-col items-center gap-1">
-              <Trash2 size={15} />
-              クリア
-            </span>
-          </button>
-          <button
-            onClick={() => setShowMore(true)}
-            className="flex-1 py-3.5 rounded-lg bg-[var(--surface2)] text-xs text-[var(--text-muted)] hover:bg-[var(--border)] active:bg-[var(--border)] transition-colors flex items-center justify-center"
-          >
-            <MoreHorizontal size={15} />
-          </button>
+        {/* 5-button tab bar */}
+        <div className="flex">
+          {[
+            {
+              icon: <Undo2 size={24} />,
+              label: '戻す',
+              onClick: onUndo,
+              disabled: waypoints.length === 0,
+            },
+            {
+              icon: <Save size={24} />,
+              label: '保存',
+              onClick: () => { setSaveName(''); setShowSave(true); },
+              disabled: waypoints.length < 2,
+            },
+            {
+              icon: <Trash2 size={24} />,
+              label: 'クリア',
+              onClick: onClear,
+              disabled: waypoints.length === 0,
+            },
+            {
+              icon: <BookMarked size={24} />,
+              label: 'マイルート',
+              onClick: () => setShowHistory(true),
+              disabled: false,
+            },
+            {
+              icon: <MoreHorizontal size={24} />,
+              label: 'その他',
+              onClick: () => setShowMore(true),
+              disabled: false,
+            },
+          ].map(({ icon, label, onClick, disabled }) => (
+            <button
+              key={label}
+              onClick={onClick}
+              disabled={disabled}
+              className="flex-1 py-2 flex flex-col items-center gap-0.5 text-[var(--text-muted)] disabled:opacity-35 active:text-[#D4AF37] transition-colors"
+            >
+              {icon}
+              <span style={{ fontSize: '10px' }}>{label}</span>
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* More menu bottom sheet */}
+      {/* More menu bottom sheet — import & share only */}
       {showMore && (
         <div className="fixed inset-0 z-[1000] flex flex-col justify-end">
           <div className="absolute inset-0 bg-black/40" onClick={() => setShowMore(false)} />
@@ -233,13 +239,6 @@ export default function BottomPanel({
               >
                 <Share2 size={16} className="text-[var(--text-muted)]" />
                 {copied ? 'コピー済' : 'シェア'}
-              </button>
-              <button
-                onClick={() => { setShowMore(false); setShowHistory(true); }}
-                className="flex items-center gap-3 w-full px-3 py-3 rounded-xl text-sm text-[var(--text)] hover:bg-[var(--surface2)] active:bg-[var(--surface2)] transition-colors"
-              >
-                <BookMarked size={16} className="text-[var(--text-muted)]" />
-                マイルート
               </button>
             </div>
           </div>
