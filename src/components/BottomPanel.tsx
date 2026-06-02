@@ -420,7 +420,7 @@ export default function BottomPanel({
       {showImport && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', overflow: 'hidden' }} onClick={() => !importLoading && setShowImport(false)}>
           <div
-            style={{ width: '100%', maxWidth: '480px', boxSizing: 'border-box', background: 'var(--surface)', borderRadius: '16px 16px 0 0', padding: '20px 16px', paddingBottom: 'calc(20px + env(safe-area-inset-bottom))' }}
+            style={{ width: '100%', maxWidth: '480px', boxSizing: 'border-box', overflow: 'hidden', background: 'var(--surface)', borderRadius: '16px 16px 0 0', padding: '20px 16px', paddingBottom: 'calc(20px + env(safe-area-inset-bottom))' }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="w-10 h-1 bg-[var(--border)] rounded-full mx-auto mb-4" />
@@ -445,7 +445,7 @@ export default function BottomPanel({
               onKeyDown={(e) => e.key === 'Enter' && handleImportConfirm()}
               placeholder="https://mapzs.com/map/..."
               disabled={importLoading}
-              style={{ width: '100%', boxSizing: 'border-box' }}
+              style={{ width: '100%', boxSizing: 'border-box', maxWidth: '100%', minWidth: 0 }}
               className="bg-[var(--surface2)] text-[var(--text)] rounded-xl px-4 py-3 text-sm mb-3 outline-none focus:ring-2 focus:ring-[var(--accent)] placeholder:text-[var(--text-muted)] disabled:opacity-50"
             />
             {importError && (
