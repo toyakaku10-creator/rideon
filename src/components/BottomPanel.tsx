@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Ruler, Bike, Footprints, Undo2, X, Share2, Upload } from 'lucide-react';
+import { Ruler, Bike, Footprints, Undo2, X, Share2, Upload, MoreHorizontal } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
 import { encodeRoute } from '@/lib/routeShare';
 
@@ -69,6 +69,7 @@ export default function BottomPanel({
   const [showSave, setShowSave] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showImport, setShowImport] = useState(false);
+  const [showMore, setShowMore] = useState(false);
   const [importUrl, setImportUrl] = useState('');
   const [importLoading, setImportLoading] = useState(false);
   const [importError, setImportError] = useState('');
@@ -106,7 +107,7 @@ export default function BottomPanel({
       setShowImport(false);
       setImportUrl('');
       setSaveName('');
-      setShowSave(true); // 保存ダイアログを開く
+      setShowSave(true);
     } else if (typeof result === 'string') {
       setImportError(result);
     }
@@ -170,68 +171,74 @@ export default function BottomPanel({
 
         {/* Action buttons */}
         <div className="flex gap-2">
-          {[
-            {
-              key: 'undo',
-              content: (
-                <span className="flex items-center justify-center gap-1">
-                  <Undo2 size={13} />戻す
-                </span>
-              ),
-              onClick: onUndo,
-              disabled: waypoints.length === 0,
-            },
-            {
-              key: 'save',
-              content: '保存',
-              onClick: () => { setSaveName(''); setShowSave(true); },
-              disabled: waypoints.length < 2,
-            },
-            {
-              key: 'share',
-              content: (
-                <span className="flex items-center justify-center gap-1">
-                  <Share2 size={13} />
-                  {copied ? 'コピー済' : 'シェア'}
-                </span>
-              ),
-              onClick: handleShare,
-              disabled: waypoints.length < 2,
-            },
-            {
-              key: 'import',
-              content: (
-                <span className="flex items-center justify-center gap-1">
-                  <Upload size={13} />インポート
-                </span>
-              ),
-              onClick: () => { setImportUrl(''); setImportError(''); setShowImport(true); },
-              disabled: false,
-            },
-            {
-              key: 'history',
-              content: '履歴',
-              onClick: () => setShowHistory(true),
-              disabled: false,
-            },
-            {
-              key: 'clear',
-              content: 'クリア',
-              onClick: onClear,
-              disabled: waypoints.length === 0,
-            },
-          ].map(({ key, content, onClick, disabled }) => (
-            <button
-              key={key}
-              onClick={onClick}
-              disabled={disabled}
-              className="flex-1 py-2 rounded-lg bg-[var(--surface2)] text-xs text-[var(--text-muted)] disabled:opacity-40 hover:bg-[var(--border)] active:bg-[var(--border)] transition-colors"
-            >
-              {content}
-            </button>
-          ))}
+          <button
+            onClick={onUndo}
+            disabled={waypoints.length === 0}
+            className="flex-1 py-2 rounded-lg bg-[var(--surface2)] text-xs text-[var(--text-muted)] disabled:opacity-40 hover:bg-[var(--border)] active:bg-[var(--border)] transition-colors"
+          >
+            <span className="flex items-center justify-center gap-1">
+              <Undo2 size={13} />戻す
+            </span>
+          </button>
+          <button
+            onClick={() => { setSaveName(''); setShowSave(true); }}
+            disabled={waypoints.length < 2}
+            className="flex-1 py-2 rounded-lg bg-[var(--surface2)] text-xs text-[var(--text-muted)] disabled:opacity-40 hover:bg-[var(--border)] active:bg-[var(--border)] transition-colors"
+          >
+            保存
+          </button>
+          <button
+            onClick={onClear}
+            disabled={waypoints.length === 0}
+            className="flex-1 py-2 rounded-lg bg-[var(--surface2)] text-xs text-[var(--text-muted)] disabled:opacity-40 hover:bg-[var(--border)] active:bg-[var(--border)] transition-colors"
+          >
+            クリア
+          </button>
+          <button
+            onClick={() => setShowMore(true)}
+            className="w-10 py-2 rounded-lg bg-[var(--surface2)] text-xs text-[var(--text-muted)] hover:bg-[var(--border)] active:bg-[var(--border)] transition-colors flex items-center justify-center"
+          >
+            <MoreHorizontal size={15} />
+          </button>
         </div>
       </div>
+
+      {/* More menu bottom sheet */}
+      {showMore && (
+        <div className="fixed inset-0 z-[1000] flex flex-col justify-end">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setShowMore(false)} />
+          <div
+            className="relative bg-[var(--surface)] rounded-t-2xl border-t border-[var(--border)]"
+            style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom))' }}
+          >
+            <div className="w-10 h-1 bg-[var(--border)] rounded-full mx-auto mt-4 mb-2" />
+            <div className="px-4 py-2 flex flex-col gap-1">
+              <button
+                onClick={() => { setImportUrl(''); setImportError(''); setShowMore(false); setShowImport(true); }}
+                className="flex items-center gap-3 w-full px-3 py-3 rounded-xl text-sm text-[var(--text)] hover:bg-[var(--surface2)] active:bg-[var(--surface2)] transition-colors"
+              >
+                <Upload size={16} className="text-[var(--text-muted)]" />
+                インポート
+              </button>
+              <button
+                onClick={() => { setShowMore(false); handleShare(); }}
+                disabled={waypoints.length < 2}
+                className="flex items-center gap-3 w-full px-3 py-3 rounded-xl text-sm text-[var(--text)] hover:bg-[var(--surface2)] active:bg-[var(--surface2)] transition-colors disabled:opacity-40"
+              >
+                <Share2 size={16} className="text-[var(--text-muted)]" />
+                {copied ? 'コピー済' : 'シェア'}
+              </button>
+              <button
+                onClick={() => { setShowMore(false); setShowHistory(true); }}
+                className="flex items-center gap-3 w-full px-3 py-3 rounded-xl text-sm text-[var(--text)] hover:bg-[var(--surface2)] active:bg-[var(--surface2)] transition-colors"
+              >
+                <span className="w-4 h-4 flex items-center justify-center text-[var(--text-muted)] text-base leading-none">☰</span>
+                履歴
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Save bottom sheet */}
       {showSave && (
@@ -342,6 +349,7 @@ export default function BottomPanel({
           </div>
         </div>
       )}
+
       {/* Import bottom sheet */}
       {showImport && (
         <div className="fixed inset-0 z-[1000] flex flex-col justify-end">
