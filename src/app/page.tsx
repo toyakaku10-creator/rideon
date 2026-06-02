@@ -162,6 +162,16 @@ export default function Home() {
       setFitBoundsPoints([...latlngs]);
       setIsImported(true);
       setIsAdjustingImport(true);
+
+      // 高低差を取得（segmentsのeffectより先に明示的に呼ぶ）
+      fetch('/api/elevation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ points: latlngs }),
+      })
+        .then((r) => r.json())
+        .then((data) => { if (data.elevations) setElevations(data.elevations); })
+        .catch(() => {});
     } catch { /* ignore */ }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
