@@ -202,10 +202,9 @@ export default function BottomPanel({
           </button>
           <button
             onClick={() => setShowMore(true)}
-            className="w-14 py-3.5 rounded-lg bg-[var(--surface2)] text-xs text-[var(--text-muted)] hover:bg-[var(--border)] active:bg-[var(--border)] transition-colors flex flex-col items-center justify-center gap-1"
+            className="flex-1 py-3.5 rounded-lg bg-[var(--surface2)] text-xs text-[var(--text-muted)] hover:bg-[var(--border)] active:bg-[var(--border)] transition-colors flex items-center justify-center"
           >
             <MoreHorizontal size={15} />
-            <span>もっと</span>
           </button>
         </div>
       </div>
