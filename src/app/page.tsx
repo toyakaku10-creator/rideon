@@ -2,12 +2,12 @@
 
 import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { Bike, Route } from 'lucide-react';
 import type { Tab, RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
 import { decodeRoute } from '@/lib/routeShare';
 import BottomPanel from '@/components/BottomPanel';
 import SpeedPanel from '@/components/SpeedPanel';
-import ElevationChart from '@/components/ElevationChart';
 
 // react-leaflet must not run on the server
 const CycleMap = dynamic(() => import('@/components/CycleMap'), { ssr: false });
@@ -65,6 +65,7 @@ function angleDiff(a: number, b: number): number {
 }
 
 export default function Home() {
+  const router = useRouter();
   const [tab, setTab] = useState<Tab>('distance');
 
   // Distance measurement
@@ -76,7 +77,6 @@ export default function Home() {
   const [fitBoundsPoints, setFitBoundsPoints] = useState<LatLng[] | null>(null);
   const [isImported, setIsImported] = useState(false);
   const [isAdjustingImport, setIsAdjustingImport] = useState(false);
-  const [showSaveDialog, setShowSaveDialog] = useState(false);
 
   // Elevation
   const [elevations, setElevations] = useState<number[]>([]);
@@ -131,6 +131,38 @@ export default function Home() {
     if (result.waypoints.length > 0) {
       setInitialCenter(result.waypoints[0]);
     }
+  }, []);
+
+  // Detect import result from /import page
+  useEffect(() => {
+    const raw = sessionStorage.getItem('cycle-map-import-result');
+    if (!raw) return;
+    sessionStorage.removeItem('cycle-map-import-result');
+    try {
+      const { points, distance: apiDistance } = JSON.parse(raw) as {
+        points: { lat: number; lng: number }[];
+        distance: number;
+      };
+      if (!Array.isArray(points) || points.length < 2) return;
+      const latlngs: LatLng[] = points.map((p) => ({ lat: p.lat, lng: p.lng }));
+      const distance =
+        apiDistance > 0
+          ? apiDistance
+          : latlngs.slice(1).reduce((sum, p, i) => sum + haversineDistance(latlngs[i], p), 0);
+      const seg: RouteSegment = {
+        from: latlngs[0],
+        to: latlngs[latlngs.length - 1],
+        geometry: latlngs,
+        distance,
+        routeType: 'straight',
+      };
+      setWaypoints([latlngs[0], latlngs[latlngs.length - 1]]);
+      setSegments([seg]);
+      setFitBoundsPoints([...latlngs]);
+      setIsImported(true);
+      setIsAdjustingImport(true);
+    } catch { /* ignore */ }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Fetch elevation data whenever segments change
@@ -281,48 +313,6 @@ export default function Home() {
     setSegments([]);
   }, []);
 
-  const handleSave = useCallback(
-    async (name: string) => {
-      let finalElevations = elevations;
-
-      // elevationsが空の場合は再取得
-      if (finalElevations.length < 2) {
-        const points = segments.flatMap((s) => s.geometry);
-        if (points.length >= 2) {
-          try {
-            const res = await fetch('/api/elevation', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ points }),
-            });
-            const data = await res.json();
-            if (data.elevations) {
-              finalElevations = data.elevations;
-              setElevations(data.elevations);
-            }
-          } catch { /* silent fail */ }
-        }
-      }
-
-      const route: SavedRoute = {
-        id: Date.now().toString(),
-        name,
-        waypoints,
-        routeType,
-        segments,
-        totalDistance,
-        createdAt: new Date().toISOString(),
-        elevations: finalElevations.length >= 2 ? finalElevations : undefined,
-      };
-      const updated = [...savedRoutes, route];
-      setSavedRoutes(updated);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-      setIsImported(false);
-      setIsAdjustingImport(false);
-      setShowSaveDialog(false);
-    },
-    [waypoints, routeType, segments, totalDistance, savedRoutes, elevations]
-  );
 
   const handleLoadRoute = useCallback((route: SavedRoute) => {
     setWaypoints(route.waypoints);
@@ -343,63 +333,6 @@ export default function Home() {
     [savedRoutes]
   );
 
-  const handleImportUrl = useCallback(async (url: string): Promise<true | string> => {
-    try {
-      const res = await fetch(`/api/kyorisoku?url=${encodeURIComponent(url)}`);
-      const data: unknown = await res.json();
-
-      if (!res.ok) {
-        return (data as { error?: string }).error ?? '取得に失敗しました';
-      }
-
-      const { points, distance: apiDistance } = data as {
-        points: { lat: number; lng: number }[];
-        title: string;
-        distance: number;
-      };
-
-      if (!Array.isArray(points) || points.length < 2) return '座標データが不足しています';
-
-      const latlngs: LatLng[] = points.map((p) => ({ lat: p.lat, lng: p.lng }));
-
-      // API が返す distance (m) を優先、取得できなければ haversine で計算
-      const distance =
-        apiDistance > 0
-          ? apiDistance
-          : latlngs.slice(1).reduce((sum, p, i) => sum + haversineDistance(latlngs[i], p), 0);
-
-      const seg: RouteSegment = {
-        from: latlngs[0],
-        to: latlngs[latlngs.length - 1],
-        geometry: latlngs,
-        distance,
-        routeType: 'straight',
-      };
-
-      setWaypoints([latlngs[0], latlngs[latlngs.length - 1]]);
-      setSegments([seg]);
-      setFitBoundsPoints([...latlngs]);
-      setIsImported(true);
-      setIsAdjustingImport(true);
-
-      // Fetch elevation data immediately so it's ready when the save dialog opens
-      try {
-        const elevRes = await fetch('/api/elevation', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ points: latlngs }),
-        });
-        const elevData = await elevRes.json();
-        if (elevData.elevations) setElevations(elevData.elevations);
-      } catch {
-        // silent fail — elevation is optional
-      }
-
-      return true;
-    } catch {
-      return 'ネットワークエラーが発生しました';
-    }
-  }, []);
 
   const handleStartPointDragged = useCallback((deltaLat: number, deltaLng: number) => {
     setWaypoints((prev) => prev.map((wp) => ({ lat: wp.lat + deltaLat, lng: wp.lng + deltaLng })));
@@ -412,6 +345,35 @@ export default function Home() {
       }))
     );
   }, []);
+
+  const navigateToSave = useCallback(async () => {
+    let finalElevations = elevations;
+    if (finalElevations.length < 2 && segments.length > 0) {
+      const points = segments.flatMap((s) => s.geometry);
+      if (points.length >= 2) {
+        try {
+          const res = await fetch('/api/elevation', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ points }),
+          });
+          const data = await res.json();
+          if (data.elevations) {
+            finalElevations = data.elevations;
+            setElevations(data.elevations);
+          }
+        } catch { /* silent fail */ }
+      }
+    }
+    sessionStorage.setItem('cycle-map-save-pending', JSON.stringify({
+      waypoints,
+      routeType,
+      segments,
+      totalDistance,
+      elevations: finalElevations.length >= 2 ? finalElevations : undefined,
+    }));
+    router.push('/save');
+  }, [elevations, segments, waypoints, routeType, totalDistance, router]);
 
   const handleImportSave = useCallback(async () => {
     if (isImported) {
@@ -426,8 +388,8 @@ export default function Home() {
         if (data.elevations) setElevations(data.elevations);
       } catch { /* silent fail */ }
     }
-    setShowSaveDialog(true);
-  }, [isImported, segments]);
+    await navigateToSave();
+  }, [isImported, segments, navigateToSave]);
 
   const mapCenter =
     tab === 'speed' ? (currentPosition ?? initialCenter) : initialCenter;
@@ -520,15 +482,12 @@ export default function Home() {
           onRouteTypeChange={handleRouteTypeChange}
           onUndo={handleUndo}
           onClear={handleClear}
-          onSave={handleSave}
+          onSaveClick={navigateToSave}
           savedRoutes={savedRoutes}
           onLoadRoute={handleLoadRoute}
           onDeleteRoute={handleDeleteRoute}
-          onImportUrl={handleImportUrl}
+          onImportClick={() => router.push('/import')}
           isImported={isImported}
-          onImportedSaved={() => setIsImported(false)}
-          showSaveDialog={showSaveDialog}
-          onShowSaveDialogChange={(open) => setShowSaveDialog(open)}
           elevations={elevations}
         />
       ) : (

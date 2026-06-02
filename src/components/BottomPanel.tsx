@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { Undo2, Save, Trash2, X, Share2, Upload, MoreHorizontal, BookMarked, Flag, Ruler, Road } from 'lucide-react';
+import { useState, useRef, useCallback } from 'react';
+import { Undo2, Save, Trash2, Share2, Upload, MoreHorizontal, Flag, Ruler, Road } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
 import { encodeRoute } from '@/lib/routeShare';
 import ElevationChart from '@/components/ElevationChart';
@@ -109,15 +109,12 @@ interface BottomPanelProps {
   onRouteTypeChange: (type: RouteType) => void;
   onUndo: () => void;
   onClear: () => void;
-  onSave: (name: string) => void | Promise<void>;
+  onSaveClick: () => void;
   savedRoutes: SavedRoute[];
   onLoadRoute: (route: SavedRoute) => void;
   onDeleteRoute: (id: string) => void;
-  onImportUrl: (url: string) => Promise<true | string>;
+  onImportClick: () => void;
   isImported: boolean;
-  onImportedSaved: () => void;
-  showSaveDialog?: boolean;
-  onShowSaveDialogChange?: (open: boolean) => void;
   elevations?: number[];
 }
 
@@ -130,39 +127,17 @@ export default function BottomPanel({
   onRouteTypeChange,
   onUndo,
   onClear,
-  onSave,
+  onSaveClick,
   savedRoutes,
   onLoadRoute,
   onDeleteRoute,
-  onImportUrl,
+  onImportClick,
   isImported,
-  onImportedSaved,
-  showSaveDialog,
-  onShowSaveDialogChange,
   elevations = [],
 }: BottomPanelProps) {
-  const [showSave, setShowSave] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
-  const [showImport, setShowImport] = useState(false);
   const [showMore, setShowMore] = useState(false);
-  const [importUrl, setImportUrl] = useState('');
-  const [importLoading, setImportLoading] = useState(false);
-  const [importError, setImportError] = useState('');
-  const [saveName, setSaveName] = useState('');
   const [copied, setCopied] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (showSave) setTimeout(() => inputRef.current?.focus(), 50);
-  }, [showSave]);
-
-  useEffect(() => {
-    if (showSaveDialog) {
-      setSaveName('');
-      setShowSave(true);
-      onShowSaveDialogChange?.(false);
-    }
-  }, [showSaveDialog, onShowSaveDialogChange]);
 
   const handleShare = async () => {
     const encoded = encodeRoute(waypoints, segments, routeType);
@@ -178,35 +153,6 @@ export default function BottomPanel({
     } catch {
       // user cancelled or clipboard unavailable
     }
-  };
-
-  const closeImport = () => {
-    setShowImport(false);
-    window.scrollTo(0, 0);
-    document.body.scrollTop = 0;
-    document.documentElement.scrollTop = 0;
-  };
-
-  const handleImportConfirm = async () => {
-    if (!importUrl.trim() || importLoading) return;
-    setImportLoading(true);
-    setImportError('');
-    const result = await onImportUrl(importUrl.trim());
-    setImportLoading(false);
-    if (result === true) {
-      closeImport();
-      setImportUrl('');
-    } else if (typeof result === 'string') {
-      setImportError(result);
-    }
-  };
-
-  const handleSaveConfirm = () => {
-    if (!saveName.trim()) return;
-    onSave(saveName.trim());
-    setSaveName('');
-    setShowSave(false);
-    onImportedSaved();
   };
 
   const speedKmh = ROUTE_SPEED[routeType];
@@ -277,7 +223,7 @@ export default function BottomPanel({
             {
               icon: <Save size={24} />,
               label: '保存',
-              onClick: () => { setSaveName(''); setShowSave(true); },
+              onClick: onSaveClick,
               disabled: waypoints.length < 2,
             },
             {
@@ -322,7 +268,7 @@ export default function BottomPanel({
           </div>
           <div style={{ flex: 1, overflowY: 'auto', padding: '16px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <button
-              onClick={() => { setImportUrl(''); setImportError(''); setShowMore(false); setShowImport(true); }}
+              onClick={() => { setShowMore(false); onImportClick(); }}
               style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', boxSizing: 'border-box', minWidth: 0, padding: '14px 16px', background: 'var(--surface2)', border: 'none', borderRadius: '12px', fontSize: '15px', color: 'var(--text)', cursor: 'pointer', textAlign: 'left' }}
             >
               <Upload size={18} />インポート
@@ -336,36 +282,6 @@ export default function BottomPanel({
             </button>
           </div>
           <div style={{ flexShrink: 0, padding: '16px', paddingBottom: 'calc(16px + env(safe-area-inset-bottom))', boxSizing: 'border-box' }} />
-        </div>
-      )}
-
-      {/* Save modal */}
-      {showSave && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#ffffff', zIndex: 2000, display: 'flex', flexDirection: 'column', maxWidth: '480px', width: '100%', margin: '0 auto', boxSizing: 'border-box', overflowY: 'auto', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
-          <div style={{ flexShrink: 0, padding: '16px 16px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <h2 style={{ fontSize: '18px', fontWeight: '600', margin: 0, color: 'var(--text)' }}>ルートを保存</h2>
-            <button style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: 'var(--text-muted)', lineHeight: 1 }} onClick={() => setShowSave(false)}>✕</button>
-          </div>
-          <div style={{ flex: 1, overflowY: 'auto', padding: '16px', boxSizing: 'border-box' }}>
-            <input
-              ref={inputRef}
-              type="text"
-              value={saveName}
-              onChange={(e) => setSaveName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSaveConfirm()}
-              placeholder="ルート名（例：自宅→駅）"
-              style={{ width: '100%', boxSizing: 'border-box', minWidth: 0, display: 'block', padding: '12px', fontSize: '15px', border: '1px solid #ddd', borderRadius: '10px', outline: 'none' }}
-            />
-          </div>
-          <div style={{ flexShrink: 0, padding: '16px', paddingBottom: 'calc(16px + env(safe-area-inset-bottom))', boxSizing: 'border-box' }}>
-            <button
-              onClick={handleSaveConfirm}
-              disabled={!saveName.trim()}
-              style={{ width: '100%', padding: '14px', background: '#D4AF37', color: '#000', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', opacity: !saveName.trim() ? 0.4 : 1 }}
-            >
-              保存する
-            </button>
-          </div>
         </div>
       )}
 
@@ -396,40 +312,6 @@ export default function BottomPanel({
         </div>
       )}
 
-      {/* Import modal */}
-      {showImport && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#ffffff', zIndex: 2000, overflowY: 'auto', WebkitOverflowScrolling: 'touch', boxSizing: 'border-box' } as React.CSSProperties}>
-          <div style={{ padding: '56px 20px 40px', boxSizing: 'border-box', minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-              <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '600' }}>キョリ測からインポート</h2>
-              <button onClick={() => !importLoading && closeImport()} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer' }}>✕</button>
-            </div>
-
-            <p style={{ fontSize: '13px', color: '#666', marginBottom: '8px' }}>キョリ測のURL</p>
-            <input
-              type="url"
-              value={importUrl}
-              onChange={(e) => { setImportUrl(e.target.value); setImportError(''); }}
-              onKeyDown={(e) => e.key === 'Enter' && handleImportConfirm()}
-              placeholder="https://www.mapion.co.jp/m/route/..."
-              disabled={importLoading}
-              style={{ display: 'block', width: '100%', boxSizing: 'border-box', padding: '12px', fontSize: '15px', border: '1px solid #ddd', borderRadius: '10px', marginBottom: '16px', WebkitAppearance: 'none' } as React.CSSProperties}
-            />
-
-            {importError && (
-              <p style={{ color: '#E53935', fontSize: '13px', marginBottom: '12px' }}>{importError}</p>
-            )}
-
-            <button
-              onClick={handleImportConfirm}
-              disabled={importLoading}
-              style={{ display: 'block', width: '100%', padding: '14px', background: '#D4AF37', color: '#000', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', marginTop: '8px', opacity: importLoading ? 0.6 : 1 }}
-            >
-              {importLoading ? '取得中...' : '取得する'}
-            </button>
-          </div>
-        </div>
-      )}
     </>
   );
 }
