@@ -360,6 +360,20 @@ export default function Home() {
       setFitBoundsPoints([...latlngs]);
       setIsImported(true);
       setIsAdjustingImport(true);
+
+      // Fetch elevation data immediately so it's ready when the save dialog opens
+      try {
+        const elevRes = await fetch('/api/elevation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ points: latlngs }),
+        });
+        const elevData = await elevRes.json();
+        if (elevData.elevations) setElevations(elevData.elevations);
+      } catch {
+        // silent fail — elevation is optional
+      }
+
       return true;
     } catch {
       return 'ネットワークエラーが発生しました';
