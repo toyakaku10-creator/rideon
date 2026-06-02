@@ -494,23 +494,20 @@ export default function Home() {
             ルート取得中…
           </div>
         )}
-        {isAdjustingImport && (
-          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[900] w-[calc(100%-32px)] max-w-sm">
-            <div className="bg-white rounded-2xl shadow-lg px-4 py-3 flex flex-col gap-2">
-              <p className="text-xs text-center text-gray-600">
-                📍 スタート地点をドラッグして位置を補正してください
-              </p>
-              <button
-                onClick={handleImportSave}
-                className="w-full py-2 rounded-xl text-sm font-bold text-white"
-                style={{ background: '#D4AF37' }}
-              >
-                完了・保存する
-              </button>
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* スタート補正バナー（地図とフッターの間） */}
+      {isAdjustingImport && (
+        <div style={{ background: '#fff9e6', borderTop: '1px solid #D4AF37', borderBottom: '1px solid #D4AF37', padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+          <span style={{ fontSize: '13px', fontWeight: '600', color: '#333' }}>
+            📍 スタート地点をドラッグして補正
+          </span>
+          <button
+            onClick={handleImportSave}
+            style={{ background: '#D4AF37', border: 'none', borderRadius: '10px', padding: '6px 14px', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }}
+          >完了・保存する</button>
+        </div>
+      )}
 
       {/* Bottom panel */}
       {tab === 'distance' ? (
