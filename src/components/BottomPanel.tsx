@@ -180,6 +180,13 @@ export default function BottomPanel({
     }
   };
 
+  const closeImport = () => {
+    setShowImport(false);
+    window.scrollTo(0, 0);
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+  };
+
   const handleImportConfirm = async () => {
     if (!importUrl.trim() || importLoading) return;
     setImportLoading(true);
@@ -187,7 +194,7 @@ export default function BottomPanel({
     const result = await onImportUrl(importUrl.trim());
     setImportLoading(false);
     if (result === true) {
-      setShowImport(false);
+      closeImport();
       setImportUrl('');
     } else if (typeof result === 'string') {
       setImportError(result);
@@ -395,7 +402,7 @@ export default function BottomPanel({
           <div style={{ padding: '56px 20px 40px', boxSizing: 'border-box', minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '600' }}>キョリ測からインポート</h2>
-              <button onClick={() => !importLoading && setShowImport(false)} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer' }}>✕</button>
+              <button onClick={() => !importLoading && closeImport()} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer' }}>✕</button>
             </div>
 
             <p style={{ fontSize: '13px', color: '#666', marginBottom: '8px' }}>キョリ測のURL</p>
