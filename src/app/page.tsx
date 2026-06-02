@@ -282,7 +282,28 @@ export default function Home() {
   }, []);
 
   const handleSave = useCallback(
-    (name: string) => {
+    async (name: string) => {
+      let finalElevations = elevations;
+
+      // elevationsが空の場合は再取得
+      if (finalElevations.length < 2) {
+        const points = segments.flatMap((s) => s.geometry);
+        if (points.length >= 2) {
+          try {
+            const res = await fetch('/api/elevation', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ points }),
+            });
+            const data = await res.json();
+            if (data.elevations) {
+              finalElevations = data.elevations;
+              setElevations(data.elevations);
+            }
+          } catch { /* silent fail */ }
+        }
+      }
+
       const route: SavedRoute = {
         id: Date.now().toString(),
         name,
@@ -291,7 +312,7 @@ export default function Home() {
         segments,
         totalDistance,
         createdAt: new Date().toISOString(),
-        elevations: elevations.length >= 2 ? elevations : undefined,
+        elevations: finalElevations.length >= 2 ? finalElevations : undefined,
       };
       const updated = [...savedRoutes, route];
       setSavedRoutes(updated);

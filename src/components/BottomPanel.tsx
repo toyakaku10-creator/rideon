@@ -109,7 +109,7 @@ interface BottomPanelProps {
   onRouteTypeChange: (type: RouteType) => void;
   onUndo: () => void;
   onClear: () => void;
-  onSave: (name: string) => void;
+  onSave: (name: string) => void | Promise<void>;
   savedRoutes: SavedRoute[];
   onLoadRoute: (route: SavedRoute) => void;
   onDeleteRoute: (id: string) => void;
