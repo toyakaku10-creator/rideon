@@ -259,30 +259,29 @@ export default function BottomPanel({
         </div>
       </div>
 
-      {/* More menu modal */}
+      {/* 外部メニュー ボトムシート */}
       {showMore && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#ffffff', zIndex: 2000, display: 'flex', flexDirection: 'column', maxWidth: '480px', width: '100%', margin: '0 auto', boxSizing: 'border-box', overflowY: 'auto', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
-          <div style={{ flexShrink: 0, padding: '16px 16px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <h2 style={{ fontSize: '18px', fontWeight: '600', margin: 0, color: 'var(--text)' }}>外部</h2>
-            <button style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: 'var(--text-muted)', lineHeight: 1 }} onClick={() => setShowMore(false)}>✕</button>
-          </div>
-          <div style={{ flex: 1, overflowY: 'auto', padding: '16px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <>
+          <div
+            onClick={() => setShowMore(false)}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000 }}
+          />
+          <div style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '480px', background: '#fff', borderRadius: '16px 16px 0 0', padding: '20px 16px', paddingBottom: 'calc(20px + env(safe-area-inset-bottom))', zIndex: 1001, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <button
               onClick={() => { setShowMore(false); onImportClick(); }}
-              style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', boxSizing: 'border-box', minWidth: 0, padding: '14px 16px', background: 'var(--surface2)', border: 'none', borderRadius: '12px', fontSize: '15px', color: 'var(--text)', cursor: 'pointer', textAlign: 'left' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', boxSizing: 'border-box', padding: '14px 16px', background: 'var(--surface2)', border: 'none', borderRadius: '12px', fontSize: '15px', color: 'var(--text)', cursor: 'pointer', textAlign: 'left' }}
             >
               <Upload size={18} />インポート
             </button>
             <button
               onClick={() => { setShowMore(false); handleShare(); }}
               disabled={waypoints.length < 2}
-              style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', boxSizing: 'border-box', minWidth: 0, padding: '14px 16px', background: 'var(--surface2)', border: 'none', borderRadius: '12px', fontSize: '15px', color: 'var(--text)', cursor: 'pointer', textAlign: 'left', opacity: waypoints.length < 2 ? 0.4 : 1 }}
+              style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', boxSizing: 'border-box', padding: '14px 16px', background: 'var(--surface2)', border: 'none', borderRadius: '12px', fontSize: '15px', color: 'var(--text)', cursor: 'pointer', textAlign: 'left', opacity: waypoints.length < 2 ? 0.4 : 1 }}
             >
               <Share2 size={18} />{copied ? 'コピー済み' : 'シェア'}
             </button>
           </div>
-          <div style={{ flexShrink: 0, padding: '16px', paddingBottom: 'calc(16px + env(safe-area-inset-bottom))', boxSizing: 'border-box' }} />
-        </div>
+        </>
       )}
 
       {/* History modal */}
