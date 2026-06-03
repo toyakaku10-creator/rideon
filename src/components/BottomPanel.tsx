@@ -404,11 +404,11 @@ export default function BottomPanel({
                 {showDataMenu && (
                   <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                     <label style={subBtnStyle}>
-                      <Download size={20} color="#D4AF37" /><span>読込み</span>
+                      <Download size={20} color="#D4AF37" /><span>マイルート読込み</span>
                       <input ref={fileInputRef} type="file" accept=".json" onChange={handleImportFile} style={{ display: 'none' }} />
                     </label>
                     <button onClick={handleExport} disabled={savedRoutes.length === 0} style={{ ...subBtnStyle, opacity: savedRoutes.length === 0 ? 0.4 : 1 }}>
-                      <Upload size={20} color="#D4AF37" /><span>書出し</span>
+                      <Upload size={20} color="#D4AF37" /><span>マイルート書出し</span>
                     </button>
                   </div>
                 )}
