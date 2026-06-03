@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Undo2, Save, Trash2, Share2, Upload, Flag, Ruler, Road, Pencil, Check } from 'lucide-react';
+import { Undo2, Save, Trash2, Share2, Upload, Download, FolderOpen, Flag, Ruler, Road, Pencil, Check } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
 import { encodeRoute } from '@/lib/routeShare';
 import ElevationChart from '@/components/ElevationChart';
@@ -376,12 +376,37 @@ export default function BottomPanel({
 
       {/* History modal */}
       {showHistory && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#ffffff', zIndex: 2000, display: 'flex', flexDirection: 'column', maxWidth: '480px', width: '100%', margin: '0 auto', boxSizing: 'border-box', overflowY: 'auto', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
-          <div style={{ flexShrink: 0, padding: '16px 16px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border)', paddingBottom: '16px' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#ffffff', zIndex: 2000, display: 'flex', flexDirection: 'column', maxWidth: '480px', width: '100%', margin: '0 auto', boxSizing: 'border-box' } as React.CSSProperties}>
+          {/* Header */}
+          <div style={{ flexShrink: 0, padding: '16px 16px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '12px' }}>
             <h2 style={{ fontSize: '18px', fontWeight: '600', margin: 0, color: 'var(--text)' }}>マイルート</h2>
             <button style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: 'var(--text-muted)', lineHeight: 1 }} onClick={() => setShowHistory(false)}>✕</button>
           </div>
-          <div style={{ flex: 1, overflowY: 'auto', boxSizing: 'border-box' }}>
+
+          {/* Action buttons */}
+          {(() => {
+            const btnStyle: React.CSSProperties = { flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '10px 4px', background: '#f5f5f5', border: '1px solid #eee', borderRadius: '10px', cursor: 'pointer', fontSize: '10px', color: '#333' };
+            return (
+              <div style={{ flexShrink: 0, display: 'flex', gap: '8px', padding: '0 16px 12px', borderBottom: '1px solid #eee' }}>
+                <button onClick={() => { setShowHistory(false); onImportClick(); }} style={btnStyle}>
+                  <Upload size={20} /><span>キョリ測</span>
+                </button>
+                <button onClick={handleShare} disabled={waypoints.length < 2} style={{ ...btnStyle, opacity: waypoints.length < 2 ? 0.4 : 1 }}>
+                  <Share2 size={20} /><span>{copied ? 'コピー済み' : 'シェア'}</span>
+                </button>
+                <button onClick={handleExport} disabled={savedRoutes.length === 0} style={{ ...btnStyle, opacity: savedRoutes.length === 0 ? 0.4 : 1 }}>
+                  <Download size={20} /><span>書出し</span>
+                </button>
+                <label style={btnStyle}>
+                  <FolderOpen size={20} /><span>読込み</span>
+                  <input ref={fileInputRef} type="file" accept=".json" onChange={handleImportFile} style={{ display: 'none' }} />
+                </label>
+              </div>
+            );
+          })()}
+
+          {/* Route list */}
+          <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', boxSizing: 'border-box' } as React.CSSProperties}>
             {savedRoutes.length === 0 ? (
               <p style={{ color: 'var(--text-muted)', fontSize: '14px', textAlign: 'center', padding: '40px 16px' }}>
                 保存済みルートはありません
@@ -397,38 +422,6 @@ export default function BottomPanel({
                 />
               ))
             )}
-            {/* 外部連携セクション */}
-            <div style={{ padding: '16px 16px 0' }}>
-              <p style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)', margin: '0 0 10px', letterSpacing: '0.05em' }}>外部連携</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <button
-                  onClick={() => { setShowHistory(false); onImportClick(); }}
-                  style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '13px 16px', background: 'var(--surface2)', border: 'none', borderRadius: '12px', fontSize: '14px', color: 'var(--text)', cursor: 'pointer', textAlign: 'left', boxSizing: 'border-box' }}
-                >
-                  <Upload size={16} />キョリ測からインポート
-                </button>
-                <button
-                  onClick={handleShare}
-                  disabled={waypoints.length < 2}
-                  style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '13px 16px', background: 'var(--surface2)', border: 'none', borderRadius: '12px', fontSize: '14px', color: 'var(--text)', cursor: 'pointer', textAlign: 'left', boxSizing: 'border-box', opacity: waypoints.length < 2 ? 0.4 : 1 }}
-                >
-                  <Share2 size={16} />{copied ? 'コピー済み' : 'シェア'}
-                </button>
-                <button
-                  onClick={handleExport}
-                  disabled={savedRoutes.length === 0}
-                  style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '13px 16px', background: 'var(--surface2)', border: 'none', borderRadius: '12px', fontSize: '14px', color: 'var(--text)', cursor: 'pointer', textAlign: 'left', boxSizing: 'border-box', opacity: savedRoutes.length === 0 ? 0.4 : 1 }}
-                >
-                  <Upload size={16} />JSONエクスポート
-                </button>
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '13px 16px', background: 'var(--surface2)', border: 'none', borderRadius: '12px', fontSize: '14px', color: 'var(--text)', cursor: 'pointer', textAlign: 'left', boxSizing: 'border-box' }}
-                >
-                  <Upload size={16} />JSONインポート
-                </button>
-              </div>
-            </div>
             <div style={{ height: 'calc(20px + env(safe-area-inset-bottom))' }} />
           </div>
         </div>
