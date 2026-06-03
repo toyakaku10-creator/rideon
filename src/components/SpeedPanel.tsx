@@ -28,10 +28,12 @@ export default function SpeedPanel({
   rideDistance = 0,
 }: SpeedPanelProps) {
   const [showMax, setShowMax] = useState(false);
+  const [showRemaining, setShowRemaining] = useState(false);
   const displaySpeed = currentSpeed > 3 ? currentSpeed : 0;
   const subSpeed = showMax ? maxSpeed : avgSpeed;
   const subLabel = showMax ? '最高' : '平均';
-  const rideKm = (rideDistance / 1000).toFixed(2);
+  const rideKm = rideDistance / 1000;
+  const remainingKm = Math.max(0, navTotalDistance / 1000 - rideKm);
 
   return (
     <div
@@ -68,10 +70,17 @@ export default function SpeedPanel({
             <div style={{ fontSize: '13px', color: '#888' }}>km/h</div>
           </div>
 
-          {/* 走行距離 */}
-          <div style={{ flex: 1, textAlign: 'center' }}>
-            <div style={{ fontSize: '11px', color: '#888', marginBottom: '4px' }}>距離</div>
-            <div style={{ fontSize: '20px', fontWeight: '700' }}>{rideKm}</div>
+          {/* 走行距離⇔残距離（タップ切替） */}
+          <div
+            style={{ flex: 1, textAlign: 'center', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' } as React.CSSProperties}
+            onClick={() => setShowRemaining((prev) => !prev)}
+          >
+            <div style={{ fontSize: '11px', color: '#888', marginBottom: '4px' }}>
+              {showRemaining ? '残距離' : '走行距離'}
+            </div>
+            <div style={{ fontSize: '20px', fontWeight: '700' }}>
+              {showRemaining ? remainingKm.toFixed(2) : rideKm.toFixed(2)}
+            </div>
             <div style={{ fontSize: '10px', color: '#888' }}>km</div>
           </div>
         </div>
