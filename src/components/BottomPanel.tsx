@@ -285,7 +285,6 @@ export default function BottomPanel({
           <span className="text-[var(--text)] font-semibold tabular-nums">
             {formatDistance(totalDistance)}
           </span>
-          <span className="text-[var(--text-muted)]">{waypoints.length}ポイント</span>
           <span className="text-[var(--text-muted)]">
             目安{' '}
             {totalDistance > 0 ? formatTime(totalDistance, speedKmh) : '--'}
