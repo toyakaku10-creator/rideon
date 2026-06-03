@@ -161,6 +161,7 @@ interface BottomPanelProps {
   onLoadRoute: (route: SavedRoute) => void;
   onDeleteRoute: (id: string) => void;
   onRenameRoute: (id: string, newName: string) => void;
+  onImportRoutes: (imported: SavedRoute[]) => void;
   onImportClick: () => void;
   isImported: boolean;
   elevations?: number[];
@@ -183,6 +184,7 @@ export default function BottomPanel({
   onLoadRoute,
   onDeleteRoute,
   onRenameRoute,
+  onImportRoutes,
   onImportClick,
   isImported,
   elevations = [],
@@ -190,6 +192,7 @@ export default function BottomPanel({
 }: BottomPanelProps) {
   const [showHistory, setShowHistory] = useState(false);
   const [showMore, setShowMore] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [showSaveSheet, setShowSaveSheet] = useState(false);
   const [routeName, setRouteName] = useState('');
   const [copied, setCopied] = useState(false);
@@ -218,6 +221,33 @@ export default function BottomPanel({
     } catch {
       // user cancelled or clipboard unavailable
     }
+  };
+
+  const handleExport = () => {
+    const json = JSON.stringify(savedRoutes, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `rideon-routes-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const imported = JSON.parse(ev.target?.result as string) as SavedRoute[];
+        onImportRoutes(imported);
+      } catch {
+        alert('ファイルの形式が正しくありません');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
   };
 
   const speedKmh = ROUTE_SPEED[routeType];
@@ -379,9 +409,23 @@ export default function BottomPanel({
       {/* History modal */}
       {showHistory && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#ffffff', zIndex: 2000, display: 'flex', flexDirection: 'column', maxWidth: '480px', width: '100%', margin: '0 auto', boxSizing: 'border-box', overflowY: 'auto', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
-          <div style={{ flexShrink: 0, padding: '16px 16px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border)', paddingBottom: '16px' }}>
-            <h2 style={{ fontSize: '18px', fontWeight: '600', margin: 0, color: 'var(--text)' }}>マイルート</h2>
-            <button style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: 'var(--text-muted)', lineHeight: 1 }} onClick={() => setShowHistory(false)}>✕</button>
+          <div style={{ flexShrink: 0, padding: '16px 16px 0', borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+              <h2 style={{ fontSize: '18px', fontWeight: '600', margin: 0, color: 'var(--text)' }}>マイルート</h2>
+              <button style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: 'var(--text-muted)', lineHeight: 1 }} onClick={() => setShowHistory(false)}>✕</button>
+            </div>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                onClick={handleExport}
+                disabled={savedRoutes.length === 0}
+                style={{ flex: 1, padding: '8px', background: 'var(--surface2)', border: 'none', borderRadius: '8px', fontSize: '13px', color: 'var(--text)', cursor: 'pointer', opacity: savedRoutes.length === 0 ? 0.4 : 1 }}
+              >エクスポート</button>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                style={{ flex: 1, padding: '8px', background: 'var(--surface2)', border: 'none', borderRadius: '8px', fontSize: '13px', color: 'var(--text)', cursor: 'pointer' }}
+              >インポート</button>
+              <input ref={fileInputRef} type="file" accept=".json" style={{ display: 'none' }} onChange={handleImportFile} />
+            </div>
           </div>
           <div style={{ flex: 1, overflowY: 'auto', boxSizing: 'border-box' }}>
             {savedRoutes.length === 0 ? (
