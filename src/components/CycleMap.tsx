@@ -43,7 +43,7 @@ function makePositionIcon(heading: number | null): google.maps.Icon {
       anchor: new google.maps.Point(size / 2, size / 2),
     };
   } else {
-    const size = 16;
+    const size = 18;
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="#4285F4" stroke-width="2" stroke-linecap="round">
       <circle cx="12" cy="12" r="10"/>
       <circle cx="12" cy="12" r="3"/>
