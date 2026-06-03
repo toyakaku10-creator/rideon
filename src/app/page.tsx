@@ -353,6 +353,10 @@ export default function Home() {
       setElevations(route.elevations);
     }
     // else: segments change will trigger the elevation fetch effect
+    const loadedPoints = route.segments.flatMap((s) => s.geometry);
+    if (loadedPoints.length > 0) {
+      setFitBoundsPoints(loadedPoints);
+    }
   }, []);
 
   const handleDeleteRoute = useCallback(
