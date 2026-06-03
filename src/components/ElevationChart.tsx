@@ -45,7 +45,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
       <div
         onTouchStart={handleTouch}
         onTouchMove={handleTouch}
-        style={{ touchAction: 'none' }}
+        style={{ touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none' } as React.CSSProperties}
       >
       <ResponsiveContainer width="100%" height={72}>
         <AreaChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
