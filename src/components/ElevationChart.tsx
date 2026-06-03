@@ -22,27 +22,13 @@ export default function ElevationChart({ elevations, totalDistance }: ElevationC
     elev: Math.round(elev),
   }));
 
-  const maxElev = Math.max(...elevations);
   const minElev = Math.min(...elevations);
-
-  let gain = 0;
-  for (let i = 1; i < elevations.length; i++) {
-    const diff = elevations[i] - elevations[i - 1];
-    if (diff > 0) gain += diff;
-  }
-
+  const maxElev = Math.max(...elevations);
   const yMin = Math.floor(minElev / 10) * 10;
   const yMax = Math.ceil(maxElev / 10) * 10;
 
   return (
     <div className="mt-2 mb-1">
-      {/* Stats */}
-      <div className="flex justify-around text-xs text-[var(--text-muted)] mb-1.5">
-        <span>↑ 最高 <span className="text-[var(--text)] font-semibold">{Math.round(maxElev)}m</span></span>
-        <span>↓ 最低 <span className="text-[var(--text)] font-semibold">{Math.round(minElev)}m</span></span>
-        <span>▲ 獲得 <span className="text-[var(--text)] font-semibold">{Math.round(gain)}m</span></span>
-      </div>
-
       {/* Chart */}
       <ResponsiveContainer width="100%" height={60}>
         <AreaChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
