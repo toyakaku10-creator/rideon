@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Undo2, Save, Trash2, Share2, Upload, Download, MapPin, Flag, Ruler, Road, Pencil, Check } from 'lucide-react';
+import { Undo2, Save, Trash2, Share2, Upload, Download, MapPinPlus, Flag, Ruler, Road, Pencil, Check } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
 import { encodeRoute } from '@/lib/routeShare';
 import ElevationChart from '@/components/ElevationChart';
@@ -392,7 +392,7 @@ export default function BottomPanel({
                   <Share2 size={20} color="#D4AF37" /><span>{copied ? 'コピー済み' : 'シェア'}</span>
                 </button>
                 <button onClick={() => { setShowHistory(false); onImportClick(); }} style={btnStyle}>
-                  <MapPin size={20} color="#D4AF37" /><span>キョリ測</span><span>取込み</span>
+                  <MapPinPlus size={20} color="#D4AF37" /><span>キョリ測</span><span>取込み</span>
                 </button>
                 <label style={btnStyle}>
                   <Download size={20} color="#D4AF37" /><span>読込み</span>
