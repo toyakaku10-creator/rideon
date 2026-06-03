@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Undo2, Save, Trash2, Share2, Download, FolderOpen, Flag, Ruler, Road, Pencil, Check } from 'lucide-react';
+import { Undo2, Save, Trash2, Share2, Upload, Download, MapPin, Flag, Ruler, Road, Pencil, Check } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
 import { encodeRoute } from '@/lib/routeShare';
 import ElevationChart from '@/components/ElevationChart';
@@ -389,16 +389,16 @@ export default function BottomPanel({
             return (
               <div style={{ flexShrink: 0, display: 'flex', gap: '8px', padding: '0 16px 12px', borderBottom: '1px solid #eee' }}>
                 <button onClick={() => { setShowHistory(false); onImportClick(); }} style={btnStyle}>
-                  <Download size={20} /><span>キョリ測</span>
+                  <MapPin size={20} /><span>キョリ測</span>
                 </button>
                 <button onClick={handleShare} disabled={waypoints.length < 2} style={{ ...btnStyle, opacity: waypoints.length < 2 ? 0.4 : 1 }}>
                   <Share2 size={20} /><span>{copied ? 'コピー済み' : 'シェア'}</span>
                 </button>
                 <button onClick={handleExport} disabled={savedRoutes.length === 0} style={{ ...btnStyle, opacity: savedRoutes.length === 0 ? 0.4 : 1 }}>
-                  <Download size={20} /><span>書出し</span>
+                  <Upload size={20} /><span>書出し</span>
                 </button>
                 <label style={btnStyle}>
-                  <FolderOpen size={20} /><span>読込み</span>
+                  <Download size={20} /><span>読込み</span>
                   <input ref={fileInputRef} type="file" accept=".json" onChange={handleImportFile} style={{ display: 'none' }} />
                 </label>
               </div>
