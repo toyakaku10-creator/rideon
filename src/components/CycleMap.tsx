@@ -44,7 +44,7 @@ function makePositionIcon(heading: number | null): google.maps.Icon {
     };
   } else {
     const size = 18;
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="#4285F4" stroke-width="2" stroke-linecap="round">
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="${size}" height="${size}" fill="rgba(66, 133, 244, 0.2)" stroke="#4285F4" stroke-width="2" stroke-linecap="round">
       <circle cx="12" cy="12" r="10"/>
       <circle cx="12" cy="12" r="3"/>
       <line x1="12" y1="2" x2="12" y2="9"/>
