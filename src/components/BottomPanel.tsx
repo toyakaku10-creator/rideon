@@ -392,7 +392,7 @@ export default function BottomPanel({
                   <Share2 size={20} color="#D4AF37" /><span>{copied ? 'コピー済み' : 'シェア'}</span>
                 </button>
                 <button onClick={() => { setShowHistory(false); onImportClick(); }} style={btnStyle}>
-                  <MapPin size={20} color="#D4AF37" /><span>キョリ測</span>
+                  <MapPin size={20} color="#D4AF37" /><span>キョリ測</span><span>取込み</span>
                 </button>
                 <label style={btnStyle}>
                   <Download size={20} color="#D4AF37" /><span>読込み</span>
