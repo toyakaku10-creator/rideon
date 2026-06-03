@@ -29,23 +29,35 @@ function makeLabelIcon(label: string, bg: string, size = 28): google.maps.Icon {
 }
 
 function makePositionIcon(heading: number | null): google.maps.Icon {
-  const size = 15;
-  const rotate = heading != null ? `transform="rotate(${heading}, 12, 12)"` : '';
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="#4285F4" stroke-width="2" stroke-linecap="round">
-    <g ${rotate}>
+  const hasHeading = heading != null && !isNaN(heading);
+  if (hasHeading) {
+    const size = 20;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="${size}" height="${size}" fill="#4285F4">
+      <g transform="rotate(${heading}, 12, 12)">
+        <polygon points="12,2 20,20 12,16 4,20"/>
+      </g>
+    </svg>`;
+    return {
+      url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
+      scaledSize: new google.maps.Size(size, size),
+      anchor: new google.maps.Point(size / 2, size / 2),
+    };
+  } else {
+    const size = 15;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="#4285F4" stroke-width="2" stroke-linecap="round">
       <circle cx="12" cy="12" r="10"/>
       <circle cx="12" cy="12" r="3"/>
       <line x1="12" y1="2" x2="12" y2="9"/>
       <line x1="12" y1="15" x2="12" y2="22"/>
       <line x1="2" y1="12" x2="9" y2="12"/>
       <line x1="15" y1="12" x2="22" y2="12"/>
-    </g>
-  </svg>`;
-  return {
-    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
-    scaledSize: new google.maps.Size(size, size),
-    anchor: new google.maps.Point(size / 2, size / 2),
-  };
+    </svg>`;
+    return {
+      url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
+      scaledSize: new google.maps.Size(size, size),
+      anchor: new google.maps.Point(size / 2, size / 2),
+    };
+  }
 }
 
 function makeElevationMarkerIcon(): google.maps.Icon {
