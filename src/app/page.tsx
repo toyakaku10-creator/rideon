@@ -437,7 +437,7 @@ export default function Home() {
         <div className="flex items-center justify-between px-4 h-full" style={{ maxWidth: '480px', margin: '0 auto' }}>
           <span className="text-[var(--accent)] text-xl flex items-center gap-1.5" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 700 }}>
             <Bike size={20} />
-            cycle-map
+            RideOn
           </span>
           <div className="flex gap-1">
             {(

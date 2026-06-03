@@ -1,6 +1,6 @@
 {
-  "name": "cycle-map",
-  "short_name": "cycle-map",
+  "name": "RideOn",
+  "short_name": "RideOn",
   "description": "自転車ルート計測・速度アプリ",
   "start_url": "/",
   "display": "standalone",

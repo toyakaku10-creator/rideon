@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'cycle-map',
+  title: 'RideOn',
   description: '自転車ルート計測アプリ',
 };
 
@@ -20,7 +20,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#D4AF37" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="cycle-map" />
+        <meta name="apple-mobile-web-app-title" content="RideOn" />
       </head>
       <body>{children}</body>
     </html>
