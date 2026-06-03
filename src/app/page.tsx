@@ -97,6 +97,7 @@ export default function Home() {
   const [speedSum, setSpeedSum] = useState(0);
   const [speedCount, setSpeedCount] = useState(0);
   const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
+  const [heading, setHeading] = useState<number | null>(null);
 
   // Center map on device location at startup
   useEffect(() => {
@@ -222,11 +223,12 @@ export default function Home() {
     if (tab !== 'speed') return;
     const watchId = navigator.geolocation.watchPosition(
       (pos) => {
-        const { latitude, longitude, speed, accuracy } = pos.coords;
+        const { latitude, longitude, speed, accuracy, heading: h } = pos.coords;
         const kmh = speed != null ? speed * 3.6 : 0;
         setCurrentPosition({ lat: latitude, lng: longitude });
         setCurrentSpeed(kmh);
         setGpsAccuracy(accuracy);
+        setHeading(h != null && !isNaN(h) ? h : null);
         if (kmh > 3) {
           setMaxSpeed((prev) => Math.max(prev, kmh));
           setSpeedSum((prev) => prev + kmh);
@@ -450,6 +452,7 @@ export default function Home() {
           onStartPointDragged={handleStartPointDragged}
           navSegments={navRoute?.segments}
           rideMode={tab === 'speed'}
+          heading={heading}
         />
         {tab === 'speed' && navInstruction && (
           <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[900] bg-[#D4AF37] text-white text-sm font-bold px-5 py-2 rounded-full shadow-lg pointer-events-none">

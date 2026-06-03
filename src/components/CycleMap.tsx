@@ -5,7 +5,6 @@ import {
   GoogleMap,
   Marker,
   Polyline,
-  Circle,
   useJsApiLoader,
   type Libraries,
 } from '@react-google-maps/api';
@@ -21,6 +20,31 @@ function makeLabelIcon(label: string, bg: string, size = 28): google.maps.Icon {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
     <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2 - 1}" fill="${bg}" stroke="white" stroke-width="2"/>
     <text x="${size / 2}" y="${size / 2 + 5}" text-anchor="middle" fill="white" font-size="13" font-weight="bold" font-family="sans-serif">${label}</text>
+  </svg>`;
+  return {
+    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
+    scaledSize: new google.maps.Size(size, size),
+    anchor: new google.maps.Point(size / 2, size / 2),
+  };
+}
+
+function makePositionIcon(heading: number | null): google.maps.Icon {
+  if (heading != null) {
+    const size = 28;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 28 28">
+      <g transform="rotate(${heading}, 14, 14)">
+        <polygon points="14,3 22,24 14,19 6,24" fill="#4285F4" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+      </g>
+    </svg>`;
+    return {
+      url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
+      scaledSize: new google.maps.Size(size, size),
+      anchor: new google.maps.Point(size / 2, size / 2),
+    };
+  }
+  const size = 20;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
+    <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2 - 2}" fill="#4285F4" stroke="white" stroke-width="3"/>
   </svg>`;
   return {
     url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
@@ -61,6 +85,7 @@ interface CycleMapProps {
   onStartPointDragged?: (deltaLat: number, deltaLng: number) => void;
   navSegments?: RouteSegment[];
   rideMode?: boolean;
+  heading?: number | null;
 }
 
 export default function CycleMap({
@@ -75,6 +100,7 @@ export default function CycleMap({
   onStartPointDragged,
   navSegments,
   rideMode,
+  heading = null,
 }: CycleMapProps) {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
@@ -105,7 +131,7 @@ export default function CycleMap({
   // Zoom in when switching to ride mode
   useEffect(() => {
     if (!map || !rideMode) return;
-    map.setZoom(16);
+    map.setZoom(17);
   }, [map, rideMode]);
 
   // Center / follow logic (mirrors Leaflet MapController behaviour)
@@ -227,19 +253,12 @@ export default function CycleMap({
         />
       ))}
 
-      {/* Current position circle (speed mode) */}
+      {/* Current position marker (speed mode) */}
       {tab === 'speed' && currentPosition && (
-        <Circle
-          center={{ lat: currentPosition.lat, lng: currentPosition.lng }}
-          radius={5}
-          options={{
-            fillColor: '#4090ff',
-            fillOpacity: 0.9,
-            strokeColor: '#ffffff',
-            strokeWeight: 2.5,
-            strokeOpacity: 1,
-            zIndex: 10,
-          }}
+        <Marker
+          position={{ lat: currentPosition.lat, lng: currentPosition.lng }}
+          icon={makePositionIcon(heading)}
+          zIndex={10}
         />
       )}
     </GoogleMap>
