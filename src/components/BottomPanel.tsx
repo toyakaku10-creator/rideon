@@ -388,19 +388,19 @@ export default function BottomPanel({
             const btnStyle: React.CSSProperties = { flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '10px 4px', background: '#f5f5f5', border: '1px solid #eee', borderRadius: '10px', cursor: 'pointer', fontSize: '10px', color: '#333' };
             return (
               <div style={{ flexShrink: 0, display: 'flex', gap: '8px', padding: '0 16px 12px', borderBottom: '1px solid #eee' }}>
-                <button onClick={() => { setShowHistory(false); onImportClick(); }} style={btnStyle}>
-                  <MapPin size={20} /><span>キョリ測</span>
-                </button>
                 <button onClick={handleShare} disabled={waypoints.length < 2} style={{ ...btnStyle, opacity: waypoints.length < 2 ? 0.4 : 1 }}>
                   <Share2 size={20} /><span>{copied ? 'コピー済み' : 'シェア'}</span>
                 </button>
-                <button onClick={handleExport} disabled={savedRoutes.length === 0} style={{ ...btnStyle, opacity: savedRoutes.length === 0 ? 0.4 : 1 }}>
-                  <Upload size={20} /><span>書出し</span>
+                <button onClick={() => { setShowHistory(false); onImportClick(); }} style={btnStyle}>
+                  <MapPin size={20} /><span>キョリ測</span>
                 </button>
                 <label style={btnStyle}>
                   <Download size={20} /><span>読込み</span>
                   <input ref={fileInputRef} type="file" accept=".json" onChange={handleImportFile} style={{ display: 'none' }} />
                 </label>
+                <button onClick={handleExport} disabled={savedRoutes.length === 0} style={{ ...btnStyle, opacity: savedRoutes.length === 0 ? 0.4 : 1 }}>
+                  <Upload size={20} /><span>書出し</span>
+                </button>
               </div>
             );
           })()}
