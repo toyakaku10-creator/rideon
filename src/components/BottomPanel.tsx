@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Road, Pencil, Check, Database } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
-import { encodeRoute } from '@/lib/routeShare';
 import ElevationChart from '@/components/ElevationChart';
 
 function formatDistance(meters: number): string {
@@ -208,19 +207,26 @@ export default function BottomPanel({
   }, [openSaveSheet]);
 
   const handleShare = async () => {
-    const encoded = encodeRoute(waypoints, segments, routeType);
-    const url = `${window.location.origin}${window.location.pathname}?route=${encodeURIComponent(encoded)}`;
+    const points = segments.flatMap((s) => s.geometry);
+    const shareData = { points, distance: totalDistance };
+    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(shareData))));
+    const longUrl = `${window.location.origin}/?route=${encoded}`;
+
+    let shareUrl = longUrl;
+    try {
+      const res = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`);
+      if (res.ok) shareUrl = await res.text();
+    } catch { /* network unavailable, fall back to long URL */ }
+
     try {
       if (navigator.share) {
-        await navigator.share({ title: 'cycle-map ルート', url });
+        await navigator.share({ title: 'RideOnルート', url: shareUrl });
       } else {
-        await navigator.clipboard.writeText(url);
+        await navigator.clipboard.writeText(shareUrl);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       }
-    } catch {
-      // user cancelled or clipboard unavailable
-    }
+    } catch { /* user cancelled */ }
   };
 
   const handleExport = () => {
