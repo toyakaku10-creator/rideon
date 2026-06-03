@@ -83,6 +83,7 @@ export default function Home() {
   const [elevations, setElevations] = useState<number[]>([]);
   const [navElevations, setNavElevations] = useState<number[]>([]);
   const [elevationIndex, setElevationIndex] = useState<number | null>(null);
+  const [navElevationIndex, setNavElevationIndex] = useState<number | null>(null);
 
   // Navigation
   const [navRoute, setNavRoute] = useState<SavedRoute | null>(null);
@@ -218,6 +219,22 @@ export default function Home() {
       .catch(() => { /* silent fail */ });
     return () => { cancelled = true; };
   }, [navRoute]);
+
+  // Update navElevationIndex when currentPosition changes (ride mode)
+  useEffect(() => {
+    if (!currentPosition || elevations.length < 2) { setNavElevationIndex(null); return; }
+    const allPoints = segments.flatMap((s) => s.geometry);
+    if (allPoints.length === 0) { setNavElevationIndex(null); return; }
+    // 最近傍ポイントを探す
+    let minDist = Infinity, minPtIdx = 0;
+    allPoints.forEach((p, i) => {
+      const d = Math.abs(p.lat - currentPosition.lat) + Math.abs(p.lng - currentPosition.lng);
+      if (d < minDist) { minDist = d; minPtIdx = i; }
+    });
+    // geometry index → elevation index に変換
+    const elevIdx = Math.round(minPtIdx / (allPoints.length - 1) * (elevations.length - 1));
+    setNavElevationIndex(elevIdx);
+  }, [currentPosition, segments, elevations]);
 
   // GPS speed tracking — only active in speed tab
   useEffect(() => {
@@ -521,6 +538,7 @@ export default function Home() {
           navRoute={navRoute}
           navElevations={elevations}
           navTotalDistance={totalDistance}
+          navElevationIndex={navElevationIndex ?? undefined}
         />
       )}
     </div>

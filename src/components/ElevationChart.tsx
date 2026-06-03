@@ -6,6 +6,7 @@ import {
   XAxis,
   YAxis,
   Tooltip,
+  ReferenceLine,
   ResponsiveContainer,
 } from 'recharts';
 
@@ -13,9 +14,10 @@ interface ElevationChartProps {
   elevations: number[];
   totalDistance: number; // meters
   onPositionChange?: (index: number) => void;
+  currentIndex?: number;
 }
 
-export default function ElevationChart({ elevations, totalDistance, onPositionChange }: ElevationChartProps) {
+export default function ElevationChart({ elevations, totalDistance, onPositionChange, currentIndex }: ElevationChartProps) {
   if (elevations.length < 2) return null;
 
   const handleTouch = (e: React.TouchEvent<HTMLDivElement>) => {
@@ -85,6 +87,14 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
             dot={false}
             isAnimationActive={false}
           />
+          {currentIndex != null && (
+            <ReferenceLine
+              x={data[Math.min(currentIndex, data.length - 1)]?.dist}
+              stroke="#D4AF37"
+              strokeWidth={2}
+              strokeDasharray="4 2"
+            />
+          )}
         </AreaChart>
       </ResponsiveContainer>
       </div>

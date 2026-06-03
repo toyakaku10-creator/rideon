@@ -12,6 +12,7 @@ interface SpeedPanelProps {
   navRoute: SavedRoute | null;
   navElevations?: number[];
   navTotalDistance?: number;
+  navElevationIndex?: number;
 }
 
 export default function SpeedPanel({
@@ -21,6 +22,7 @@ export default function SpeedPanel({
   navRoute,
   navElevations = [],
   navTotalDistance = 0,
+  navElevationIndex,
 }: SpeedPanelProps) {
   const displaySpeed = currentSpeed > 3 ? currentSpeed : 0;
 
@@ -67,7 +69,7 @@ export default function SpeedPanel({
         {/* Elevation chart for loaded route */}
         {navElevations.length >= 2 && (
           <div style={{ padding: '0 16px 8px' }}>
-            <ElevationChart elevations={navElevations} totalDistance={navTotalDistance} />
+            <ElevationChart elevations={navElevations} totalDistance={navTotalDistance} currentIndex={navElevationIndex} />
           </div>
         )}
       </div>
