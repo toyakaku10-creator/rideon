@@ -449,6 +449,7 @@ export default function Home() {
           fitBoundsPoints={fitBoundsPoints}
           onStartPointDragged={handleStartPointDragged}
           navSegments={navRoute?.segments}
+          rideMode={tab === 'speed'}
         />
         {tab === 'speed' && navInstruction && (
           <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[900] bg-[#D4AF37] text-white text-sm font-bold px-5 py-2 rounded-full shadow-lg pointer-events-none">

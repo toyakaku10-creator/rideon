@@ -60,6 +60,7 @@ interface CycleMapProps {
   fitBoundsPoints?: LatLng[] | null;
   onStartPointDragged?: (deltaLat: number, deltaLng: number) => void;
   navSegments?: RouteSegment[];
+  rideMode?: boolean;
 }
 
 export default function CycleMap({
@@ -73,6 +74,7 @@ export default function CycleMap({
   fitBoundsPoints,
   onStartPointDragged,
   navSegments,
+  rideMode,
 }: CycleMapProps) {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
@@ -99,6 +101,12 @@ export default function CycleMap({
     map.fitBounds(bounds, 50);
     initializedRef.current = true; // prevent subsequent center effect from overriding
   }, [map, fitBoundsPoints]);
+
+  // Zoom in when switching to ride mode
+  useEffect(() => {
+    if (!map || !rideMode) return;
+    map.setZoom(16);
+  }, [map, rideMode]);
 
   // Center / follow logic (mirrors Leaflet MapController behaviour)
   useEffect(() => {
@@ -223,7 +231,7 @@ export default function CycleMap({
       {tab === 'speed' && currentPosition && (
         <Circle
           center={{ lat: currentPosition.lat, lng: currentPosition.lng }}
-          radius={15}
+          radius={5}
           options={{
             fillColor: '#4090ff',
             fillOpacity: 0.9,
