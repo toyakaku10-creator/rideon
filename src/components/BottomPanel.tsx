@@ -208,6 +208,10 @@ export default function BottomPanel({
 
   const handleShare = async () => {
     const points = segments.flatMap((s) => s.geometry);
+    if (points.length < 2) {
+      alert('ルートを引いてからシェアしてください');
+      return;
+    }
     const shareData = { points, distance: totalDistance };
     const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(shareData))));
     const longUrl = `${window.location.origin}/?route=${encoded}`;
