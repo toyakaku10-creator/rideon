@@ -117,9 +117,9 @@ function SwipeableRouteItem({
               style={{ width: '100%', boxSizing: 'border-box', padding: '4px 8px', fontSize: '14px', border: '1px solid #D4AF37', borderRadius: '6px', outline: 'none', fontWeight: '500' }}
             />
           ) : (
-            <p className="text-[var(--text)] text-sm font-medium truncate">{route.name}</p>
+            <p className="text-[var(--text)] font-medium truncate" style={{ fontSize: '16px' }}>{route.name}</p>
           )}
-          <p className="text-[var(--text-muted)] text-xs mt-0.5">
+          <p className="text-[var(--text-muted)] mt-0.5" style={{ fontSize: '13px' }}>
             {formatDistance(route.totalDistance)} ·{' '}
             {route.waypoints.length}ポイント ·{' '}
             {new Date(route.createdAt).toLocaleDateString('ja-JP')}
