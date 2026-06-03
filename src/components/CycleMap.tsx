@@ -29,7 +29,7 @@ function makeLabelIcon(label: string, bg: string, size = 28): google.maps.Icon {
 }
 
 function makePositionIcon(heading: number | null): google.maps.Icon {
-  const size = 16;
+  const size = 12;
   const rotate = heading != null ? `transform="rotate(${heading}, 12, 12)"` : '';
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="#4285F4" stroke-width="2" stroke-linecap="round">
     <g ${rotate}>
