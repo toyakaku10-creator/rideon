@@ -539,7 +539,7 @@ export default function Home() {
       {isAdjustingImport && (
         <div style={{ background: '#fff9e6', borderTop: '1px solid #D4AF37', borderBottom: '1px solid #D4AF37', padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
           <span style={{ fontSize: '13px', fontWeight: '600', color: '#333' }}>
-            📍 スタート地点をドラッグして補正
+            スタート地点をドラッグして補正
           </span>
           <button
             onClick={handleImportSave}
