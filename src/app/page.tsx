@@ -129,13 +129,31 @@ export default function Home() {
     const params = new URLSearchParams(window.location.search);
     const encoded = params.get('route');
     if (!encoded) return;
+
+    // Try new format: btoa(JSON.stringify({ points, distance }))
+    try {
+      const json = JSON.parse(decodeURIComponent(escape(atob(encoded))));
+      if (json && Array.isArray(json.points) && json.points.length >= 2) {
+        const pts: LatLng[] = json.points.map((p: { lat: number; lng: number }) => ({ lat: p.lat, lng: p.lng }));
+        const segs: RouteSegment[] = pts.slice(1).map((to, i) => ({
+          from: pts[i], to, geometry: [pts[i], to],
+          distance: haversineDistance(pts[i], to), routeType: 'straight' as const,
+        }));
+        setWaypoints(pts);
+        setSegments(segs);
+        setFitBoundsPoints(pts);
+        return;
+      }
+    } catch { /* fall through to legacy format */ }
+
+    // Legacy format: encodeRoute
     const result = decodeRoute(encoded);
     if (!result) return;
     setWaypoints(result.waypoints);
     setSegments(result.segments);
     setRouteType(result.routeType);
     if (result.waypoints.length > 0) {
-      setInitialCenter(result.waypoints[0]);
+      setFitBoundsPoints(result.waypoints);
     }
   }, []);
 
