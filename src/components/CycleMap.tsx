@@ -60,22 +60,7 @@ function makePositionIcon(heading: number | null): google.maps.Icon {
   }
 }
 
-function makeElevationMarkerIcon(distanceLabel?: string): google.maps.Icon {
-  if (distanceLabel) {
-    const W = 56, labelH = 18, gap = 2, dotR = 5;
-    const dotY = labelH + gap + dotR;
-    const H = dotY + dotR;
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
-      <rect x="0" y="0" width="${W}" height="${labelH}" rx="8" fill="#D4AF37"/>
-      <text x="${W / 2}" y="${labelH - 4}" text-anchor="middle" fill="#000" font-size="11" font-weight="700" font-family="sans-serif">${distanceLabel}</text>
-      <circle cx="${W / 2}" cy="${dotY}" r="${dotR}" fill="#D4AF37" stroke="white" stroke-width="2"/>
-    </svg>`;
-    return {
-      url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
-      scaledSize: new google.maps.Size(W, H),
-      anchor: new google.maps.Point(W / 2, dotY),
-    };
-  }
+function makeElevationMarkerIcon(): google.maps.Icon {
   const size = 14;
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
     <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2 - 1}" fill="#D4AF37" stroke="white" stroke-width="2"/>
@@ -121,7 +106,6 @@ interface CycleMapProps {
   rideMode?: boolean;
   heading?: number | null;
   elevationMarkerPos?: LatLng;
-  elevationMarkerDistance?: string;
 }
 
 export default function CycleMap({
@@ -138,7 +122,6 @@ export default function CycleMap({
   rideMode,
   heading = null,
   elevationMarkerPos,
-  elevationMarkerDistance,
 }: CycleMapProps) {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
@@ -295,7 +278,7 @@ export default function CycleMap({
       {elevationMarkerPos && (
         <Marker
           position={{ lat: elevationMarkerPos.lat, lng: elevationMarkerPos.lng }}
-          icon={makeElevationMarkerIcon(elevationMarkerDistance)}
+          icon={makeElevationMarkerIcon()}
           zIndex={8}
         />
       )}
