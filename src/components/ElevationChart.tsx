@@ -93,6 +93,13 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
               stroke="#D4AF37"
               strokeWidth={2}
               strokeDasharray="4 2"
+              label={{
+                value: `${Math.round(elevations[Math.min(currentIndex, elevations.length - 1)])}m`,
+                fill: '#D4AF37',
+                fontSize: 11,
+                fontWeight: 'bold',
+                position: 'top',
+              }}
             />
           )}
         </AreaChart>
