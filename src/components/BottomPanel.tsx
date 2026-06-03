@@ -207,12 +207,14 @@ export default function BottomPanel({
   }, [openSaveSheet]);
 
   const handleShare = async () => {
-    const points = segments.flatMap((s) => s.geometry);
-    if (points.length < 2) {
+    const segPoints = segments.flatMap((s) => s.geometry);
+    console.log('share points:', segPoints?.length, 'waypoints:', waypoints?.length);
+    const sharePoints = segPoints.length >= 2 ? segPoints : waypoints;
+    if (sharePoints.length < 2) {
       alert('ルートを引いてからシェアしてください');
       return;
     }
-    const shareData = { points, distance: totalDistance };
+    const shareData = { points: sharePoints, distance: totalDistance };
     const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(shareData))));
     const longUrl = `${window.location.origin}/?route=${encoded}`;
 
