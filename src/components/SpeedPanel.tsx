@@ -76,7 +76,7 @@ export default function SpeedPanel({
             onClick={() => setShowRemaining((prev) => !prev)}
           >
             <div style={{ fontSize: '11px', color: '#888', marginBottom: '4px' }}>
-              {showRemaining ? '残距離' : '走行距離'}
+              {showRemaining ? '残り' : '走行距離'}
             </div>
             <div style={{ fontSize: '20px', fontWeight: '700' }}>
               {showRemaining ? remainingKm.toFixed(2) : rideKm.toFixed(2)}
