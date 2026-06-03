@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import type { SavedRoute } from '@/types';
 import ElevationChart from '@/components/ElevationChart';
 
@@ -13,6 +14,7 @@ interface SpeedPanelProps {
   navElevations?: number[];
   navTotalDistance?: number;
   navElevationIndex?: number;
+  rideDistance?: number; // meters
 }
 
 export default function SpeedPanel({
@@ -23,8 +25,13 @@ export default function SpeedPanel({
   navElevations = [],
   navTotalDistance = 0,
   navElevationIndex,
+  rideDistance = 0,
 }: SpeedPanelProps) {
+  const [showMax, setShowMax] = useState(false);
   const displaySpeed = currentSpeed > 3 ? currentSpeed : 0;
+  const subSpeed = showMax ? maxSpeed : avgSpeed;
+  const subLabel = showMax ? '最高' : '平均';
+  const rideKm = (rideDistance / 1000).toFixed(2);
 
   return (
     <div
@@ -43,12 +50,15 @@ export default function SpeedPanel({
           </div>
         )}
 
-        {/* Speed row: max / current / avg */}
+        {/* Speed row: sub / current / distance */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px' }}>
-          {/* 最高速度 */}
-          <div style={{ flex: 1, textAlign: 'center' }}>
-            <div style={{ fontSize: '11px', color: '#888', marginBottom: '4px' }}>最高</div>
-            <div style={{ fontSize: '20px', fontWeight: '700' }}>{maxSpeed.toFixed(1)}</div>
+          {/* 平均⇔最高（タップ切替） */}
+          <div
+            style={{ flex: 1, textAlign: 'center', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' } as React.CSSProperties}
+            onClick={() => setShowMax((prev) => !prev)}
+          >
+            <div style={{ fontSize: '11px', color: '#888', marginBottom: '4px' }}>{subLabel}</div>
+            <div style={{ fontSize: '20px', fontWeight: '700' }}>{subSpeed.toFixed(1)}</div>
             <div style={{ fontSize: '10px', color: '#888' }}>km/h</div>
           </div>
 
@@ -58,11 +68,11 @@ export default function SpeedPanel({
             <div style={{ fontSize: '13px', color: '#888' }}>km/h</div>
           </div>
 
-          {/* 平均速度 */}
+          {/* 走行距離 */}
           <div style={{ flex: 1, textAlign: 'center' }}>
-            <div style={{ fontSize: '11px', color: '#888', marginBottom: '4px' }}>平均</div>
-            <div style={{ fontSize: '20px', fontWeight: '700' }}>{avgSpeed.toFixed(1)}</div>
-            <div style={{ fontSize: '10px', color: '#888' }}>km/h</div>
+            <div style={{ fontSize: '11px', color: '#888', marginBottom: '4px' }}>距離</div>
+            <div style={{ fontSize: '20px', fontWeight: '700' }}>{rideKm}</div>
+            <div style={{ fontSize: '10px', color: '#888' }}>km</div>
           </div>
         </div>
 

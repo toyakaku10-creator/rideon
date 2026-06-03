@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Bike, Route } from 'lucide-react';
 import type { Tab, RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
@@ -100,6 +100,8 @@ export default function Home() {
   const [speedCount, setSpeedCount] = useState(0);
   const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
   const [heading, setHeading] = useState<number | null>(null);
+  const [rideDistance, setRideDistance] = useState(0);
+  const prevGpsPos = useRef<{ lat: number; lng: number } | null>(null);
 
   // Center map on device location at startup
   useEffect(() => {
@@ -239,11 +241,19 @@ export default function Home() {
   // GPS speed tracking — only active in speed tab
   useEffect(() => {
     if (tab !== 'speed') return;
+    prevGpsPos.current = null;
+    setRideDistance(0);
     const watchId = navigator.geolocation.watchPosition(
       (pos) => {
         const { latitude, longitude, speed, accuracy, heading: h } = pos.coords;
         const kmh = speed != null ? speed * 3.6 : 0;
-        setCurrentPosition({ lat: latitude, lng: longitude });
+        const cur = { lat: latitude, lng: longitude };
+        if (prevGpsPos.current) {
+          const d = haversineDistance(prevGpsPos.current, cur);
+          setRideDistance((prev) => prev + d);
+        }
+        prevGpsPos.current = cur;
+        setCurrentPosition(cur);
         setCurrentSpeed(kmh);
         setGpsAccuracy(accuracy);
         setHeading(h != null && !isNaN(h) ? h : null);
@@ -566,6 +576,7 @@ export default function Home() {
           navElevations={elevations}
           navTotalDistance={totalDistance}
           navElevationIndex={navElevationIndex ?? undefined}
+          rideDistance={rideDistance}
         />
       )}
     </div>
