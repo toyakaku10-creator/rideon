@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Undo2, Save, Trash2, Share2, Upload, Download, FolderOpen, Flag, Ruler, Road, Pencil, Check } from 'lucide-react';
+import { Undo2, Save, Trash2, Share2, Download, FolderOpen, Flag, Ruler, Road, Pencil, Check } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
 import { encodeRoute } from '@/lib/routeShare';
 import ElevationChart from '@/components/ElevationChart';
@@ -389,7 +389,7 @@ export default function BottomPanel({
             return (
               <div style={{ flexShrink: 0, display: 'flex', gap: '8px', padding: '0 16px 12px', borderBottom: '1px solid #eee' }}>
                 <button onClick={() => { setShowHistory(false); onImportClick(); }} style={btnStyle}>
-                  <Upload size={20} /><span>キョリ測</span>
+                  <Download size={20} /><span>キョリ測</span>
                 </button>
                 <button onClick={handleShare} disabled={waypoints.length < 2} style={{ ...btnStyle, opacity: waypoints.length < 2 ? 0.4 : 1 }}>
                   <Share2 size={20} /><span>{copied ? 'コピー済み' : 'シェア'}</span>
