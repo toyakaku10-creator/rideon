@@ -462,6 +462,12 @@ export default function Home() {
     return allPoints[Math.min(ptIndex, allPoints.length - 1)];
   })();
 
+  const elevationMarkerDistance = (() => {
+    if (elevationIndex === null || elevations.length < 2) return undefined;
+    const km = (elevationIndex / (elevations.length - 1)) * totalDistance / 1000;
+    return `${km.toFixed(2)}km`;
+  })();
+
 
   return (
     <div className="flex flex-col bg-[var(--bg)]" style={{ height: '100dvh' }}>
@@ -515,6 +521,7 @@ export default function Home() {
           rideMode={tab === 'speed'}
           heading={heading}
           elevationMarkerPos={elevationMarkerPos}
+          elevationMarkerDistance={elevationMarkerDistance}
         />
         {tab === 'speed' && navInstruction && (
           <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[900] bg-[#D4AF37] text-white text-sm font-bold px-5 py-2 rounded-full shadow-lg pointer-events-none">
