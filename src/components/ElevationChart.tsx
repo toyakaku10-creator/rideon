@@ -12,10 +12,20 @@ import {
 interface ElevationChartProps {
   elevations: number[];
   totalDistance: number; // meters
+  onPositionChange?: (index: number) => void;
 }
 
-export default function ElevationChart({ elevations, totalDistance }: ElevationChartProps) {
+export default function ElevationChart({ elevations, totalDistance, onPositionChange }: ElevationChartProps) {
   if (elevations.length < 2) return null;
+
+  const handleTouch = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!onPositionChange) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.touches[0].clientX - rect.left;
+    const ratio = Math.max(0, Math.min(1, x / rect.width));
+    const index = Math.floor(ratio * (elevations.length - 1));
+    onPositionChange(index);
+  };
 
   const data = elevations.map((elev, i) => ({
     dist: parseFloat(((i / (elevations.length - 1)) * totalDistance / 1000).toFixed(2)),
@@ -30,6 +40,11 @@ export default function ElevationChart({ elevations, totalDistance }: ElevationC
   return (
     <div className="mt-2 mb-1">
       {/* Chart */}
+      <div
+        onTouchStart={handleTouch}
+        onTouchMove={handleTouch}
+        style={{ touchAction: 'none' }}
+      >
       <ResponsiveContainer width="100%" height={60}>
         <AreaChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
           <defs>
@@ -72,6 +87,7 @@ export default function ElevationChart({ elevations, totalDistance }: ElevationC
           />
         </AreaChart>
       </ResponsiveContainer>
+      </div>
     </div>
   );
 }

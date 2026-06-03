@@ -48,6 +48,18 @@ function makePositionIcon(heading: number | null): google.maps.Icon {
   };
 }
 
+function makeElevationMarkerIcon(): google.maps.Icon {
+  const size = 14;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
+    <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2 - 1}" fill="#D4AF37" stroke="white" stroke-width="2"/>
+  </svg>`;
+  return {
+    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
+    scaledSize: new google.maps.Size(size, size),
+    anchor: new google.maps.Point(size / 2, size / 2),
+  };
+}
+
 function makeDotIcon(): google.maps.Icon {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14">
     <circle cx="7" cy="7" r="5" fill="#D4AF37" stroke="white" stroke-width="2"/>
@@ -81,6 +93,7 @@ interface CycleMapProps {
   navSegments?: RouteSegment[];
   rideMode?: boolean;
   heading?: number | null;
+  elevationMarkerPos?: LatLng;
 }
 
 export default function CycleMap({
@@ -96,6 +109,7 @@ export default function CycleMap({
   navSegments,
   rideMode,
   heading = null,
+  elevationMarkerPos,
 }: CycleMapProps) {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
@@ -247,6 +261,15 @@ export default function CycleMap({
           }}
         />
       ))}
+
+      {/* Elevation scrub marker */}
+      {elevationMarkerPos && (
+        <Marker
+          position={{ lat: elevationMarkerPos.lat, lng: elevationMarkerPos.lng }}
+          icon={makeElevationMarkerIcon()}
+          zIndex={8}
+        />
+      )}
 
       {/* Current position marker (speed mode) */}
       {tab === 'speed' && currentPosition && (

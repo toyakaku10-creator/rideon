@@ -82,6 +82,7 @@ export default function Home() {
   // Elevation
   const [elevations, setElevations] = useState<number[]>([]);
   const [navElevations, setNavElevations] = useState<number[]>([]);
+  const [elevationIndex, setElevationIndex] = useState<number | null>(null);
 
   // Navigation
   const [navRoute, setNavRoute] = useState<SavedRoute | null>(null);
@@ -401,6 +402,14 @@ export default function Home() {
     tab === 'speed' ? (currentPosition ?? initialCenter) : initialCenter;
   const mapFollow = tab === 'speed' && currentPosition !== null;
 
+  const elevationMarkerPos = (() => {
+    if (elevationIndex === null || elevations.length < 2) return undefined;
+    const allPoints = segments.flatMap((s) => s.geometry);
+    if (allPoints.length === 0) return undefined;
+    const ptIndex = Math.round(elevationIndex / (elevations.length - 1) * (allPoints.length - 1));
+    return allPoints[Math.min(ptIndex, allPoints.length - 1)];
+  })();
+
   return (
     <div className="flex flex-col bg-[var(--bg)]" style={{ height: '100dvh' }}>
       {/* Header */}
@@ -453,6 +462,7 @@ export default function Home() {
           navSegments={navRoute?.segments}
           rideMode={tab === 'speed'}
           heading={heading}
+          elevationMarkerPos={elevationMarkerPos}
         />
         {tab === 'speed' && navInstruction && (
           <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[900] bg-[#D4AF37] text-white text-sm font-bold px-5 py-2 rounded-full shadow-lg pointer-events-none">
@@ -499,6 +509,7 @@ export default function Home() {
           onImportClick={() => router.push('/import')}
           isImported={isImported}
           elevations={elevations}
+          onElevationPositionChange={setElevationIndex}
         />
       ) : (
         <SpeedPanel

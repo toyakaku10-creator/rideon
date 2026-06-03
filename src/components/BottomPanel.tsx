@@ -118,6 +118,7 @@ interface BottomPanelProps {
   onImportClick: () => void;
   isImported: boolean;
   elevations?: number[];
+  onElevationPositionChange?: (index: number) => void;
 }
 
 export default function BottomPanel({
@@ -138,6 +139,7 @@ export default function BottomPanel({
   onImportClick,
   isImported,
   elevations = [],
+  onElevationPositionChange,
 }: BottomPanelProps) {
   const [showHistory, setShowHistory] = useState(false);
   const [showMore, setShowMore] = useState(false);
@@ -216,7 +218,7 @@ export default function BottomPanel({
         {/* Elevation chart */}
         {elevations.length >= 2 && (
           <div className="px-4">
-            <ElevationChart elevations={elevations} totalDistance={totalDistance} />
+            <ElevationChart elevations={elevations} totalDistance={totalDistance} onPositionChange={onElevationPositionChange} />
           </div>
         )}
 
