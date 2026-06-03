@@ -466,8 +466,8 @@ export default function Home() {
           <div className="flex gap-1">
             {(
               [
-                { key: 'distance', label: 'ルート', icon: <Route size={14} /> },
-                { key: 'speed', label: 'ライド', icon: <Bike size={14} /> },
+                { key: 'distance', label: 'ルート', icon: <Route size={17} /> },
+                { key: 'speed', label: 'ライド', icon: <Bike size={17} /> },
               ] as { key: Tab; label: string; icon: React.ReactNode }[]
             ).map(({ key, label, icon }) => (
               <button
