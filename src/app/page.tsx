@@ -368,6 +368,15 @@ export default function Home() {
     [savedRoutes]
   );
 
+  const handleRenameRoute = useCallback(
+    (id: string, newName: string) => {
+      const updated = savedRoutes.map((r) => r.id === id ? { ...r, name: newName } : r);
+      setSavedRoutes(updated);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    },
+    [savedRoutes]
+  );
+
 
   const handleStartPointDragged = useCallback((deltaLat: number, deltaLng: number) => {
     setWaypoints((prev) => prev.map((wp) => ({ lat: wp.lat + deltaLat, lng: wp.lng + deltaLng })));
@@ -527,6 +536,7 @@ export default function Home() {
           savedRoutes={savedRoutes}
           onLoadRoute={handleLoadRoute}
           onDeleteRoute={handleDeleteRoute}
+          onRenameRoute={handleRenameRoute}
           onImportClick={() => router.push('/import')}
           isImported={isImported}
           elevations={elevations}

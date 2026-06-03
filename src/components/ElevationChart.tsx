@@ -47,7 +47,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
         onTouchMove={handleTouch}
         style={{ touchAction: 'none' }}
       >
-      <ResponsiveContainer width="100%" height={60}>
+      <ResponsiveContainer width="100%" height={72}>
         <AreaChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
           <defs>
             <linearGradient id="elevGradient" x1="0" y1="0" x2="0" y2="1">

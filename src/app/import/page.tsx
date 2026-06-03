@@ -47,25 +47,23 @@ export default function ImportPage() {
       </div>
 
       {/* Body */}
-      <div style={{ flex: 1, padding: '24px 16px 16px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
-        <p style={{ fontSize: '13px', color: '#666', margin: '0 0 8px' }}>キョリ測のURL</p>
-        <input
-          type="url"
-          value={url}
-          onChange={(e) => { setUrl(e.target.value); setError(''); }}
-          onKeyDown={(e) => e.key === 'Enter' && handleConfirm()}
-          placeholder="https://www.mapion.co.jp/m/route/..."
-          disabled={loading}
-          autoFocus
-          style={{ display: 'block', width: '100%', boxSizing: 'border-box', padding: '12px', fontSize: '16px', border: '1px solid #ddd', borderRadius: '10px', outline: 'none', WebkitAppearance: 'none' } as React.CSSProperties}
-        />
-        {error && (
-          <p style={{ color: '#E53935', fontSize: '13px', margin: '10px 0 0' }}>{error}</p>
-        )}
-      </div>
-
-      {/* Footer */}
-      <div style={{ flexShrink: 0, padding: '16px', paddingBottom: 'calc(16px + env(safe-area-inset-bottom))', boxSizing: 'border-box' }}>
+      <div style={{ flex: 1, padding: '24px 16px 16px', paddingBottom: 'calc(16px + env(safe-area-inset-bottom))', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div>
+          <p style={{ fontSize: '13px', color: '#666', margin: '0 0 8px' }}>キョリ測のURL</p>
+          <input
+            type="url"
+            value={url}
+            onChange={(e) => { setUrl(e.target.value); setError(''); }}
+            onKeyDown={(e) => e.key === 'Enter' && handleConfirm()}
+            placeholder="https://www.mapion.co.jp/m/route/..."
+            disabled={loading}
+            autoFocus
+            style={{ display: 'block', width: '100%', boxSizing: 'border-box', padding: '12px', fontSize: '16px', border: '1px solid #ddd', borderRadius: '10px', outline: 'none', WebkitAppearance: 'none' } as React.CSSProperties}
+          />
+          {error && (
+            <p style={{ color: '#E53935', fontSize: '13px', margin: '8px 0 0' }}>{error}</p>
+          )}
+        </div>
         <button
           onClick={handleConfirm}
           disabled={!url.trim() || loading}

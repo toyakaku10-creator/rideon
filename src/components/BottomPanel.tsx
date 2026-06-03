@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Undo2, Save, Trash2, Share2, Upload, MoreHorizontal, Flag, Ruler, Road } from 'lucide-react';
+import { Undo2, Save, Trash2, Share2, Upload, MoreHorizontal, Flag, Ruler, Road, Pencil, Check } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
 import { encodeRoute } from '@/lib/routeShare';
 import ElevationChart from '@/components/ElevationChart';
@@ -35,13 +35,18 @@ function SwipeableRouteItem({
   route,
   onLoad,
   onDelete,
+  onRename,
 }: {
   route: SavedRoute;
   onLoad: () => void;
   onDelete: () => void;
+  onRename: (newName: string) => void;
 }) {
   const [offset, setOffset] = useState(0);
+  const [editing, setEditing] = useState(false);
+  const [editName, setEditName] = useState(route.name);
   const startXRef = useRef<number | null>(null);
+  const editInputRef = useRef<HTMLInputElement>(null);
   const revealed = offset <= -80;
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
@@ -65,6 +70,19 @@ function SwipeableRouteItem({
     setOffset(offset <= -40 ? -80 : 0);
   }, [offset]);
 
+  const startEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditName(route.name);
+    setEditing(true);
+    setTimeout(() => editInputRef.current?.focus(), 50);
+  };
+
+  const commitEdit = () => {
+    const trimmed = editName.trim();
+    if (trimmed && trimmed !== route.name) onRename(trimmed);
+    setEditing(false);
+  };
+
   return (
     <div className="relative overflow-hidden border-b border-[var(--border)]">
       {/* Delete button */}
@@ -85,16 +103,43 @@ function SwipeableRouteItem({
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        onClick={() => { if (!revealed) onLoad(); }}
+        onClick={() => { if (!revealed && !editing) onLoad(); }}
       >
         <div className="flex-1 min-w-0">
-          <p className="text-[var(--text)] text-sm font-medium truncate">{route.name}</p>
+          {editing ? (
+            <input
+              ref={editInputRef}
+              type="text"
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') commitEdit(); if (e.key === 'Escape') setEditing(false); }}
+              onClick={(e) => e.stopPropagation()}
+              style={{ width: '100%', boxSizing: 'border-box', padding: '4px 8px', fontSize: '14px', border: '1px solid #D4AF37', borderRadius: '6px', outline: 'none', fontWeight: '500' }}
+            />
+          ) : (
+            <p className="text-[var(--text)] text-sm font-medium truncate">{route.name}</p>
+          )}
           <p className="text-[var(--text-muted)] text-xs mt-0.5">
             {formatDistance(route.totalDistance)} ·{' '}
             {route.waypoints.length}ポイント ·{' '}
             {new Date(route.createdAt).toLocaleDateString('ja-JP')}
           </p>
         </div>
+        {editing ? (
+          <button
+            onClick={(e) => { e.stopPropagation(); commitEdit(); }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#D4AF37', padding: '4px', flexShrink: 0 }}
+          >
+            <Check size={18} />
+          </button>
+        ) : (
+          <button
+            onClick={startEdit}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#999', padding: '4px', flexShrink: 0 }}
+          >
+            <Pencil size={15} />
+          </button>
+        )}
       </div>
     </div>
   );
@@ -115,6 +160,7 @@ interface BottomPanelProps {
   savedRoutes: SavedRoute[];
   onLoadRoute: (route: SavedRoute) => void;
   onDeleteRoute: (id: string) => void;
+  onRenameRoute: (id: string, newName: string) => void;
   onImportClick: () => void;
   isImported: boolean;
   elevations?: number[];
@@ -136,6 +182,7 @@ export default function BottomPanel({
   savedRoutes,
   onLoadRoute,
   onDeleteRoute,
+  onRenameRoute,
   onImportClick,
   isImported,
   elevations = [],
@@ -348,6 +395,7 @@ export default function BottomPanel({
                   route={route}
                   onLoad={() => { onLoadRoute(route); setShowHistory(false); }}
                   onDelete={() => onDeleteRoute(route.id)}
+                  onRename={(newName) => onRenameRoute(route.id, newName)}
                 />
               ))
             )}
