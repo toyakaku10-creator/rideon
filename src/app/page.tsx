@@ -511,41 +511,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col bg-[var(--bg)]" style={{ height: '100dvh' }}>
-      {/* Header */}
-      <header
-        className="shrink-0 bg-[var(--surface)] border-b border-[var(--border)]"
-        style={{ height: '48px' }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', height: '100%', maxWidth: '480px', margin: '0 auto' }}>
-          <div style={{ width: '60px' }} />
-          <button
-            onClick={() => setTab(tab === 'speed' ? 'distance' : 'speed')}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              fontFamily: "'Dancing Script', cursive",
-              fontSize: '26px',
-              fontWeight: 700,
-              color: tab === 'speed' ? '#FF6B00' : '#D4AF37',
-              background: tab === 'speed' ? '#fff8f0' : '#fdfaf3',
-              border: `2px solid ${tab === 'speed' ? '#FF6B00' : '#D4AF37'}`,
-              borderRadius: '24px',
-              padding: '6px 20px',
-              cursor: 'pointer',
-              letterSpacing: '0.05em',
-              userSelect: 'none',
-              transition: 'all 0.2s',
-            } as React.CSSProperties}
-          >
-            <Bike size={22} color={tab === 'speed' ? '#FF6B00' : '#D4AF37'} />
-            RideOn
-          </button>
-          <div style={{ width: '60px' }} />
-        </div>
-      </header>
-
-      {/* Map */}
+      {/* Map (full screen, header removed) */}
       <div className="flex-1 relative min-h-0">
         <CycleMap
           tab={tab}
@@ -563,6 +529,36 @@ export default function Home() {
           elevationMarkerPos={elevationMarkerPos}
           elevationMarkerDistance={elevationMarkerDistance}
         />
+
+        {/* Floating RideOn button */}
+        <div style={{ position: 'absolute', top: '16px', left: '50%', transform: 'translateX(-50%)', zIndex: 500 }}>
+          <button
+            onClick={() => setTab(tab === 'speed' ? 'distance' : 'speed')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              fontFamily: "'Dancing Script', cursive",
+              fontSize: '24px',
+              fontWeight: 700,
+              color: tab === 'speed' ? '#FF6B00' : '#D4AF37',
+              background: 'rgba(255,255,255,0.9)',
+              border: `2px solid ${tab === 'speed' ? '#FF6B00' : '#D4AF37'}`,
+              borderRadius: '24px',
+              padding: '6px 20px',
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              backdropFilter: 'blur(4px)',
+              userSelect: 'none',
+              whiteSpace: 'nowrap',
+              transition: 'all 0.2s',
+            } as React.CSSProperties}
+          >
+            <Bike size={20} color={tab === 'speed' ? '#FF6B00' : '#D4AF37'} />
+            RideOn
+          </button>
+        </div>
+
         {tab === 'speed' && navInstruction && (
           <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[900] bg-[#D4AF37] text-white text-sm font-bold px-5 py-2 rounded-full shadow-lg pointer-events-none">
             {navInstruction}
