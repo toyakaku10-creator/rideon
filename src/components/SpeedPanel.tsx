@@ -17,6 +17,34 @@ interface SpeedPanelProps {
   rideDistance?: number; // meters
 }
 
+const SpeedMeter = ({ speed }: { speed: number }) => {
+  const maxSpeed = 60
+  const angle = Math.min((speed / maxSpeed) * 180, 180)
+  const rad = (angle - 180) * Math.PI / 180
+  const cx = 110, cy = 115, r = 85
+  const x = cx + r * Math.cos(rad)
+  const y = cy + r * Math.sin(rad)
+  const largeArc = angle > 180 ? 1 : 0
+
+  return (
+    <svg viewBox="0 0 220 140" width="180" height="114">
+      <path d="M 25 115 A 85 85 0 0 1 195 115" fill="none" stroke="#e8e8e8" strokeWidth="14" strokeLinecap="round"/>
+      <path d={`M 25 115 A 85 85 0 ${largeArc} 1 ${x} ${y}`} fill="none" stroke="#D4AF37" strokeWidth="14" strokeLinecap="round"/>
+      {[0,15,30,45,60].map((v) => {
+        const a = (v / maxSpeed * 180 - 180) * Math.PI / 180
+        const x1 = cx + 74 * Math.cos(a), y1 = cy + 74 * Math.sin(a)
+        const x2 = cx + 84 * Math.cos(a), y2 = cy + 84 * Math.sin(a)
+        return <line key={v} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#ccc" strokeWidth="2"/>
+      })}
+      <line x1={cx} y1={cy} x2={x} y2={y} stroke="#D4AF37" strokeWidth="2.5" strokeLinecap="round"/>
+      <circle cx={cx} cy={cy} r="7" fill="#D4AF37"/>
+      <circle cx={cx} cy={cy} r="3" fill="white"/>
+      <text x={cx} y={cy - 18} textAnchor="middle" fontSize="24" fontWeight="bold" fill="#333">{speed.toFixed(1)}</text>
+      <text x={cx} y={cy - 4} textAnchor="middle" fontSize="11" fill="#999">km/h</text>
+    </svg>
+  )
+}
+
 export default function SpeedPanel({
   currentSpeed,
   maxSpeed,
@@ -64,10 +92,9 @@ export default function SpeedPanel({
             <div style={{ fontSize: '10px', color: '#888' }}>km/h</div>
           </div>
 
-          {/* 現在速度 */}
-          <div style={{ flex: 2, textAlign: 'center' }}>
-            <div style={{ fontSize: '56px', fontWeight: '800', lineHeight: 1, color: '#D4AF37' }}>{displaySpeed.toFixed(1)}</div>
-            <div style={{ fontSize: '13px', color: '#888' }}>km/h</div>
+          {/* 現在速度（アナログメーター） */}
+          <div style={{ flex: 2, textAlign: 'center', display: 'flex', justifyContent: 'center' }}>
+            <SpeedMeter speed={displaySpeed} />
           </div>
 
           {/* 走行距離⇔残距離（タップ切替） */}
