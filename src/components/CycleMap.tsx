@@ -37,8 +37,8 @@ function makePositionIcon(heading: number | null): google.maps.Icon {
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
       <g transform="rotate(${heading}, 9, 18)">
         <polygon points="9,0 4,8 14,8" fill="#4285F4"/>
-        <circle cx="9" cy="18" r="8" fill="rgba(66,133,244,0.2)" stroke="#4285F4" stroke-width="1.5"/>
-        <circle cx="9" cy="18" r="2" fill="rgba(66,133,244,0.2)" stroke="#4285F4" stroke-width="1.5"/>
+        <circle cx="9" cy="18" r="8" fill="rgba(66,133,244,0.35)" stroke="#4285F4" stroke-width="1.5"/>
+        <circle cx="9" cy="18" r="2" fill="rgba(66,133,244,0.35)" stroke="#4285F4" stroke-width="1.5"/>
         <line x1="9" y1="11" x2="9" y2="16" stroke="#4285F4" stroke-width="1.5"/>
         <line x1="9" y1="20" x2="9" y2="25" stroke="#4285F4" stroke-width="1.5"/>
         <line x1="2" y1="18" x2="7" y2="18" stroke="#4285F4" stroke-width="1.5"/>
