@@ -99,13 +99,12 @@ export default function SpeedPanel({
             left: '50%',
             transform: 'translateX(-50%)',
             top: '-60px',
-            background: 'var(--surface, #fff)',
+            background: '#fff',
             borderRadius: '50% 50% 0 0',
-            border: '1px solid var(--border, #eee)',
+            border: '1px solid #eee',
             borderBottom: 'none',
-            padding: '8px 16px 0',
-            display: 'flex',
-            justifyContent: 'center',
+            padding: '4px 8px 0',
+            lineHeight: 0,
             zIndex: 10,
           }}>
             <SpeedMeter speed={displaySpeed} />
