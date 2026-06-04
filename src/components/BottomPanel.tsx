@@ -208,7 +208,6 @@ export default function BottomPanel({
 
   const handleShare = async () => {
     const segPoints = segments.flatMap((s) => s.geometry);
-    console.log('share points:', segPoints?.length, 'waypoints:', waypoints?.length);
     const sharePoints = segPoints.length >= 2 ? segPoints : waypoints;
     if (sharePoints.length < 2) {
       alert('ルートを引いてからシェアしてください');
@@ -216,28 +215,14 @@ export default function BottomPanel({
     }
     const shareData = { points: sharePoints, distance: totalDistance };
     const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(shareData))));
-    const longUrl = `${window.location.origin}/?route=${encoded}`;
+    const shareUrl = `${window.location.origin}/?route=${encoded}`;
 
-    let shareUrl = longUrl;
-    try {
-      const res = await fetch('/api/shorten', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: longUrl }),
-      });
-      const data = await res.json();
-      shareUrl = data.shortUrl;
-    } catch { /* network unavailable, fall back to long URL */ }
-
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: 'RideOnルート', url: shareUrl });
-      } else {
-        await navigator.clipboard.writeText(shareUrl);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      }
-    } catch { /* user cancelled */ }
+    if (navigator.share) {
+      navigator.share({ url: shareUrl, title: 'RideOnルート' });
+    } else {
+      navigator.clipboard.writeText(shareUrl);
+      alert('URLをコピーしました');
+    }
   };
 
   const handleExport = () => {
