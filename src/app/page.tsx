@@ -554,7 +554,7 @@ export default function Home() {
               transition: 'all 0.2s',
             } as React.CSSProperties}
           >
-            <Bike size={20} color={tab === 'speed' ? '#fff' : '#D4AF37'} />
+            <Bike size={26} color={tab === 'speed' ? '#fff' : '#D4AF37'} />
             RideOn
           </button>
         </div>
