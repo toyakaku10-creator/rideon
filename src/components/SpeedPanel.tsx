@@ -27,7 +27,7 @@ const SpeedMeter = ({ speed }: { speed: number }) => {
   const largeArc = angle > 180 ? 1 : 0
 
   return (
-    <svg viewBox="15 20 190 105" width="190" height="105">
+    <svg viewBox="15 20 190 105" width="160" height="88">
       <path d="M 25 115 A 85 85 0 0 1 195 115" fill="none" stroke="#e8e8e8" strokeWidth="14" strokeLinecap="round"/>
       <path d={`M 25 115 A 85 85 0 ${largeArc} 1 ${x} ${y}`} fill="none" stroke="#D4AF37" strokeWidth="14" strokeLinecap="round"/>
       {[0,15,30,45,60].map((v) => {
