@@ -78,7 +78,6 @@ export default function Home() {
   const [isImported, setIsImported] = useState(false);
   const [isAdjustingImport, setIsAdjustingImport] = useState(false);
   const [openSaveSheet, setOpenSaveSheet] = useState(false);
-  const [lineShareId, setLineShareId] = useState<string | null>(null);
 
   // Elevation
   const [elevations, setElevations] = useState<number[]>([]);
@@ -131,10 +130,6 @@ export default function Home() {
     const shareId = params.get('share');
     const action = params.get('action');
     if (!shareId) return;
-
-    // LINEブラウザ判定：バナー表示用
-    const isLine = navigator.userAgent.includes('Line');
-    if (isLine) setLineShareId(shareId);
 
     fetch(`/api/share?id=${shareId}`)
       .then((r) => r.json())
@@ -670,41 +665,6 @@ export default function Home() {
         />
       )}
 
-      {/* LINEブラウザでシェアURLを開いた時のPWA追加バナー */}
-      {lineShareId && (
-        <div style={{
-          position: 'fixed',
-          bottom: 80,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          background: '#D4AF37',
-          color: '#000',
-          padding: '10px 20px',
-          borderRadius: '24px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          zIndex: 9999,
-          boxShadow: '0 2px 12px rgba(0,0,0,0.2)',
-          whiteSpace: 'nowrap',
-        }}>
-          <span style={{ fontSize: '13px', fontWeight: '600' }}>PWAアプリに追加</span>
-          <a
-            href={`https://rideon-map.vercel.app/?share=${lineShareId}&action=save`}
-            style={{
-              background: '#000',
-              color: '#D4AF37',
-              padding: '5px 14px',
-              borderRadius: '16px',
-              fontSize: '12px',
-              fontWeight: '600',
-              textDecoration: 'none',
-            }}
-          >
-            追加する
-          </a>
-        </div>
-      )}
     </div>
   );
 }
