@@ -464,6 +464,27 @@ export default function Home() {
   );
 
 
+  const handleLoadRouteFromUrl = useCallback(async (shareId: string) => {
+    try {
+      const res = await fetch(`/api/share?id=${shareId}`);
+      const data = await res.json();
+      if (!data.points || data.points.length < 2) { alert('ルートが見つかりません'); return; }
+      const latlngs: LatLng[] = data.points;
+      setSegments([{
+        from: latlngs[0],
+        to: latlngs[latlngs.length - 1],
+        geometry: latlngs,
+        distance: data.distance,
+        routeType: 'straight',
+      }]);
+      setWaypoints([latlngs[0], latlngs[latlngs.length - 1]]);
+      setFitBoundsPoints(latlngs);
+      setTimeout(() => setOpenSaveSheet(true), 500);
+    } catch {
+      alert('ルートの取得に失敗しました');
+    }
+  }, []);
+
   const handleStartPointDragged = useCallback((deltaLat: number, deltaLng: number) => {
     setWaypoints((prev) => prev.map((wp) => ({ lat: wp.lat + deltaLat, lng: wp.lng + deltaLng })));
     setSegments((prev) =>
@@ -632,6 +653,7 @@ export default function Home() {
           elevations={elevations}
           onElevationPositionChange={setElevationIndex}
           onReverseRoute={handleReverseRoute}
+          onLoadRouteFromUrl={handleLoadRouteFromUrl}
         />
       ) : (
         <SpeedPanel

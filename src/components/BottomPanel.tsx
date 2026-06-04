@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database } from 'lucide-react';
+import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database, Link } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
 import ElevationChart from '@/components/ElevationChart';
 
@@ -168,6 +168,7 @@ interface BottomPanelProps {
   elevations?: number[];
   onElevationPositionChange?: (index: number) => void;
   onReverseRoute?: () => void;
+  onLoadRouteFromUrl?: (shareId: string) => void;
 }
 
 export default function BottomPanel({
@@ -192,9 +193,12 @@ export default function BottomPanel({
   elevations = [],
   onElevationPositionChange,
   onReverseRoute,
+  onLoadRouteFromUrl,
 }: BottomPanelProps) {
   const [showHistory, setShowHistory] = useState(false);
   const [showDataMenu, setShowDataMenu] = useState(false);
+  const [showUrlInput, setShowUrlInput] = useState(false);
+  const [urlInputValue, setUrlInputValue] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showSaveSheet, setShowSaveSheet] = useState(false);
   const [routeName, setRouteName] = useState('');
@@ -244,6 +248,24 @@ export default function BottomPanel({
     a.download = `rideon-routes-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handleOpenShareUrl = () => {
+    const input = urlInputValue.trim();
+    if (!input) return;
+    let shareId: string | null = null;
+    try {
+      const url = new URL(input);
+      shareId = url.searchParams.get('share');
+    } catch {
+      // URLでない場合はそのままIDとして扱う
+      shareId = input;
+    }
+    if (!shareId) { alert('シェアIDが見つかりません'); return; }
+    onLoadRouteFromUrl?.(shareId);
+    setUrlInputValue('');
+    setShowUrlInput(false);
+    setShowHistory(false);
   };
 
   const handleImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -421,10 +443,30 @@ export default function BottomPanel({
                   <button onClick={() => { setShowHistory(false); onImportClick(); }} style={btnStyle}>
                     <Download size={20} color="#D4AF37" /><span>キョリ測</span>
                   </button>
-                  <button onClick={() => setShowDataMenu((prev) => !prev)} style={btnStyle}>
+                  <button onClick={() => { setShowUrlInput((prev) => !prev); setShowDataMenu(false); }} style={btnStyle}>
+                    <Link size={20} color="#D4AF37" /><span>URL取込み</span>
+                  </button>
+                  <button onClick={() => { setShowDataMenu((prev) => !prev); setShowUrlInput(false); }} style={btnStyle}>
                     <Database size={20} color="#D4AF37" /><span>データ管理</span>
                   </button>
                 </div>
+                {showUrlInput && (
+                  <div style={{ marginTop: '8px' }}>
+                    <input
+                      type="url"
+                      placeholder="シェアURLを貼り付け"
+                      value={urlInputValue}
+                      onChange={(e) => setUrlInputValue(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleOpenShareUrl()}
+                      style={{ display: 'block', width: '100%', boxSizing: 'border-box', padding: '12px', fontSize: '16px', border: '1px solid #ddd', borderRadius: '10px', marginBottom: '8px', WebkitAppearance: 'none' } as React.CSSProperties}
+                    />
+                    <button
+                      onClick={handleOpenShareUrl}
+                      disabled={!urlInputValue.trim()}
+                      style={{ display: 'block', width: '100%', padding: '12px', background: '#D4AF37', color: '#000', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', opacity: !urlInputValue.trim() ? 0.4 : 1 }}
+                    >読み込む</button>
+                  </div>
+                )}
                 {showDataMenu && (
                   <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                     <label style={subBtnStyle}>
