@@ -531,7 +531,7 @@ export default function Home() {
         />
 
         {/* Floating RideOn button */}
-        <div style={{ position: 'absolute', top: '16px', left: '50%', transform: 'translateX(-50%)', zIndex: 500 }}>
+        <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 500 }}>
           <button
             onClick={() => setTab(tab === 'speed' ? 'distance' : 'speed')}
             style={{
