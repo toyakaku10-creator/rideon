@@ -36,13 +36,13 @@ function makePositionIcon(heading: number | null): google.maps.Icon {
     const W = 18, H = 27;
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
       <g transform="rotate(${heading}, 9, 18)">
-        <polygon points="9,0 4,8 14,8" fill="#4285F4"/>
-        <circle cx="9" cy="18" r="8" fill="rgba(66,133,244,0.35)" stroke="#4285F4" stroke-width="1.5"/>
-        <circle cx="9" cy="18" r="2" fill="rgba(66,133,244,0.35)" stroke="#4285F4" stroke-width="1.5"/>
-        <line x1="9" y1="11" x2="9" y2="16" stroke="#4285F4" stroke-width="1.5"/>
-        <line x1="9" y1="20" x2="9" y2="25" stroke="#4285F4" stroke-width="1.5"/>
-        <line x1="2" y1="18" x2="7" y2="18" stroke="#4285F4" stroke-width="1.5"/>
-        <line x1="11" y1="18" x2="16" y2="18" stroke="#4285F4" stroke-width="1.5"/>
+        <polygon points="9,0 4,8 14,8" fill="#000000"/>
+        <circle cx="9" cy="18" r="8" fill="rgba(255,255,255,0.8)" stroke="#000000" stroke-width="2"/>
+        <circle cx="9" cy="18" r="2" fill="rgba(255,255,255,0.8)" stroke="#000000" stroke-width="2"/>
+        <line x1="9" y1="11" x2="9" y2="16" stroke="#000000" stroke-width="1.5"/>
+        <line x1="9" y1="20" x2="9" y2="25" stroke="#000000" stroke-width="1.5"/>
+        <line x1="2" y1="18" x2="7" y2="18" stroke="#000000" stroke-width="1.5"/>
+        <line x1="11" y1="18" x2="16" y2="18" stroke="#000000" stroke-width="1.5"/>
       </g>
     </svg>`;
     return {
@@ -52,7 +52,7 @@ function makePositionIcon(heading: number | null): google.maps.Icon {
     };
   } else {
     const size = 18;
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="${size}" height="${size}" fill="rgba(66, 133, 244, 0.2)" stroke="#4285F4" stroke-width="2" stroke-linecap="round">
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="${size}" height="${size}" fill="rgba(255,255,255,0.8)" stroke="#000000" stroke-width="2" stroke-linecap="round">
       <circle cx="12" cy="12" r="10"/>
       <circle cx="12" cy="12" r="3"/>
       <line x1="12" y1="2" x2="12" y2="9"/>
