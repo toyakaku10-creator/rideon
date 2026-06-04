@@ -3,7 +3,6 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Bike, Route } from 'lucide-react';
 import type { Tab, RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
 import { decodeRoute } from '@/lib/routeShare';
 import BottomPanel from '@/components/BottomPanel';
@@ -516,32 +515,27 @@ export default function Home() {
         className="shrink-0 bg-[var(--surface)] border-b border-[var(--border)]"
         style={{ height: '48px' }}
       >
-        <div className="flex items-center justify-between px-4 h-full" style={{ maxWidth: '480px', margin: '0 auto' }}>
-          <span className="text-[var(--accent)] text-xl" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 700 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', height: '100%', maxWidth: '480px', margin: '0 auto' }}>
+          <div style={{ width: '60px' }} />
+          <button
+            onClick={() => setTab(tab === 'speed' ? 'distance' : 'speed')}
+            style={{
+              fontFamily: "'Dancing Script', cursive",
+              fontSize: '26px',
+              fontWeight: 700,
+              color: tab === 'speed' ? '#FF6B00' : '#D4AF37',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              letterSpacing: '0.05em',
+              userSelect: 'none',
+              transition: 'color 0.2s',
+              padding: 0,
+            } as React.CSSProperties}
+          >
             RideOn
-          </span>
-          <div className="flex gap-1">
-            {(
-              [
-                { key: 'distance', label: 'ルート', icon: <Route size={17} /> },
-                { key: 'speed', label: 'ライド', icon: <Bike size={17} /> },
-              ] as { key: Tab; label: string; icon: React.ReactNode }[]
-            ).map(({ key, label, icon }) => (
-              <button
-                key={key}
-                onClick={() => setTab(key)}
-                className={`flex-1 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1 ${
-                  tab === key
-                    ? 'bg-[var(--accent)] text-white'
-                    : 'text-[var(--text-muted)] hover:text-[var(--text)]'
-                }`}
-                style={{ padding: '6px 20px' }}
-              >
-                {icon}
-                {label}
-              </button>
-            ))}
-          </div>
+          </button>
+          <div style={{ width: '60px' }} />
         </div>
       </header>
 
