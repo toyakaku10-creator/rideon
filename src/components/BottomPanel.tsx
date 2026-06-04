@@ -207,11 +207,14 @@ export default function BottomPanel({
 
   const handleShare = async () => {
     const segPoints = segments.flatMap((s) => s.geometry);
-    const sharePoints = segPoints.length >= 2 ? segPoints : waypoints;
-    if (sharePoints.length < 2) {
+    const allPoints = segPoints.length >= 2 ? segPoints : waypoints;
+    if (allPoints.length < 2) {
       alert('ルートを引いてからシェアしてください');
       return;
     }
+    const MAX_POINTS = 300;
+    const step = Math.max(1, Math.floor(allPoints.length / MAX_POINTS));
+    const sharePoints = allPoints.filter((_: unknown, i: number) => i % step === 0 || i === allPoints.length - 1);
     const shareData = { points: sharePoints, distance: totalDistance };
     const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(shareData))));
     const shareUrl = `${window.location.origin}/?route=${encoded}`;
