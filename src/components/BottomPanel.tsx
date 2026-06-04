@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Road, Pencil, Check, Database } from 'lucide-react';
+import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Pencil, Check, Database } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
 import ElevationChart from '@/components/ElevationChart';
 
@@ -26,7 +26,7 @@ const ROUTE_SPEED: Record<RouteType, number> = {
 };
 
 const ROUTE_BUTTONS: { type: RouteType; icon: React.ReactNode; label: string }[] = [
-  { type: 'cycling', icon: <Road size={13} />, label: '道なり' },
+  { type: 'cycling', icon: <Route size={13} />, label: '道なり' },
   { type: 'straight', icon: <Ruler size={13} />, label: '直線' },
 ];
 
