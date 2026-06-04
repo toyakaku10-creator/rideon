@@ -98,7 +98,7 @@ export default function SpeedPanel({
             position: 'absolute',
             left: '50%',
             transform: 'translateX(-50%)',
-            top: '-35px',
+            top: '-28px',
             background: '#fff',
             borderRadius: '50% 50% 0 0',
             padding: 0,
