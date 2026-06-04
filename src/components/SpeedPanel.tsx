@@ -27,7 +27,7 @@ const SpeedMeter = ({ speed }: { speed: number }) => {
   const largeArc = angle > 180 ? 1 : 0
 
   return (
-    <svg viewBox="0 0 220 140" width="180" height="114">
+    <svg viewBox="0 0 220 140" width="200" height="126">
       <path d="M 25 115 A 85 85 0 0 1 195 115" fill="none" stroke="#e8e8e8" strokeWidth="14" strokeLinecap="round"/>
       <path d={`M 25 115 A 85 85 0 ${largeArc} 1 ${x} ${y}`} fill="none" stroke="#D4AF37" strokeWidth="14" strokeLinecap="round"/>
       {[0,15,30,45,60].map((v) => {
@@ -66,7 +66,7 @@ export default function SpeedPanel({
   return (
     <div
       className="bg-[var(--surface)] border-t border-[var(--border)] shrink-0"
-      style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
+      style={{ marginTop: '-30px', paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}
     >
       <div style={{ maxWidth: '480px', margin: '0 auto' }}>
         {/* Nav route name */}
@@ -81,7 +81,7 @@ export default function SpeedPanel({
         )}
 
         {/* Speed row: sub / current / distance */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '8px 16px' }}>
           {/* 平均⇔最高（タップ切替） */}
           <div
             style={{ flex: 1, textAlign: 'center', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' } as React.CSSProperties}
@@ -93,7 +93,7 @@ export default function SpeedPanel({
           </div>
 
           {/* 現在速度（アナログメーター） */}
-          <div style={{ flex: 2, textAlign: 'center', display: 'flex', justifyContent: 'center' }}>
+          <div style={{ flex: 2, textAlign: 'center', display: 'flex', justifyContent: 'center', overflow: 'visible', marginTop: '-30px' }}>
             <SpeedMeter speed={displaySpeed} />
           </div>
 
