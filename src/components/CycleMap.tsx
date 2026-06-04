@@ -31,16 +31,24 @@ function makeLabelIcon(label: string, bg: string, size = 28): google.maps.Icon {
 function makePositionIcon(heading: number | null): google.maps.Icon {
   const hasHeading = heading != null && !isNaN(heading);
   if (hasHeading) {
-    const size = 20;
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="${size}" height="${size}" fill="#4285F4">
-      <g transform="rotate(${heading}, 12, 12)">
-        <polygon points="12,2 20,20 12,16 4,20"/>
+    // Triangle (top, 8px) + 1px gap + Wheel (18px) = total height 27px, width 18px
+    // Wheel center at (9, 18); rotate everything around wheel center
+    const W = 18, H = 27;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
+      <g transform="rotate(${heading}, 9, 18)">
+        <polygon points="9,0 4,8 14,8" fill="#4285F4"/>
+        <circle cx="9" cy="18" r="8" fill="rgba(66,133,244,0.2)" stroke="#4285F4" stroke-width="1.5"/>
+        <circle cx="9" cy="18" r="2" fill="rgba(66,133,244,0.2)" stroke="#4285F4" stroke-width="1.5"/>
+        <line x1="9" y1="11" x2="9" y2="16" stroke="#4285F4" stroke-width="1.5"/>
+        <line x1="9" y1="20" x2="9" y2="25" stroke="#4285F4" stroke-width="1.5"/>
+        <line x1="2" y1="18" x2="7" y2="18" stroke="#4285F4" stroke-width="1.5"/>
+        <line x1="11" y1="18" x2="16" y2="18" stroke="#4285F4" stroke-width="1.5"/>
       </g>
     </svg>`;
     return {
       url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
-      scaledSize: new google.maps.Size(size, size),
-      anchor: new google.maps.Point(size / 2, size / 2),
+      scaledSize: new google.maps.Size(W, H),
+      anchor: new google.maps.Point(9, 18),
     };
   } else {
     const size = 18;
