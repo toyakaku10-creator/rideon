@@ -104,7 +104,10 @@ export default function SpeedPanel({
             padding: 0,
             margin: 0,
             lineHeight: 0,
+            width: '190px',
             overflow: 'hidden',
+            display: 'flex',
+            justifyContent: 'center',
             zIndex: 10,
           }}>
             <SpeedMeter speed={displaySpeed} />
