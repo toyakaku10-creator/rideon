@@ -66,12 +66,12 @@ export default function SpeedPanel({
   return (
     <div
       className="bg-[var(--surface)] border-t border-[var(--border)] shrink-0"
-      style={{ marginTop: '-30px', paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}
+      style={{ position: 'relative', paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}
     >
       <div style={{ maxWidth: '480px', margin: '0 auto' }}>
         {/* Nav route name */}
         {navRoute && (
-          <div style={{ padding: '12px 16px 0' }}>
+          <div style={{ padding: '8px 16px 0' }}>
             <div className="bg-[var(--surface2)] rounded-xl px-3 py-2">
               <span className="text-[var(--text)] text-sm font-medium truncate block">
                 {navRoute.name}
@@ -80,8 +80,8 @@ export default function SpeedPanel({
           </div>
         )}
 
-        {/* Speed row: sub / current / distance */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '8px 16px' }}>
+        {/* Speed row: sub / meter bubble / distance */}
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', padding: '8px 16px' }}>
           {/* 平均⇔最高（タップ切替） */}
           <div
             style={{ flex: 1, textAlign: 'center', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' } as React.CSSProperties}
@@ -92,8 +92,22 @@ export default function SpeedPanel({
             <div style={{ fontSize: '10px', color: '#888' }}>km/h</div>
           </div>
 
-          {/* 現在速度（アナログメーター） */}
-          <div style={{ flex: 2, textAlign: 'center', display: 'flex', justifyContent: 'center', overflow: 'visible', marginTop: '-30px' }}>
+          {/* 現在速度（メーター泡） — absolute で上に飛び出す */}
+          <div style={{ flex: 2 }} />
+          <div style={{
+            position: 'absolute',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            top: '-60px',
+            background: 'var(--surface, #fff)',
+            borderRadius: '50% 50% 0 0',
+            border: '1px solid var(--border, #eee)',
+            borderBottom: 'none',
+            padding: '8px 16px 0',
+            display: 'flex',
+            justifyContent: 'center',
+            zIndex: 10,
+          }}>
             <SpeedMeter speed={displaySpeed} />
           </div>
 
