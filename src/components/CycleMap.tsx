@@ -188,7 +188,8 @@ export default function CycleMap({
       map.setZoom(15);
       initializedRef.current = true;
     } else if (follow) {
-      map.panTo({ lat: center.lat, lng: center.lng });
+      map.setCenter({ lat: center.lat, lng: center.lng });
+      map.panBy(0, 60);
     }
   }, [map, center, follow]);
 
