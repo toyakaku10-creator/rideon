@@ -539,13 +539,13 @@ export default function Home() {
               alignItems: 'center',
               gap: '8px',
               fontFamily: "'Dancing Script', cursive",
-              fontSize: '24px',
+              fontSize: '20px',
               fontWeight: 700,
               color: tab === 'speed' ? '#fff' : '#D4AF37',
               background: tab === 'speed' ? '#D4AF37' : 'rgba(255,255,255,0.9)',
               border: '2px solid #D4AF37',
-              borderRadius: '24px',
-              padding: '6px 20px',
+              borderRadius: '20px',
+              padding: '5px 14px',
               cursor: 'pointer',
               boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
               backdropFilter: 'blur(4px)',
@@ -554,7 +554,7 @@ export default function Home() {
               transition: 'all 0.2s',
             } as React.CSSProperties}
           >
-            <Bike size={26} color={tab === 'speed' ? '#fff' : '#D4AF37'} />
+            <Bike size={18} color={tab === 'speed' ? '#fff' : '#D4AF37'} />
             RideOn
           </button>
         </div>
