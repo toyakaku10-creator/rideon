@@ -189,7 +189,7 @@ export default function CycleMap({
       initializedRef.current = true;
     } else if (follow) {
       map.setCenter({ lat: center.lat, lng: center.lng });
-      map.panBy(0, 60);
+      map.panBy(0, 30);
     }
   }, [map, center, follow]);
 
