@@ -124,6 +124,28 @@ export default function Home() {
     }
   }, []);
 
+  // Restore route from ?share=ID (Firestore short URL)
+  useEffect(() => {
+    const shareId = new URLSearchParams(window.location.search).get('share');
+    if (!shareId) return;
+    fetch(`/api/share?id=${shareId}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (!data.points || data.points.length < 2) return;
+        const latlngs: LatLng[] = data.points;
+        setSegments([{
+          from: latlngs[0],
+          to: latlngs[latlngs.length - 1],
+          geometry: latlngs,
+          distance: data.distance,
+          routeType: 'straight',
+        }]);
+        setWaypoints([latlngs[0], latlngs[latlngs.length - 1]]);
+        setFitBoundsPoints(latlngs);
+      })
+      .catch(() => {});
+  }, []);
+
   // Restore route from ?route= URL param (shared link)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);

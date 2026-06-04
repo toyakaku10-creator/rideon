@@ -212,18 +212,22 @@ export default function BottomPanel({
       alert('ルートを引いてからシェアしてください');
       return;
     }
-    const MAX_POINTS = 300;
-    const step = Math.max(1, Math.floor(allPoints.length / MAX_POINTS));
-    const sharePoints = allPoints.filter((_: unknown, i: number) => i % step === 0 || i === allPoints.length - 1);
-    const shareData = { points: sharePoints, distance: totalDistance };
-    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(shareData))));
-    const shareUrl = `${window.location.origin}/?route=${encoded}`;
-
-    if (navigator.share) {
-      navigator.share({ url: shareUrl, title: 'RideOnルート' });
-    } else {
-      navigator.clipboard.writeText(shareUrl);
-      alert('URLをコピーしました');
+    try {
+      const res = await fetch('/api/share', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ points: allPoints, distance: totalDistance }),
+      });
+      const data = await res.json();
+      const shareUrl = `${window.location.origin}/?share=${data.id}`;
+      if (navigator.share) {
+        navigator.share({ url: shareUrl, title: 'RideOnルート' });
+      } else {
+        navigator.clipboard.writeText(shareUrl);
+        alert('URLをコピーしました');
+      }
+    } catch {
+      alert('シェアに失敗しました');
     }
   };
 
