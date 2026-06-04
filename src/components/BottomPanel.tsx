@@ -220,8 +220,13 @@ export default function BottomPanel({
 
     let shareUrl = longUrl;
     try {
-      const res = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`);
-      if (res.ok) shareUrl = await res.text();
+      const res = await fetch('/api/shorten', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: longUrl }),
+      });
+      const data = await res.json();
+      shareUrl = data.shortUrl;
     } catch { /* network unavailable, fall back to long URL */ }
 
     try {
