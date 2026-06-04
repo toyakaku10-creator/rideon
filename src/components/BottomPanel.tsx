@@ -194,7 +194,6 @@ export default function BottomPanel({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showSaveSheet, setShowSaveSheet] = useState(false);
   const [routeName, setRouteName] = useState('');
-  const [copied, setCopied] = useState(false);
 
   // 外部から保存シートを開く（インポート完了後など）
   const prevOpenSaveSheet = useRef(false);
@@ -334,6 +333,12 @@ export default function BottomPanel({
               onClick: () => setShowHistory(true),
               disabled: false,
             },
+            {
+              icon: <Share2 size={24} />,
+              label: 'シェア',
+              onClick: handleShare,
+              disabled: waypoints.length < 2,
+            },
           ].map(({ icon, label, onClick, disabled }) => (
             <button
               key={label}
@@ -392,9 +397,6 @@ export default function BottomPanel({
             return (
               <div style={{ flexShrink: 0, padding: '0 16px 12px', borderBottom: '1px solid #eee' }}>
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <button onClick={handleShare} disabled={waypoints.length < 2} style={{ ...btnStyle, opacity: waypoints.length < 2 ? 0.4 : 1 }}>
-                    <Share2 size={20} color="#D4AF37" /><span>{copied ? 'コピー済み' : 'シェア'}</span>
-                  </button>
                   <button onClick={() => { setShowHistory(false); onImportClick(); }} style={btnStyle}>
                     <Download size={20} color="#D4AF37" /><span>キョリ測</span>
                   </button>
