@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { Bike } from 'lucide-react';
 import type { Tab, RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
 import { decodeRoute } from '@/lib/routeShare';
 import BottomPanel from '@/components/BottomPanel';
@@ -520,19 +521,24 @@ export default function Home() {
           <button
             onClick={() => setTab(tab === 'speed' ? 'distance' : 'speed')}
             style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
               fontFamily: "'Dancing Script', cursive",
               fontSize: '26px',
               fontWeight: 700,
               color: tab === 'speed' ? '#FF6B00' : '#D4AF37',
-              background: 'none',
-              border: 'none',
+              background: tab === 'speed' ? '#fff8f0' : '#fdfaf3',
+              border: `2px solid ${tab === 'speed' ? '#FF6B00' : '#D4AF37'}`,
+              borderRadius: '24px',
+              padding: '6px 20px',
               cursor: 'pointer',
               letterSpacing: '0.05em',
               userSelect: 'none',
-              transition: 'color 0.2s',
-              padding: 0,
+              transition: 'all 0.2s',
             } as React.CSSProperties}
           >
+            <Bike size={22} color={tab === 'speed' ? '#FF6B00' : '#D4AF37'} />
             RideOn
           </button>
           <div style={{ width: '60px' }} />
