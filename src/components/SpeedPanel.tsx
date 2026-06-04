@@ -101,7 +101,7 @@ export default function SpeedPanel({
             top: '-45px',
             background: '#fff',
             width: '170px',
-            height: '100px',
+            height: '95px',
             borderRadius: '85px 85px 0 0',
             padding: 0,
             margin: 0,
