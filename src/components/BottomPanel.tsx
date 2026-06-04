@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Pencil, Check, Database } from 'lucide-react';
+import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
 import ElevationChart from '@/components/ElevationChart';
 
@@ -29,6 +29,8 @@ const ROUTE_BUTTONS: { type: RouteType; icon: React.ReactNode; label: string }[]
   { type: 'cycling', icon: <Route size={13} />, label: '道なり' },
   { type: 'straight', icon: <Ruler size={13} />, label: '直線' },
 ];
+
+const REVERSE_BUTTON = { icon: <Repeat size={13} />, label: '反転' };
 
 function SwipeableRouteItem({
   route,
@@ -165,6 +167,7 @@ interface BottomPanelProps {
   isImported: boolean;
   elevations?: number[];
   onElevationPositionChange?: (index: number) => void;
+  onReverseRoute?: () => void;
 }
 
 export default function BottomPanel({
@@ -188,6 +191,7 @@ export default function BottomPanel({
   isImported,
   elevations = [],
   onElevationPositionChange,
+  onReverseRoute,
 }: BottomPanelProps) {
   const [showHistory, setShowHistory] = useState(false);
   const [showDataMenu, setShowDataMenu] = useState(false);
@@ -286,6 +290,16 @@ export default function BottomPanel({
               </span>
             </button>
           ))}
+          <button
+            onClick={() => waypoints.length >= 2 && onReverseRoute?.()}
+            disabled={waypoints.length < 2}
+            className="flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors bg-[var(--surface2)] text-[var(--text-muted)] hover:text-[var(--text)] active:bg-[var(--border)] disabled:opacity-50"
+          >
+            <span className="flex items-center justify-center gap-1">
+              {REVERSE_BUTTON.icon}
+              {REVERSE_BUTTON.label}
+            </span>
+          </button>
         </div>
 
         {/* Stats row */}

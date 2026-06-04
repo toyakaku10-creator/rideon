@@ -394,6 +394,17 @@ export default function Home() {
     setSegments([]);
   }, []);
 
+  const handleReverseRoute = useCallback(() => {
+    setWaypoints((prev) => [...prev].reverse());
+    setSegments((prev) => [...prev].reverse().map((s) => ({
+      ...s,
+      geometry: [...s.geometry].reverse(),
+      from: s.to,
+      to: s.from,
+    })));
+    setElevations((prev) => [...prev].reverse());
+  }, []);
+
 
   const handleLoadRoute = useCallback((route: SavedRoute) => {
     setWaypoints(route.waypoints);
@@ -607,6 +618,7 @@ export default function Home() {
           isImported={isImported}
           elevations={elevations}
           onElevationPositionChange={setElevationIndex}
+          onReverseRoute={handleReverseRoute}
         />
       ) : (
         <SpeedPanel
