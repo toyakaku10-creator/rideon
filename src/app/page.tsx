@@ -135,6 +135,7 @@ export default function Home() {
   const [spotDialog, setSpotDialog] = useState<{ lat: number; lng: number } | null>(null);
   const [spotName, setSpotName] = useState('');
   const [spotCategory, setSpotCategory] = useState('pin');
+  const [spotDeleteConfirm, setSpotDeleteConfirm] = useState<Spot | null>(null);
 
   // Center map on device location at startup
   useEffect(() => {
@@ -672,6 +673,7 @@ export default function Home() {
           elevationMarkerDistance={elevationMarkerDistance}
           spots={spots}
           onLongPress={(lat, lng) => { setSpotDialog({ lat, lng }); setSpotName(''); setSpotCategory('pin'); }}
+          onSpotClick={(spot) => setSpotDeleteConfirm(spot)}
         />
 
         {/* Floating RideOn button */}
@@ -803,6 +805,26 @@ export default function Home() {
       )}
 
       {/* Spot add dialog */}
+      {spotDeleteConfirm && (
+        <>
+          <div onClick={() => setSpotDeleteConfirm(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 2000 }} />
+          <div style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '480px', background: '#fff', borderRadius: '16px 16px 0 0', padding: '20px 16px', paddingBottom: 'calc(20px + env(safe-area-inset-bottom))', zIndex: 2001, boxSizing: 'border-box' }}>
+            <h3 style={{ margin: '0 0 8px', fontSize: '16px', fontWeight: '600' }}>スポットを削除</h3>
+            <p style={{ margin: '0 0 20px', fontSize: '14px', color: '#555' }}>「{spotDeleteConfirm.name}」を削除しますか？</p>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                onClick={() => setSpotDeleteConfirm(null)}
+                style={{ flex: 1, padding: '14px', background: '#f0f0f0', color: '#333', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: 'pointer' }}
+              >キャンセル</button>
+              <button
+                onClick={() => { handleDeleteSpot(spotDeleteConfirm.id); setSpotDeleteConfirm(null); }}
+                style={{ flex: 1, padding: '14px', background: '#e53935', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: 'pointer' }}
+              >削除する</button>
+            </div>
+          </div>
+        </>
+      )}
+
       {spotDialog && (
         <>
           <div onClick={() => setSpotDialog(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 2000 }} />

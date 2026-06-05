@@ -166,7 +166,7 @@ interface CycleMapProps {
   elevationMarkerDistance?: string;
   spots?: Spot[];
   onLongPress?: (lat: number, lng: number) => void;
-  onDeleteSpot?: (id: string) => void;
+  onSpotClick?: (spot: Spot) => void;
 }
 
 export default function CycleMap({
@@ -186,7 +186,7 @@ export default function CycleMap({
   elevationMarkerDistance,
   spots = [],
   onLongPress,
-  onDeleteSpot,
+  onSpotClick,
 }: CycleMapProps) {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
@@ -404,11 +404,7 @@ export default function CycleMap({
           position={{ lat: spot.lat, lng: spot.lng }}
           icon={makeSpotIcon(spot.category, spot.name)}
           zIndex={5}
-          onClick={() => {
-            if (window.confirm(`「${spot.name}」を削除しますか？`)) {
-              onDeleteSpot?.(spot.id);
-            }
-          }}
+          onClick={() => onSpotClick?.(spot)}
         />
       ))}
 
