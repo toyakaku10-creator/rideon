@@ -2,7 +2,9 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database, Link } from 'lucide-react';
-import type { RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
+import type { RouteType, LatLng, RouteSegment, SavedRoute, RideLog } from '@/types';
+
+const RIDE_LOG_KEY = 'rideon-logs';
 import ElevationChart from '@/components/ElevationChart';
 
 function formatDistance(meters: number): string {
@@ -196,6 +198,8 @@ export default function BottomPanel({
   onLoadRouteFromUrl,
 }: BottomPanelProps) {
   const [showHistory, setShowHistory] = useState(false);
+  const [historyTab, setHistoryTab] = useState<'routes' | 'logs'>('routes');
+  const [rideLogs, setRideLogs] = useState<RideLog[]>([]);
   const [showDataMenu, setShowDataMenu] = useState(false);
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [urlInputValue, setUrlInputValue] = useState('');
@@ -249,6 +253,14 @@ export default function BottomPanel({
     a.click();
     URL.revokeObjectURL(url);
   };
+
+  useEffect(() => {
+    if (!showHistory) return;
+    try {
+      const raw = localStorage.getItem(RIDE_LOG_KEY);
+      if (raw) setRideLogs(JSON.parse(raw) as RideLog[]);
+    } catch { /* ignore */ }
+  }, [showHistory]);
 
   const handleOpenShareUrl = () => {
     const input = urlInputValue.trim();
@@ -428,13 +440,21 @@ export default function BottomPanel({
       {showHistory && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#ffffff', zIndex: 2000, display: 'flex', flexDirection: 'column', maxWidth: '480px', width: '100%', margin: '0 auto', boxSizing: 'border-box' } as React.CSSProperties}>
           {/* Header */}
-          <div style={{ flexShrink: 0, padding: '16px 16px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '12px' }}>
+          <div style={{ flexShrink: 0, padding: '16px 16px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '8px' }}>
             <h2 style={{ fontSize: '18px', fontWeight: '600', margin: 0, color: 'var(--text)' }}>マイルート</h2>
             <button style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: 'var(--text-muted)', lineHeight: 1 }} onClick={() => setShowHistory(false)}>✕</button>
           </div>
+          {/* Tabs */}
+          <div style={{ flexShrink: 0, display: 'flex', gap: '0', padding: '0 16px 0', marginBottom: '8px' }}>
+            {(['routes', 'logs'] as const).map((t) => (
+              <button key={t} onClick={() => setHistoryTab(t)} style={{ flex: 1, padding: '8px 0', fontSize: '13px', fontWeight: '600', background: 'none', border: 'none', borderBottom: historyTab === t ? '2px solid #D4AF37' : '2px solid #eee', color: historyTab === t ? '#D4AF37' : '#999', cursor: 'pointer' }}>
+                {t === 'routes' ? 'ルート一覧' : '走行履歴'}
+              </button>
+            ))}
+          </div>
 
-          {/* Action buttons */}
-          {(() => {
+          {/* Action buttons — routes tab only */}
+          {historyTab === 'routes' && (() => {
             const btnStyle: React.CSSProperties = { flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '10px 4px', background: '#f5f5f5', border: '1px solid #eee', borderRadius: '10px', cursor: 'pointer', fontSize: '12px', color: '#333' };
             const subBtnStyle: React.CSSProperties = { flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '10px 4px', background: '#f5f5f5', border: '1px solid #eee', borderRadius: '10px', cursor: 'pointer', fontSize: '12px', color: '#333' };
             return (
@@ -483,24 +503,58 @@ export default function BottomPanel({
           })()}
 
           {/* Route list */}
-          <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', boxSizing: 'border-box' } as React.CSSProperties}>
-            {savedRoutes.length === 0 ? (
-              <p style={{ color: 'var(--text-muted)', fontSize: '14px', textAlign: 'center', padding: '40px 16px' }}>
-                保存済みルートはありません
-              </p>
-            ) : (
-              [...savedRoutes].reverse().map((route) => (
-                <SwipeableRouteItem
-                  key={route.id}
-                  route={route}
-                  onLoad={() => { onLoadRoute(route); setShowHistory(false); }}
-                  onDelete={() => onDeleteRoute(route.id)}
-                  onRename={(newName) => onRenameRoute(route.id, newName)}
-                />
-              ))
-            )}
-            <div style={{ height: 'calc(20px + env(safe-area-inset-bottom))' }} />
-          </div>
+          {historyTab === 'routes' && (
+            <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', boxSizing: 'border-box' } as React.CSSProperties}>
+              {savedRoutes.length === 0 ? (
+                <p style={{ color: 'var(--text-muted)', fontSize: '14px', textAlign: 'center', padding: '40px 16px' }}>
+                  保存済みルートはありません
+                </p>
+              ) : (
+                [...savedRoutes].reverse().map((route) => (
+                  <SwipeableRouteItem
+                    key={route.id}
+                    route={route}
+                    onLoad={() => { onLoadRoute(route); setShowHistory(false); }}
+                    onDelete={() => onDeleteRoute(route.id)}
+                    onRename={(newName) => onRenameRoute(route.id, newName)}
+                  />
+                ))
+              )}
+              <div style={{ height: 'calc(20px + env(safe-area-inset-bottom))' }} />
+            </div>
+          )}
+
+          {/* Ride log list */}
+          {historyTab === 'logs' && (
+            <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '0 16px', boxSizing: 'border-box' } as React.CSSProperties}>
+              {rideLogs.length === 0 ? (
+                <p style={{ color: 'var(--text-muted)', fontSize: '14px', textAlign: 'center', padding: '40px 16px' }}>
+                  走行記録はありません
+                </p>
+              ) : (
+                [...rideLogs].reverse().map((log) => {
+                  const h = Math.floor(log.duration / 3600);
+                  const m = Math.floor((log.duration % 3600) / 60);
+                  const durationStr = h > 0 ? `${h}時間${m}分` : `${m}分`;
+                  return (
+                    <div key={log.id} style={{ padding: '12px 0', borderBottom: '1px solid #eee' }}>
+                      <div style={{ fontSize: '13px', color: '#888', marginBottom: '4px' }}>
+                        {new Date(log.date).toLocaleDateString('ja-JP', { month: 'long', day: 'numeric', weekday: 'short' })}
+                        {log.routeName && <span style={{ marginLeft: '8px', color: '#D4AF37', fontWeight: '600' }}>{log.routeName}</span>}
+                      </div>
+                      <div style={{ display: 'flex', gap: '16px', alignItems: 'baseline' }}>
+                        <span style={{ fontSize: '20px', fontWeight: '700' }}>{log.distance.toFixed(2)}<span style={{ fontSize: '11px', color: '#888', marginLeft: '2px' }}>km</span></span>
+                        <span style={{ fontSize: '13px', color: '#555' }}>{durationStr}</span>
+                        <span style={{ fontSize: '13px', color: '#555' }}>平均 {log.avgSpeed.toFixed(1)} km/h</span>
+                        <span style={{ fontSize: '13px', color: '#555' }}>最高 {log.maxSpeed.toFixed(1)} km/h</span>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+              <div style={{ height: 'calc(20px + env(safe-area-inset-bottom))' }} />
+            </div>
+          )}
         </div>
       )}
 

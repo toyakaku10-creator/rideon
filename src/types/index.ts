@@ -14,6 +14,16 @@ export interface RouteSegment {
   routeType: 'cycling' | 'straight';
 }
 
+export interface RideLog {
+  id: string;
+  date: string; // ISO形式
+  distance: number; // km
+  duration: number; // 秒
+  avgSpeed: number; // km/h
+  maxSpeed: number; // km/h
+  routeName?: string;
+}
+
 export interface SavedRoute {
   id: string;
   name: string;

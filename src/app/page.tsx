@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Bike } from 'lucide-react';
-import type { Tab, RouteType, LatLng, RouteSegment, SavedRoute } from '@/types';
+import type { Tab, RouteType, LatLng, RouteSegment, SavedRoute, RideLog } from '@/types';
 import { decodeRoute } from '@/lib/routeShare';
 import BottomPanel from '@/components/BottomPanel';
 import SpeedPanel from '@/components/SpeedPanel';
@@ -13,6 +13,7 @@ import SpeedPanel from '@/components/SpeedPanel';
 const CycleMap = dynamic(() => import('@/components/CycleMap'), { ssr: false });
 
 const STORAGE_KEY = 'cycle-map-routes';
+const RIDE_LOG_KEY = 'rideon-logs';
 
 function haversineDistance(a: LatLng, b: LatLng): number {
   const R = 6371000;
@@ -117,6 +118,7 @@ export default function Home() {
   const [heading, setHeading] = useState<number | null>(null);
   const [rideDistance, setRideDistance] = useState(0);
   const prevGpsPos = useRef<{ lat: number; lng: number } | null>(null);
+  const rideStartTimeRef = useRef<number | null>(null);
 
   // Center map on device location at startup
   useEffect(() => {
@@ -595,7 +597,37 @@ export default function Home() {
         {/* Floating RideOn button */}
         <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 500 }}>
           <button
-            onClick={() => setTab(tab === 'speed' ? 'distance' : 'speed')}
+            onClick={() => {
+              if (tab === 'speed') {
+                // ライドモード終了 → 走行記録を保存
+                const endTime = Date.now();
+                const duration = rideStartTimeRef.current ? Math.round((endTime - rideStartTimeRef.current) / 1000) : 0;
+                const distanceKm = rideDistance / 1000;
+                if (distanceKm >= 0.1 && duration > 0) {
+                  const log: RideLog = {
+                    id: endTime.toString(),
+                    date: new Date().toISOString(),
+                    distance: distanceKm,
+                    duration,
+                    avgSpeed: speedCount > 0 ? speedSum / speedCount : 0,
+                    maxSpeed,
+                    routeName: navRoute?.name,
+                  };
+                  try {
+                    const raw = localStorage.getItem(RIDE_LOG_KEY);
+                    const logs: RideLog[] = raw ? JSON.parse(raw) : [];
+                    logs.push(log);
+                    localStorage.setItem(RIDE_LOG_KEY, JSON.stringify(logs));
+                  } catch { /* ignore */ }
+                }
+                rideStartTimeRef.current = null;
+                setTab('distance');
+              } else {
+                // ライドモード開始
+                rideStartTimeRef.current = Date.now();
+                setTab('speed');
+              }
+            }}
             style={{
               display: 'flex',
               alignItems: 'center',
