@@ -3,9 +3,17 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Bike } from 'lucide-react';
+import { Bike, ShoppingBag, Droplets, Mountain, Coffee, MapPin, type LucideProps } from 'lucide-react';
 import type { Tab, RouteType, LatLng, RouteSegment, SavedRoute, RideLog, Spot } from '@/types';
 import { SPOT_CATEGORIES } from '@/lib/spotCategories';
+
+const SPOT_ICON_MAP: Record<string, React.ComponentType<LucideProps>> = {
+  ShoppingBag, Droplets, Mountain, Coffee, MapPin,
+};
+function SpotCatIcon({ iconName, size = 16, color = '#D4AF37' }: { iconName: string; size?: number; color?: string }) {
+  const Icon = SPOT_ICON_MAP[iconName] ?? MapPin;
+  return <Icon size={size} color={color} />;
+}
 import { decodeRoute } from '@/lib/routeShare';
 import BottomPanel from '@/components/BottomPanel';
 import SpeedPanel from '@/components/SpeedPanel';
@@ -816,7 +824,7 @@ export default function Home() {
                   onClick={() => setSpotCategory(cat.id)}
                   style={{ padding: '6px 12px', borderRadius: '20px', border: `2px solid ${spotCategory === cat.id ? '#D4AF37' : '#ddd'}`, background: spotCategory === cat.id ? '#fff9e6' : '#fff', fontSize: '13px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
                 >
-                  <span>{cat.emoji}</span>{cat.label}
+                  <SpotCatIcon iconName={cat.icon} size={15} color={spotCategory === cat.id ? '#D4AF37' : '#999'} />{cat.label}
                 </button>
               ))}
             </div>

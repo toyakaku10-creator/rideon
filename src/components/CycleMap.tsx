@@ -11,21 +11,35 @@ import {
 import type { Tab, LatLng, RouteSegment, Spot } from '@/types';
 import { spotLucidePath } from '@/lib/spotCategories';
 
-function makeSpotIcon(category: string): google.maps.Icon {
+function makeSpotIcon(category: string, name: string): google.maps.Icon {
   const path = spotLucidePath(category);
-  const size = 36;
-  const pinH = size + 10;
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${pinH}">
-    <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2 - 1}" fill="white" stroke="#D4AF37" stroke-width="2.5"/>
-    <g transform="translate(${size / 2 - 12},${size / 2 - 12}) scale(1)">
-      <path d="${path}" fill="none" stroke="#D4AF37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  const circleSize = 32;
+  const tailH = 8;
+  // Label pill above the circle
+  const labelPad = 6;
+  const charW = 7; // approximate per-char width at font-size 11
+  const labelW = Math.max(name.length * charW + labelPad * 2, 40);
+  const labelH = 18;
+  const labelGap = 3;
+  const totalW = Math.max(labelW, circleSize);
+  const circleX = (totalW - circleSize) / 2;
+  const labelX = (totalW - labelW) / 2;
+  const circleY = labelH + labelGap;
+  const totalH = circleY + circleSize + tailH;
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${totalW}" height="${totalH}">
+    <rect x="${labelX}" y="0" width="${labelW}" height="${labelH}" rx="4" fill="white" stroke="#ddd" stroke-width="1"/>
+    <text x="${totalW / 2}" y="${labelH - 4}" text-anchor="middle" font-size="11" font-weight="600" font-family="sans-serif" fill="#333">${name}</text>
+    <circle cx="${circleX + circleSize / 2}" cy="${circleY + circleSize / 2}" r="${circleSize / 2 - 1}" fill="#D4AF37" stroke="white" stroke-width="2"/>
+    <g transform="translate(${circleX + circleSize / 2 - 10},${circleY + circleSize / 2 - 10})">
+      <path d="${path}" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </g>
-    <polygon points="${size / 2 - 5},${size - 1} ${size / 2 + 5},${size - 1} ${size / 2},${pinH - 1}" fill="#D4AF37"/>
+    <polygon points="${circleX + circleSize / 2 - 5},${circleY + circleSize - 1} ${circleX + circleSize / 2 + 5},${circleY + circleSize - 1} ${circleX + circleSize / 2},${totalH - 1}" fill="#D4AF37"/>
   </svg>`;
   return {
     url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
-    scaledSize: new google.maps.Size(size, pinH),
-    anchor: new google.maps.Point(size / 2, pinH),
+    scaledSize: new google.maps.Size(totalW, totalH),
+    anchor: new google.maps.Point(totalW / 2, totalH),
   };
 }
 
@@ -385,7 +399,7 @@ export default function CycleMap({
         <Marker
           key={spot.id}
           position={{ lat: spot.lat, lng: spot.lng }}
-          icon={makeSpotIcon(spot.category)}
+          icon={makeSpotIcon(spot.category, spot.name)}
           zIndex={5}
         />
       ))}

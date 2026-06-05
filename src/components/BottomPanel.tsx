@@ -595,7 +595,7 @@ export default function BottomPanel({
                         <p style={{ margin: 0, fontSize: '15px', fontWeight: '600', color: '#333', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{spot.name}</p>
                         <p style={{ margin: 0, fontSize: '12px', color: '#888' }}>{cat?.label ?? spot.category}</p>
                       </div>
-                      <button onClick={() => onDeleteSpot?.(spot.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ccc', padding: '4px', flexShrink: 0, fontSize: '18px' }}>✕</button>
+                      <button onClick={() => onDeleteSpot?.(spot.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ccc', padding: '4px', flexShrink: 0 }}><Trash2 size={16} /></button>
                     </div>
                   );
                 })
