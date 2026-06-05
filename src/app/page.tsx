@@ -102,6 +102,7 @@ export default function Home() {
   const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([]);
   const [fitBoundsPoints, setFitBoundsPoints] = useState<LatLng[] | null>(null);
   const [isImported, setIsImported] = useState(false);
+  const [referenceRoute, setReferenceRoute] = useState<SavedRoute | null>(null);
   const [isAdjustingImport, setIsAdjustingImport] = useState(false);
   const [openSaveSheet, setOpenSaveSheet] = useState(false);
 
@@ -447,6 +448,7 @@ export default function Home() {
   const handleClear = useCallback(() => {
     setWaypoints([]);
     setSegments([]);
+    setReferenceRoute(null);
   }, []);
 
   const handleReverseRoute = useCallback(() => {
@@ -692,6 +694,7 @@ export default function Home() {
           onLongPress={(lat, lng) => { setSpotDialog({ lat, lng }); setSpotName(''); setSpotCategory('pin'); }}
           onSpotClick={(spot) => { if (spots.some((s) => s.id === spot.id)) setSpotDeleteConfirm(spot); }}
           logTrack={logTrack}
+          referenceSegments={referenceRoute?.segments}
         />
 
         {/* Floating RideOn button */}
@@ -814,6 +817,13 @@ export default function Home() {
           onLoadRideLog={(log) => {
             setLogTrack(log.track ?? null);
             if (log.track && log.track.length >= 2) setFitBoundsPoints(log.track);
+          }}
+          onReferenceRoute={(route) => {
+            setReferenceRoute(route);
+            setWaypoints([]);
+            setSegments([]);
+            const pts = route.segments.flatMap((s) => s.geometry);
+            if (pts.length > 0) setFitBoundsPoints(pts);
           }}
         />
       ) : (

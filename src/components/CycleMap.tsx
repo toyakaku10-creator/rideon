@@ -168,6 +168,7 @@ interface CycleMapProps {
   onLongPress?: (lat: number, lng: number) => void;
   onSpotClick?: (spot: Spot) => void;
   logTrack?: { lat: number; lng: number }[] | null;
+  referenceSegments?: RouteSegment[];
 }
 
 export default function CycleMap({
@@ -189,6 +190,7 @@ export default function CycleMap({
   onLongPress,
   onSpotClick,
   logTrack,
+  referenceSegments,
 }: CycleMapProps) {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
@@ -324,6 +326,20 @@ export default function CycleMap({
       onLoad={handleLoad}
       onUnmount={handleUnmount}
     >
+      {/* Reference route polylines (guide, read-only) */}
+      {referenceSegments && referenceSegments.map((seg, i) => (
+        <Polyline
+          key={`ref-${i}`}
+          path={seg.geometry.map((p) => ({ lat: p.lat, lng: p.lng }))}
+          options={{
+            strokeColor: '#888888',
+            strokeWeight: 5,
+            strokeOpacity: 0.3,
+            zIndex: 0,
+          }}
+        />
+      ))}
+
       {/* Route polylines — outline then main line for each segment */}
       {segments.map((seg, i) => {
         const path = seg.geometry.map((p) => ({ lat: p.lat, lng: p.lng }));

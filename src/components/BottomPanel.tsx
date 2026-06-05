@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database, Link, ShoppingBag, Droplets, Mountain, Coffee, MapPin, type LucideProps } from 'lucide-react';
+import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database, Link, Copy, ShoppingBag, Droplets, Mountain, Coffee, MapPin, type LucideProps } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute, RideLog, Spot } from '@/types';
 import { SPOT_CATEGORIES } from '@/lib/spotCategories';
 
@@ -50,11 +50,13 @@ function SwipeableRouteItem({
   onLoad,
   onDelete,
   onRename,
+  onReference,
 }: {
   route: SavedRoute;
   onLoad: () => void;
   onDelete: () => void;
   onRename: (newName: string) => void;
+  onReference?: () => void;
 }) {
   const [offset, setOffset] = useState(0);
   const [editing, setEditing] = useState(false);
@@ -147,12 +149,21 @@ function SwipeableRouteItem({
             <Check size={18} />
           </button>
         ) : (
-          <button
-            onClick={startEdit}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#999', padding: '4px', flexShrink: 0 }}
-          >
-            <Pencil size={15} />
-          </button>
+          <div style={{ display: 'flex', gap: '2px', flexShrink: 0 }}>
+            <button
+              onClick={(e) => { e.stopPropagation(); onReference?.(); }}
+              title="参考にして引き直す"
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1a73e8', padding: '4px' }}
+            >
+              <Copy size={15} />
+            </button>
+            <button
+              onClick={startEdit}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#999', padding: '4px' }}
+            >
+              <Pencil size={15} />
+            </button>
+          </div>
         )}
       </div>
     </div>
@@ -264,6 +275,7 @@ interface BottomPanelProps {
   sharedSpots?: Spot[];
   onSaveSharedSpots?: (spots: Spot[]) => void;
   onLoadRideLog?: (log: RideLog) => void;
+  onReferenceRoute?: (route: SavedRoute) => void;
 }
 
 export default function BottomPanel({
@@ -295,6 +307,7 @@ export default function BottomPanel({
   sharedSpots = [],
   onSaveSharedSpots,
   onLoadRideLog,
+  onReferenceRoute,
 }: BottomPanelProps) {
   const [showHistory, setShowHistory] = useState(false);
   const [historyTab, setHistoryTab] = useState<'routes' | 'spots' | 'logs'>('routes');
@@ -666,6 +679,7 @@ export default function BottomPanel({
                     onLoad={() => { onLoadRoute(route); setShowHistory(false); }}
                     onDelete={() => onDeleteRoute(route.id)}
                     onRename={(newName) => onRenameRoute(route.id, newName)}
+                    onReference={() => { onReferenceRoute?.(route); setShowHistory(false); }}
                   />
                 ))
               )}
