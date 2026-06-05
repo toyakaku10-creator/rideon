@@ -132,6 +132,7 @@ export default function Home() {
   const rideStartTimeRef = useRef<number | null>(null);
   const rideTrackRef = useRef<{ lat: number; lng: number }[]>([]);
   const [logTrack, setLogTrack] = useState<{ lat: number; lng: number }[] | null>(null);
+  const [activeRideLog, setActiveRideLog] = useState<RideLog | null>(null);
 
   // Spots
   const [spots, setSpots] = useState<Spot[]>([]);
@@ -697,6 +698,32 @@ export default function Home() {
           referenceSegments={referenceRoute?.segments}
         />
 
+        {/* Save ride log as route button */}
+        {activeRideLog && tab === 'distance' && (
+          <div style={{ position: 'absolute', top: '12px', left: '50%', transform: 'translateX(-50%)', zIndex: 500 }}>
+            <button
+              onClick={() => {
+                const track = activeRideLog.track!;
+                const latlngs: LatLng[] = track.map((p) => ({ lat: p.lat, lng: p.lng }));
+                setWaypoints([latlngs[0], latlngs[latlngs.length - 1]]);
+                setSegments([{
+                  from: latlngs[0],
+                  to: latlngs[latlngs.length - 1],
+                  geometry: latlngs,
+                  distance: activeRideLog.distance * 1000,
+                  routeType: 'straight',
+                }]);
+                setLogTrack(null);
+                setActiveRideLog(null);
+                setTimeout(() => setOpenSaveSheet(true), 100);
+              }}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', background: '#1a73e8', color: '#fff', border: 'none', borderRadius: '20px', fontSize: '13px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.25)' }}
+            >
+              マイルートに保存
+            </button>
+          </div>
+        )}
+
         {/* Floating RideOn button */}
         <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 500 }}>
           <button
@@ -816,6 +843,7 @@ export default function Home() {
           onSaveSharedSpots={handleSaveSharedSpots}
           onLoadRideLog={(log) => {
             setLogTrack(log.track ?? null);
+            setActiveRideLog(log.track && log.track.length >= 2 ? log : null);
             if (log.track && log.track.length >= 2) setFitBoundsPoints(log.track);
           }}
           onReferenceRoute={(route) => {
