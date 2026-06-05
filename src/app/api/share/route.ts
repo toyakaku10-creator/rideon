@@ -4,7 +4,7 @@ const PROJECT_ID = 'rideon-aad80'
 const FIRESTORE_BASE = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/shared_routes`
 
 export async function POST(request: NextRequest) {
-  const { points, distance, title } = await request.json()
+  const { points, distance, title, spots } = await request.json()
 
   const id = Math.random().toString(36).substring(2, 8)
   const url = `${FIRESTORE_BASE}/${id}`
@@ -14,6 +14,7 @@ export async function POST(request: NextRequest) {
       points: { stringValue: JSON.stringify(points) },
       distance: { doubleValue: distance },
       title: { stringValue: title || '無題のルート' },
+      spots: { stringValue: JSON.stringify(spots || []) },
       createdAt: { timestampValue: new Date().toISOString() },
     },
   }
@@ -46,5 +47,6 @@ export async function GET(request: NextRequest) {
     points: JSON.parse(fields.points.stringValue),
     distance: fields.distance.doubleValue,
     title: fields.title.stringValue,
+    spots: fields.spots?.stringValue ? JSON.parse(fields.spots.stringValue) : [],
   })
 }

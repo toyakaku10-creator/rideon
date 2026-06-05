@@ -136,6 +136,7 @@ export default function Home() {
   const [spotName, setSpotName] = useState('');
   const [spotCategory, setSpotCategory] = useState('pin');
   const [spotDeleteConfirm, setSpotDeleteConfirm] = useState<Spot | null>(null);
+  const [sharedSpots, setSharedSpots] = useState<Spot[]>([]);
 
   // Center map on device location at startup
   useEffect(() => {
@@ -483,6 +484,17 @@ export default function Home() {
     });
   }, []);
 
+  const handleSaveSharedSpots = useCallback((incoming: Spot[]) => {
+    setSpots((prev) => {
+      const existingIds = new Set(prev.map((s) => s.id));
+      const newSpots = incoming.filter((s) => !existingIds.has(s.id));
+      const updated = [...prev, ...newSpots];
+      localStorage.setItem(SPOT_KEY, JSON.stringify(updated));
+      return updated;
+    });
+    setSharedSpots([]);
+  }, []);
+
 
   const handleLoadRoute = useCallback((route: SavedRoute) => {
     setWaypoints(route.waypoints);
@@ -544,6 +556,7 @@ export default function Home() {
       }]);
       setWaypoints([latlngs[0], latlngs[latlngs.length - 1]]);
       setFitBoundsPoints(latlngs);
+      setSharedSpots(Array.isArray(data.spots) ? data.spots : []);
       setTimeout(() => setOpenSaveSheet(true), 500);
     } catch {
       alert('ルートの取得に失敗しました');
@@ -671,9 +684,9 @@ export default function Home() {
           })()}
           elevationMarkerPos={elevationMarkerPos}
           elevationMarkerDistance={elevationMarkerDistance}
-          spots={spots}
+          spots={[...spots, ...sharedSpots]}
           onLongPress={(lat, lng) => { setSpotDialog({ lat, lng }); setSpotName(''); setSpotCategory('pin'); }}
-          onSpotClick={(spot) => setSpotDeleteConfirm(spot)}
+          onSpotClick={(spot) => { if (spots.some((s) => s.id === spot.id)) setSpotDeleteConfirm(spot); }}
         />
 
         {/* Floating RideOn button */}
@@ -788,6 +801,8 @@ export default function Home() {
           onKyorisokuImport={handleKyorisokuImport}
           spots={spots}
           onDeleteSpot={handleDeleteSpot}
+          sharedSpots={sharedSpots}
+          onSaveSharedSpots={handleSaveSharedSpots}
         />
       ) : (
         <SpeedPanel

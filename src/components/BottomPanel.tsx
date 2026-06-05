@@ -185,6 +185,8 @@ interface BottomPanelProps {
   onKyorisokuImport?: (points: { lat: number; lng: number }[], distance: number) => void;
   spots?: Spot[];
   onDeleteSpot?: (id: string) => void;
+  sharedSpots?: Spot[];
+  onSaveSharedSpots?: (spots: Spot[]) => void;
 }
 
 export default function BottomPanel({
@@ -213,6 +215,8 @@ export default function BottomPanel({
   onKyorisokuImport,
   spots = [],
   onDeleteSpot,
+  sharedSpots = [],
+  onSaveSharedSpots,
 }: BottomPanelProps) {
   const [showHistory, setShowHistory] = useState(false);
   const [historyTab, setHistoryTab] = useState<'routes' | 'spots' | 'logs'>('routes');
@@ -248,7 +252,7 @@ export default function BottomPanel({
       const res = await fetch('/api/share', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ points: allPoints, distance: totalDistance }),
+        body: JSON.stringify({ points: allPoints, distance: totalDistance, spots }),
       });
       const data = await res.json();
       const shareUrl = `${window.location.origin}/?share=${data.id}`;
@@ -467,6 +471,12 @@ export default function BottomPanel({
               autoFocus
               style={{ display: 'block', width: '100%', boxSizing: 'border-box', padding: '12px', fontSize: '16px', border: '1px solid #ddd', borderRadius: '10px', marginBottom: '12px', WebkitAppearance: 'none' } as React.CSSProperties}
             />
+            {sharedSpots.length > 0 && (
+              <button
+                onClick={() => { onSaveSharedSpots?.(sharedSpots); }}
+                style={{ display: 'block', width: '100%', padding: '12px', background: '#f0f8ff', color: '#1a73e8', border: '1.5px solid #1a73e8', borderRadius: '10px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', marginBottom: '10px' }}
+              >スポットをマイスポットに追加（{sharedSpots.length}件）</button>
+            )}
             <button
               onClick={() => { if (!routeName.trim()) return; onSave(routeName.trim()); setShowSaveSheet(false); setRouteName(''); }}
               disabled={!routeName.trim()}
