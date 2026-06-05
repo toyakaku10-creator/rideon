@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database, Link, Copy, FileInput, Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin, type LucideProps } from 'lucide-react';
+import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database, Link, Copy, FileInput, FileOutput, Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin, type LucideProps } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute, RideLog, Spot } from '@/types';
 import { SPOT_CATEGORIES, spotCustomSvg } from '@/lib/spotCategories';
 
@@ -457,6 +457,21 @@ export default function BottomPanel({
     reader.readAsText(file);
   };
 
+  const handleGpxExport = () => {
+    const allPoints = segments.flatMap((s) => s.geometry);
+    const points = allPoints.length >= 2 ? allPoints : waypoints;
+    if (points.length < 2) { alert('ルートを引いてからエクスポートしてください'); return; }
+    const trkpts = points.map((p) => `      <trkpt lat="${p.lat}" lon="${p.lng}"></trkpt>`).join('\n');
+    const gpx = `<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="RideOn">\n  <trk>\n    <name>RideOnルート</name>\n    <trkseg>\n${trkpts}\n    </trkseg>\n  </trk>\n</gpx>`;
+    const blob = new Blob([gpx], { type: 'application/gpx+xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `rideon-route-${new Date().toISOString().slice(0, 10)}.gpx`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const handleImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -666,10 +681,15 @@ export default function BottomPanel({
                       </button>
                     </div>
                     {urlError && <p style={{ fontSize: '12px', color: '#E53935', margin: '-4px 0 8px' }}>{urlError}</p>}
-                    <label style={{ ...subBtnStyle, width: '100%', flexDirection: 'row', justifyContent: 'center', gap: '6px', cursor: 'pointer' }}>
-                      <FileInput size={16} color="#D4AF37" /><span>GPXファイルを取込み</span>
-                      <input type="file" accept=".gpx" onChange={handleGpxImport} style={{ display: 'none' }} />
-                    </label>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <label style={{ ...subBtnStyle, flex: 1, flexDirection: 'row', justifyContent: 'center', gap: '6px', cursor: 'pointer' }}>
+                        <FileInput size={16} color="#D4AF37" /><span>GPX取込み</span>
+                        <input type="file" accept=".gpx" onChange={handleGpxImport} style={{ display: 'none' }} />
+                      </label>
+                      <button onClick={handleGpxExport} style={{ ...subBtnStyle, flex: 1, flexDirection: 'row', justifyContent: 'center', gap: '6px' }}>
+                        <FileOutput size={16} color="#D4AF37" /><span>GPX書き出し</span>
+                      </button>
+                    </div>
                   </div>
                 )}
                 {showDataMenu && (
