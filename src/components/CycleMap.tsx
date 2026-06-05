@@ -351,6 +351,7 @@ export default function CycleMap({
             strokeWeight: 5,
             strokeOpacity: 0.25,
             zIndex: 0,
+            clickable: false,
           }}
         />
       ))}
