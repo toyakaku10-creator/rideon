@@ -239,10 +239,27 @@ export default function CycleMap({
     };
     const upListener = map.addListener('mouseup', cancelLongPress);
     const dragListener = map.addListener('drag', cancelLongPress);
+
+    // Touch events for mobile
+    const touchStartListener = map.addListener('touchstart', (e: { latLng?: google.maps.LatLng }) => {
+      const lat = e.latLng?.lat();
+      const lng = e.latLng?.lng();
+      if (!lat || !lng) return;
+      longPressLatLngRef.current = { lat, lng };
+      longPressTimerRef.current = setTimeout(() => {
+        onLongPress(lat, lng);
+      }, 800);
+    });
+    const touchEndListener = map.addListener('touchend', cancelLongPress);
+    const touchMoveListener = map.addListener('touchmove', cancelLongPress);
+
     return () => {
       google.maps.event.removeListener(downListener);
       google.maps.event.removeListener(upListener);
       google.maps.event.removeListener(dragListener);
+      google.maps.event.removeListener(touchStartListener);
+      google.maps.event.removeListener(touchEndListener);
+      google.maps.event.removeListener(touchMoveListener);
       if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
     };
   }, [map, onLongPress]);
