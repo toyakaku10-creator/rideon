@@ -1,9 +1,19 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database, Link } from 'lucide-react';
+import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database, Link, ShoppingBag, Droplets, Mountain, Coffee, MapPin, type LucideProps } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute, RideLog, Spot } from '@/types';
-import { SPOT_CATEGORIES, spotEmoji } from '@/lib/spotCategories';
+import { SPOT_CATEGORIES } from '@/lib/spotCategories';
+
+const SPOT_ICONS: Record<string, React.ComponentType<LucideProps>> = {
+  ShoppingBag, Droplets, Mountain, Coffee, MapPin,
+};
+
+function SpotIcon({ category, size = 20 }: { category: string; size?: number }) {
+  const cat = SPOT_CATEGORIES.find((c) => c.id === category);
+  const Icon = SPOT_ICONS[cat?.icon ?? 'MapPin'] ?? MapPin;
+  return <Icon size={size} color="#D4AF37" />;
+}
 
 const RIDE_LOG_KEY = 'rideon-logs';
 import ElevationChart from '@/components/ElevationChart';
@@ -580,7 +590,7 @@ export default function BottomPanel({
                   const cat = SPOT_CATEGORIES.find((c) => c.id === spot.category);
                   return (
                     <div key={spot.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 0', borderBottom: '1px solid #eee' }}>
-                      <span style={{ fontSize: '24px', flexShrink: 0 }}>{spotEmoji(spot.category)}</span>
+                      <div style={{ flexShrink: 0 }}><SpotIcon category={spot.category} size={22} /></div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <p style={{ margin: 0, fontSize: '15px', fontWeight: '600', color: '#333', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{spot.name}</p>
                         <p style={{ margin: 0, fontSize: '12px', color: '#888' }}>{cat?.label ?? spot.category}</p>

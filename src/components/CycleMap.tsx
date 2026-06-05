@@ -9,20 +9,23 @@ import {
   type Libraries,
 } from '@react-google-maps/api';
 import type { Tab, LatLng, RouteSegment, Spot } from '@/types';
-import { spotEmoji } from '@/lib/spotCategories';
+import { spotLucidePath } from '@/lib/spotCategories';
 
 function makeSpotIcon(category: string): google.maps.Icon {
-  const emoji = spotEmoji(category);
-  const size = 32;
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size + 8}">
-    <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2 - 1}" fill="white" stroke="#D4AF37" stroke-width="2"/>
-    <text x="${size / 2}" y="${size / 2 + 6}" text-anchor="middle" font-size="18">${emoji}</text>
-    <polygon points="${size / 2 - 5},${size - 1} ${size / 2 + 5},${size - 1} ${size / 2},${size + 7}" fill="#D4AF37"/>
+  const path = spotLucidePath(category);
+  const size = 36;
+  const pinH = size + 10;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${pinH}">
+    <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2 - 1}" fill="white" stroke="#D4AF37" stroke-width="2.5"/>
+    <g transform="translate(${size / 2 - 12},${size / 2 - 12}) scale(1)">
+      <path d="${path}" fill="none" stroke="#D4AF37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <polygon points="${size / 2 - 5},${size - 1} ${size / 2 + 5},${size - 1} ${size / 2},${pinH - 1}" fill="#D4AF37"/>
   </svg>`;
   return {
     url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
-    scaledSize: new google.maps.Size(size, size + 8),
-    anchor: new google.maps.Point(size / 2, size + 8),
+    scaledSize: new google.maps.Size(size, pinH),
+    anchor: new google.maps.Point(size / 2, pinH),
   };
 }
 
