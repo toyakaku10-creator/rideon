@@ -3,12 +3,12 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Bike, Droplets, Mountain, MapPin, type LucideProps } from 'lucide-react';
+import { Bike, Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin, type LucideProps } from 'lucide-react';
 import type { Tab, RouteType, LatLng, RouteSegment, SavedRoute, RideLog, Spot } from '@/types';
 import { SPOT_CATEGORIES, spotCustomSvg } from '@/lib/spotCategories';
 
 const SPOT_ICON_MAP: Record<string, React.ComponentType<LucideProps>> = {
-  Droplets, Mountain, MapPin,
+  Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin,
 };
 function SpotCatIcon({ iconName, category, size = 16, color = '#D4AF37' }: { iconName: string; category?: string; size?: number; color?: string }) {
   const custom = category ? spotCustomSvg(category) : null;
