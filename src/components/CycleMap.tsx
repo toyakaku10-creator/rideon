@@ -407,6 +407,7 @@ export default function CycleMap({
               key={`wp-${i}`}
               position={{ lat: wp.lat, lng: wp.lng }}
               icon={icon}
+              zIndex={isStart ? 2 : isGoal ? 1 : 0}
               draggable={isStart && !!onStartPointDragged}
               onDragEnd={
                 isStart && onStartPointDragged
