@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database, Link } from 'lucide-react';
-import type { RouteType, LatLng, RouteSegment, SavedRoute, RideLog } from '@/types';
+import type { RouteType, LatLng, RouteSegment, SavedRoute, RideLog, Spot } from '@/types';
+import { SPOT_CATEGORIES, spotEmoji } from '@/lib/spotCategories';
 
 const RIDE_LOG_KEY = 'rideon-logs';
 import ElevationChart from '@/components/ElevationChart';
@@ -172,6 +173,8 @@ interface BottomPanelProps {
   onReverseRoute?: () => void;
   onLoadRouteFromUrl?: (shareId: string) => void;
   onKyorisokuImport?: (points: { lat: number; lng: number }[], distance: number) => void;
+  spots?: Spot[];
+  onDeleteSpot?: (id: string) => void;
 }
 
 export default function BottomPanel({
@@ -198,9 +201,11 @@ export default function BottomPanel({
   onReverseRoute,
   onLoadRouteFromUrl,
   onKyorisokuImport,
+  spots = [],
+  onDeleteSpot,
 }: BottomPanelProps) {
   const [showHistory, setShowHistory] = useState(false);
-  const [historyTab, setHistoryTab] = useState<'routes' | 'logs'>('routes');
+  const [historyTab, setHistoryTab] = useState<'routes' | 'spots' | 'logs'>('routes');
   const [rideLogs, setRideLogs] = useState<RideLog[]>([]);
   const [showDataMenu, setShowDataMenu] = useState(false);
   const [showUrlInput, setShowUrlInput] = useState(false);
@@ -471,9 +476,9 @@ export default function BottomPanel({
           </div>
           {/* Tabs */}
           <div style={{ flexShrink: 0, display: 'flex', gap: '0', padding: '0 16px 0', marginBottom: '8px' }}>
-            {(['routes', 'logs'] as const).map((t) => (
-              <button key={t} onClick={() => setHistoryTab(t)} style={{ flex: 1, padding: '8px 0', fontSize: '13px', fontWeight: '600', background: 'none', border: 'none', borderBottom: historyTab === t ? '2px solid #D4AF37' : '2px solid #eee', color: historyTab === t ? '#D4AF37' : '#999', cursor: 'pointer' }}>
-                {t === 'routes' ? 'ルート一覧' : '走行履歴'}
+            {([['routes', 'ルート'], ['spots', 'スポット'], ['logs', '走行履歴']] as const).map(([t, label]) => (
+              <button key={t} onClick={() => setHistoryTab(t)} style={{ flex: 1, padding: '8px 0', fontSize: '12px', fontWeight: '600', background: 'none', border: 'none', borderBottom: historyTab === t ? '2px solid #D4AF37' : '2px solid #eee', color: historyTab === t ? '#D4AF37' : '#999', cursor: 'pointer' }}>
+                {label}
               </button>
             ))}
           </div>
@@ -557,6 +562,33 @@ export default function BottomPanel({
                     onRename={(newName) => onRenameRoute(route.id, newName)}
                   />
                 ))
+              )}
+              <div style={{ height: 'calc(20px + env(safe-area-inset-bottom))' }} />
+            </div>
+          )}
+
+          {/* Spot list */}
+          {historyTab === 'spots' && (
+            <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '0 16px', boxSizing: 'border-box' } as React.CSSProperties}>
+              {spots.length === 0 ? (
+                <p style={{ color: 'var(--text-muted)', fontSize: '14px', textAlign: 'center', padding: '40px 16px' }}>
+                  スポットはありません<br />
+                  <span style={{ fontSize: '12px' }}>地図を長押しして追加</span>
+                </p>
+              ) : (
+                [...spots].reverse().map((spot) => {
+                  const cat = SPOT_CATEGORIES.find((c) => c.id === spot.category);
+                  return (
+                    <div key={spot.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 0', borderBottom: '1px solid #eee' }}>
+                      <span style={{ fontSize: '24px', flexShrink: 0 }}>{spotEmoji(spot.category)}</span>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p style={{ margin: 0, fontSize: '15px', fontWeight: '600', color: '#333', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{spot.name}</p>
+                        <p style={{ margin: 0, fontSize: '12px', color: '#888' }}>{cat?.label ?? spot.category}</p>
+                      </div>
+                      <button onClick={() => onDeleteSpot?.(spot.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ccc', padding: '4px', flexShrink: 0, fontSize: '18px' }}>✕</button>
+                    </div>
+                  );
+                })
               )}
               <div style={{ height: 'calc(20px + env(safe-area-inset-bottom))' }} />
             </div>

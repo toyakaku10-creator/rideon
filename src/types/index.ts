@@ -14,6 +14,15 @@ export interface RouteSegment {
   routeType: 'cycling' | 'straight';
 }
 
+export interface Spot {
+  id: string;
+  name: string;
+  category: string;
+  lat: number;
+  lng: number;
+  createdAt: string;
+}
+
 export interface RideLog {
   id: string;
   date: string; // ISO形式

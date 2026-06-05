@@ -4,7 +4,8 @@ import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Bike } from 'lucide-react';
-import type { Tab, RouteType, LatLng, RouteSegment, SavedRoute, RideLog } from '@/types';
+import type { Tab, RouteType, LatLng, RouteSegment, SavedRoute, RideLog, Spot } from '@/types';
+import { SPOT_CATEGORIES } from '@/lib/spotCategories';
 import { decodeRoute } from '@/lib/routeShare';
 import BottomPanel from '@/components/BottomPanel';
 import SpeedPanel from '@/components/SpeedPanel';
@@ -14,6 +15,7 @@ const CycleMap = dynamic(() => import('@/components/CycleMap'), { ssr: false });
 
 const STORAGE_KEY = 'cycle-map-routes';
 const RIDE_LOG_KEY = 'rideon-logs';
+const SPOT_KEY = 'rideon-spots';
 
 function haversineDistance(a: LatLng, b: LatLng): number {
   const R = 6371000;
@@ -120,6 +122,12 @@ export default function Home() {
   const prevGpsPos = useRef<{ lat: number; lng: number } | null>(null);
   const rideStartTimeRef = useRef<number | null>(null);
 
+  // Spots
+  const [spots, setSpots] = useState<Spot[]>([]);
+  const [spotDialog, setSpotDialog] = useState<{ lat: number; lng: number } | null>(null);
+  const [spotName, setSpotName] = useState('');
+  const [spotCategory, setSpotCategory] = useState('pin');
+
   // Center map on device location at startup
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -139,6 +147,14 @@ export default function Home() {
     } catch {
       // ignore corrupt data
     }
+  }, []);
+
+  // Load spots
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(SPOT_KEY);
+      if (raw) setSpots(JSON.parse(raw) as Spot[]);
+    } catch { /* ignore */ }
   }, []);
 
   // Restore route from ?share=ID (Firestore short URL)
@@ -430,6 +446,34 @@ export default function Home() {
     setElevations((prev) => [...prev].reverse());
   }, []);
 
+  const handleSaveSpot = useCallback(() => {
+    if (!spotDialog || !spotName.trim()) return;
+    const spot: Spot = {
+      id: Date.now().toString(),
+      name: spotName.trim(),
+      category: spotCategory,
+      lat: spotDialog.lat,
+      lng: spotDialog.lng,
+      createdAt: new Date().toISOString(),
+    };
+    setSpots((prev) => {
+      const updated = [...prev, spot];
+      localStorage.setItem(SPOT_KEY, JSON.stringify(updated));
+      return updated;
+    });
+    setSpotDialog(null);
+    setSpotName('');
+    setSpotCategory('pin');
+  }, [spotDialog, spotName, spotCategory]);
+
+  const handleDeleteSpot = useCallback((id: string) => {
+    setSpots((prev) => {
+      const updated = prev.filter((s) => s.id !== id);
+      localStorage.setItem(SPOT_KEY, JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
 
   const handleLoadRoute = useCallback((route: SavedRoute) => {
     setWaypoints(route.waypoints);
@@ -618,6 +662,8 @@ export default function Home() {
           })()}
           elevationMarkerPos={elevationMarkerPos}
           elevationMarkerDistance={elevationMarkerDistance}
+          spots={spots}
+          onLongPress={(lat, lng) => { setSpotDialog({ lat, lng }); setSpotName(''); setSpotCategory('pin'); }}
         />
 
         {/* Floating RideOn button */}
@@ -730,6 +776,8 @@ export default function Home() {
           onReverseRoute={handleReverseRoute}
           onLoadRouteFromUrl={handleLoadRouteFromUrl}
           onKyorisokuImport={handleKyorisokuImport}
+          spots={spots}
+          onDeleteSpot={handleDeleteSpot}
         />
       ) : (
         <SpeedPanel
@@ -746,6 +794,40 @@ export default function Home() {
         />
       )}
 
+      {/* Spot add dialog */}
+      {spotDialog && (
+        <>
+          <div onClick={() => setSpotDialog(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 2000 }} />
+          <div style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '480px', background: '#fff', borderRadius: '16px 16px 0 0', padding: '20px 16px', paddingBottom: 'calc(20px + env(safe-area-inset-bottom))', zIndex: 2001, boxSizing: 'border-box' }}>
+            <h3 style={{ margin: '0 0 16px', fontSize: '16px', fontWeight: '600' }}>スポットを追加</h3>
+            <input
+              type="text"
+              placeholder="スポット名"
+              value={spotName}
+              onChange={(e) => setSpotName(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && spotName.trim() && handleSaveSpot()}
+              autoFocus
+              style={{ display: 'block', width: '100%', boxSizing: 'border-box', padding: '12px', fontSize: '16px', border: '1px solid #ddd', borderRadius: '10px', marginBottom: '12px', WebkitAppearance: 'none' } as React.CSSProperties}
+            />
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
+              {SPOT_CATEGORIES.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setSpotCategory(cat.id)}
+                  style={{ padding: '6px 12px', borderRadius: '20px', border: `2px solid ${spotCategory === cat.id ? '#D4AF37' : '#ddd'}`, background: spotCategory === cat.id ? '#fff9e6' : '#fff', fontSize: '13px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                >
+                  <span>{cat.emoji}</span>{cat.label}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={handleSaveSpot}
+              disabled={!spotName.trim()}
+              style={{ display: 'block', width: '100%', padding: '14px', background: '#D4AF37', color: '#000', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', opacity: !spotName.trim() ? 0.4 : 1 }}
+            >保存する</button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

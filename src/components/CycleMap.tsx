@@ -8,7 +8,23 @@ import {
   useJsApiLoader,
   type Libraries,
 } from '@react-google-maps/api';
-import type { Tab, LatLng, RouteSegment } from '@/types';
+import type { Tab, LatLng, RouteSegment, Spot } from '@/types';
+import { spotEmoji } from '@/lib/spotCategories';
+
+function makeSpotIcon(category: string): google.maps.Icon {
+  const emoji = spotEmoji(category);
+  const size = 32;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size + 8}">
+    <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2 - 1}" fill="white" stroke="#D4AF37" stroke-width="2"/>
+    <text x="${size / 2}" y="${size / 2 + 6}" text-anchor="middle" font-size="18">${emoji}</text>
+    <polygon points="${size / 2 - 5},${size - 1} ${size / 2 + 5},${size - 1} ${size / 2},${size + 7}" fill="#D4AF37"/>
+  </svg>`;
+  return {
+    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
+    scaledSize: new google.maps.Size(size, size + 8),
+    anchor: new google.maps.Point(size / 2, size + 8),
+  };
+}
 
 const LIBRARIES: Libraries = ['geometry'];
 
@@ -130,6 +146,8 @@ interface CycleMapProps {
   heading?: number | null;
   elevationMarkerPos?: LatLng;
   elevationMarkerDistance?: string;
+  spots?: Spot[];
+  onLongPress?: (lat: number, lng: number) => void;
 }
 
 export default function CycleMap({
@@ -147,6 +165,8 @@ export default function CycleMap({
   heading = null,
   elevationMarkerPos,
   elevationMarkerDistance,
+  spots = [],
+  onLongPress,
 }: CycleMapProps) {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
@@ -156,6 +176,8 @@ export default function CycleMap({
 
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const initializedRef = useRef(false);
+  const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const longPressLatLngRef = useRef<{ lat: number; lng: number } | null>(null);
 
   const handleLoad = useCallback((m: google.maps.Map) => {
     setMap(m);
@@ -192,6 +214,35 @@ export default function CycleMap({
       map.panBy(0, 30);
     }
   }, [map, center, follow]);
+
+  // Long press detection
+  useEffect(() => {
+    if (!map || !onLongPress) return;
+    const downListener = map.addListener('mousedown', (e: google.maps.MapMouseEvent) => {
+      if (!e.latLng) return;
+      longPressLatLngRef.current = { lat: e.latLng.lat(), lng: e.latLng.lng() };
+      longPressTimerRef.current = setTimeout(() => {
+        if (longPressLatLngRef.current) {
+          onLongPress(longPressLatLngRef.current.lat, longPressLatLngRef.current.lng);
+        }
+      }, 800);
+    });
+    const cancelLongPress = () => {
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current);
+        longPressTimerRef.current = null;
+      }
+      longPressLatLngRef.current = null;
+    };
+    const upListener = map.addListener('mouseup', cancelLongPress);
+    const dragListener = map.addListener('drag', cancelLongPress);
+    return () => {
+      google.maps.event.removeListener(downListener);
+      google.maps.event.removeListener(upListener);
+      google.maps.event.removeListener(dragListener);
+      if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+    };
+  }, [map, onLongPress]);
 
   const handleMapClick = useCallback(
     (e: google.maps.MapMouseEvent) => {
@@ -308,6 +359,16 @@ export default function CycleMap({
           zIndex={8}
         />
       )}
+
+      {/* Spot markers */}
+      {spots.map((spot) => (
+        <Marker
+          key={spot.id}
+          position={{ lat: spot.lat, lng: spot.lng }}
+          icon={makeSpotIcon(spot.category)}
+          zIndex={5}
+        />
+      ))}
 
       {/* Current position marker (speed mode) */}
       {tab === 'speed' && currentPosition && (
