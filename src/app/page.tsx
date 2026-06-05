@@ -129,6 +129,8 @@ export default function Home() {
   const [rideDistance, setRideDistance] = useState(0);
   const prevGpsPos = useRef<{ lat: number; lng: number } | null>(null);
   const rideStartTimeRef = useRef<number | null>(null);
+  const rideTrackRef = useRef<{ lat: number; lng: number }[]>([]);
+  const [logTrack, setLogTrack] = useState<{ lat: number; lng: number }[] | null>(null);
 
   // Spots
   const [spots, setSpots] = useState<Spot[]>([]);
@@ -333,12 +335,14 @@ export default function Home() {
   useEffect(() => {
     if (tab !== 'speed') return;
     prevGpsPos.current = null;
+    rideTrackRef.current = [];
     setRideDistance(0);
     const watchId = navigator.geolocation.watchPosition(
       (pos) => {
         const { latitude, longitude, speed, accuracy, heading: h } = pos.coords;
         const kmh = speed != null ? speed * 3.6 : 0;
         const cur = { lat: latitude, lng: longitude };
+        rideTrackRef.current.push(cur);
         if (prevGpsPos.current) {
           const d = haversineDistance(prevGpsPos.current, cur);
           setRideDistance((prev) => prev + d);
@@ -687,6 +691,7 @@ export default function Home() {
           spots={[...spots, ...sharedSpots]}
           onLongPress={(lat, lng) => { setSpotDialog({ lat, lng }); setSpotName(''); setSpotCategory('pin'); }}
           onSpotClick={(spot) => { if (spots.some((s) => s.id === spot.id)) setSpotDeleteConfirm(spot); }}
+          logTrack={logTrack}
         />
 
         {/* Floating RideOn button */}
@@ -707,6 +712,7 @@ export default function Home() {
                     avgSpeed: speedCount > 0 ? speedSum / speedCount : 0,
                     maxSpeed,
                     routeName: navRoute?.name,
+                    track: [...rideTrackRef.current],
                   };
                   try {
                     const raw = localStorage.getItem(RIDE_LOG_KEY);
@@ -719,6 +725,8 @@ export default function Home() {
                 setTab('distance');
               } else {
                 // ライドモード開始
+                rideTrackRef.current = [];
+                setLogTrack(null);
                 rideStartTimeRef.current = Date.now();
                 setTab('speed');
               }
@@ -803,6 +811,10 @@ export default function Home() {
           onDeleteSpot={handleDeleteSpot}
           sharedSpots={sharedSpots}
           onSaveSharedSpots={handleSaveSharedSpots}
+          onLoadRideLog={(log) => {
+            setLogTrack(log.track ?? null);
+            if (log.track && log.track.length >= 2) setFitBoundsPoints(log.track);
+          }}
         />
       ) : (
         <SpeedPanel

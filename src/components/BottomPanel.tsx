@@ -162,9 +162,11 @@ function SwipeableRouteItem({
 function SwipeableLogItem({
   log,
   onDelete,
+  onTap,
 }: {
   log: RideLog;
   onDelete: () => void;
+  onTap?: () => void;
 }) {
   const [offset, setOffset] = useState(0);
   const startXRef = useRef<number | null>(null);
@@ -216,7 +218,7 @@ function SwipeableLogItem({
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        onClick={() => { if (revealed) setOffset(0); }}
+        onClick={() => { if (revealed) { setOffset(0); } else { onTap?.(); } }}
       >
         <div style={{ fontSize: '13px', color: '#888', marginBottom: '4px' }}>
           {new Date(log.date).toLocaleDateString('ja-JP', { month: 'long', day: 'numeric', weekday: 'short' })}
@@ -261,6 +263,7 @@ interface BottomPanelProps {
   onDeleteSpot?: (id: string) => void;
   sharedSpots?: Spot[];
   onSaveSharedSpots?: (spots: Spot[]) => void;
+  onLoadRideLog?: (log: RideLog) => void;
 }
 
 export default function BottomPanel({
@@ -291,6 +294,7 @@ export default function BottomPanel({
   onDeleteSpot,
   sharedSpots = [],
   onSaveSharedSpots,
+  onLoadRideLog,
 }: BottomPanelProps) {
   const [showHistory, setShowHistory] = useState(false);
   const [historyTab, setHistoryTab] = useState<'routes' | 'spots' | 'logs'>('routes');
@@ -709,6 +713,7 @@ export default function BottomPanel({
                     key={log.id}
                     log={log}
                     onDelete={() => handleDeleteLog(log.id)}
+                    onTap={() => { if (log.track && log.track.length >= 2) { onLoadRideLog?.(log); } }}
                   />
                 ))
               )}

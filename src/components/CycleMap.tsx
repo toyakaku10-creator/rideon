@@ -167,6 +167,7 @@ interface CycleMapProps {
   spots?: Spot[];
   onLongPress?: (lat: number, lng: number) => void;
   onSpotClick?: (spot: Spot) => void;
+  logTrack?: { lat: number; lng: number }[] | null;
 }
 
 export default function CycleMap({
@@ -187,6 +188,7 @@ export default function CycleMap({
   spots = [],
   onLongPress,
   onSpotClick,
+  logTrack,
 }: CycleMapProps) {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
@@ -394,6 +396,19 @@ export default function CycleMap({
           }}
         />
       ))}
+
+      {/* Log track polyline */}
+      {logTrack && logTrack.length >= 2 && (
+        <Polyline
+          path={logTrack.map((p) => ({ lat: p.lat, lng: p.lng }))}
+          options={{
+            strokeColor: '#FF6D00',
+            strokeWeight: 4,
+            strokeOpacity: 0.85,
+            zIndex: 4,
+          }}
+        />
+      )}
 
       {/* Elevation scrub marker */}
       {elevationMarkerPos && (

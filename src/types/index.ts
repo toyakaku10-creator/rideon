@@ -31,6 +31,7 @@ export interface RideLog {
   avgSpeed: number; // km/h
   maxSpeed: number; // km/h
   routeName?: string;
+  track?: { lat: number; lng: number }[]; // GPS軌跡
 }
 
 export interface SavedRoute {
