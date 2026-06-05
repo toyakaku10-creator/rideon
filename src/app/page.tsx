@@ -603,6 +603,10 @@ export default function Home() {
       .catch(() => {});
   }, []);
 
+  const handleGpxImport = useCallback((points: { lat: number; lng: number }[]) => {
+    handleKyorisokuImport(points, 0);
+  }, [handleKyorisokuImport]);
+
   const handleStartPointDragged = useCallback((deltaLat: number, deltaLng: number) => {
     setWaypoints((prev) => prev.map((wp) => ({ lat: wp.lat + deltaLat, lng: wp.lng + deltaLng })));
     setSegments((prev) =>
@@ -860,6 +864,7 @@ export default function Home() {
             const pts = route.segments.flatMap((s) => s.geometry);
             if (pts.length > 0) setFitBoundsPoints(pts);
           }}
+          onGpxImport={handleGpxImport}
         />
       ) : (
         <SpeedPanel

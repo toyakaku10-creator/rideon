@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database, Link, Copy, Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin, type LucideProps } from 'lucide-react';
+import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database, Link, Copy, FileInput, Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin, type LucideProps } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute, RideLog, Spot } from '@/types';
 import { SPOT_CATEGORIES, spotCustomSvg } from '@/lib/spotCategories';
 
@@ -283,6 +283,7 @@ interface BottomPanelProps {
   onSaveSharedSpots?: (spots: Spot[]) => void;
   onLoadRideLog?: (log: RideLog) => void;
   onReferenceRoute?: (route: SavedRoute) => void;
+  onGpxImport?: (points: { lat: number; lng: number }[]) => void;
 }
 
 export default function BottomPanel({
@@ -315,6 +316,7 @@ export default function BottomPanel({
   onSaveSharedSpots,
   onLoadRideLog,
   onReferenceRoute,
+  onGpxImport,
 }: BottomPanelProps) {
   const [showHistory, setShowHistory] = useState(false);
   const [historyTab, setHistoryTab] = useState<'routes' | 'spots' | 'logs'>('routes');
@@ -430,6 +432,29 @@ export default function BottomPanel({
     } else {
       setUrlError('対応していないURLです');
     }
+  };
+
+  const handleGpxImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = '';
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const text = ev.target?.result as string;
+      const xml = new DOMParser().parseFromString(text, 'application/xml');
+      const pts = xml.querySelectorAll('trkpt, rtept');
+      const points: { lat: number; lng: number }[] = [];
+      pts.forEach((pt) => {
+        const lat = parseFloat(pt.getAttribute('lat') ?? '');
+        const lng = parseFloat(pt.getAttribute('lon') ?? '');
+        if (isFinite(lat) && isFinite(lng)) points.push({ lat, lng });
+      });
+      if (points.length < 2) { alert('GPXファイルにルートデータが見つかりません'); return; }
+      onGpxImport?.(points);
+      setShowDataMenu(false);
+      setShowHistory(false);
+    };
+    reader.readAsText(file);
   };
 
   const handleImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -652,6 +677,10 @@ export default function BottomPanel({
                     <button onClick={handleExport} disabled={savedRoutes.length === 0} style={{ ...subBtnStyle, opacity: savedRoutes.length === 0 ? 0.4 : 1 }}>
                       <Upload size={20} color="#D4AF37" /><span>マイルート書出し</span>
                     </button>
+                    <label style={{ ...subBtnStyle, cursor: 'pointer' }}>
+                      <FileInput size={20} color="#D4AF37" /><span>GPX取込み</span>
+                      <input type="file" accept=".gpx" onChange={handleGpxImport} style={{ display: 'none' }} />
+                    </label>
                   </div>
                 )}
               </div>
