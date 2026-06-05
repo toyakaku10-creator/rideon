@@ -13,28 +13,29 @@ import { spotLucidePath } from '@/lib/spotCategories';
 
 function makeSpotIcon(category: string, name: string): google.maps.Icon {
   const path = spotLucidePath(category);
-  const circleSize = 32;
-  const tailH = 8;
-  // Label pill above the circle
+  const circleSize = 24;
+  const iconSize = 14;
+  const tailH = 7;
   const labelPad = 6;
-  const charW = 7; // approximate per-char width at font-size 11
-  const labelW = Math.max(name.length * charW + labelPad * 2, 40);
-  const labelH = 18;
-  const labelGap = 3;
+  const charW = 6.5;
+  const labelW = Math.max(name.length * charW + labelPad * 2, 36);
+  const labelH = 16;
+  const labelGap = 2;
   const totalW = Math.max(labelW, circleSize);
   const circleX = (totalW - circleSize) / 2;
   const labelX = (totalW - labelW) / 2;
   const circleY = labelH + labelGap;
   const totalH = circleY + circleSize + tailH;
+  const iconOffset = (circleSize - iconSize) / 2;
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${totalW}" height="${totalH}">
     <rect x="${labelX}" y="0" width="${labelW}" height="${labelH}" rx="4" fill="white" stroke="#ddd" stroke-width="1"/>
-    <text x="${totalW / 2}" y="${labelH - 4}" text-anchor="middle" font-size="11" font-weight="600" font-family="sans-serif" fill="#333">${name}</text>
-    <circle cx="${circleX + circleSize / 2}" cy="${circleY + circleSize / 2}" r="${circleSize / 2 - 1}" fill="#D4AF37" stroke="white" stroke-width="2"/>
-    <g transform="translate(${circleX + circleSize / 2 - 10},${circleY + circleSize / 2 - 10})">
+    <text x="${totalW / 2}" y="${labelH - 4}" text-anchor="middle" font-size="10" font-weight="600" font-family="sans-serif" fill="#333">${name}</text>
+    <circle cx="${circleX + circleSize / 2}" cy="${circleY + circleSize / 2}" r="${circleSize / 2 - 1}" fill="#D4AF37" stroke="white" stroke-width="1.5"/>
+    <g transform="translate(${circleX + iconOffset},${circleY + iconOffset}) scale(${iconSize / 24})">
       <path d="${path}" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </g>
-    <polygon points="${circleX + circleSize / 2 - 5},${circleY + circleSize - 1} ${circleX + circleSize / 2 + 5},${circleY + circleSize - 1} ${circleX + circleSize / 2},${totalH - 1}" fill="#D4AF37"/>
+    <polygon points="${circleX + circleSize / 2 - 4},${circleY + circleSize - 1} ${circleX + circleSize / 2 + 4},${circleY + circleSize - 1} ${circleX + circleSize / 2},${totalH - 1}" fill="#D4AF37"/>
   </svg>`;
   return {
     url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
@@ -165,6 +166,7 @@ interface CycleMapProps {
   elevationMarkerDistance?: string;
   spots?: Spot[];
   onLongPress?: (lat: number, lng: number) => void;
+  onDeleteSpot?: (id: string) => void;
 }
 
 export default function CycleMap({
@@ -184,6 +186,7 @@ export default function CycleMap({
   elevationMarkerDistance,
   spots = [],
   onLongPress,
+  onDeleteSpot,
 }: CycleMapProps) {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
@@ -401,6 +404,11 @@ export default function CycleMap({
           position={{ lat: spot.lat, lng: spot.lng }}
           icon={makeSpotIcon(spot.category, spot.name)}
           zIndex={5}
+          onClick={() => {
+            if (window.confirm(`「${spot.name}」を削除しますか？`)) {
+              onDeleteSpot?.(spot.id);
+            }
+          }}
         />
       ))}
 
