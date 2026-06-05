@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database, Link, Copy, ShoppingBag, Droplets, Mountain, Coffee, MapPin, type LucideProps } from 'lucide-react';
+import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database, Link, Copy, Droplets, Mountain, Coffee, MapPin, type LucideProps } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute, RideLog, Spot } from '@/types';
 import { SPOT_CATEGORIES } from '@/lib/spotCategories';
 
 const SPOT_ICONS: Record<string, React.ComponentType<LucideProps>> = {
-  ShoppingBag, Droplets, Mountain, Coffee, MapPin,
+  Droplets, Mountain, Coffee, MapPin,
 };
 
 function SpotIcon({ category, size = 20 }: { category: string; size?: number }) {

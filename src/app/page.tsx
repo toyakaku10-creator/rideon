@@ -3,12 +3,12 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Bike, ShoppingBag, Droplets, Mountain, Coffee, MapPin, type LucideProps } from 'lucide-react';
+import { Bike, Droplets, Mountain, Coffee, MapPin, type LucideProps } from 'lucide-react';
 import type { Tab, RouteType, LatLng, RouteSegment, SavedRoute, RideLog, Spot } from '@/types';
 import { SPOT_CATEGORIES } from '@/lib/spotCategories';
 
 const SPOT_ICON_MAP: Record<string, React.ComponentType<LucideProps>> = {
-  ShoppingBag, Droplets, Mountain, Coffee, MapPin,
+  Droplets, Mountain, Coffee, MapPin,
 };
 function SpotCatIcon({ iconName, size = 16, color = '#D4AF37' }: { iconName: string; size?: number; color?: string }) {
   const Icon = SPOT_ICON_MAP[iconName] ?? MapPin;
