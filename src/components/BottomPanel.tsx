@@ -159,6 +159,80 @@ function SwipeableRouteItem({
   );
 }
 
+function SwipeableLogItem({
+  log,
+  onDelete,
+}: {
+  log: RideLog;
+  onDelete: () => void;
+}) {
+  const [offset, setOffset] = useState(0);
+  const startXRef = useRef<number | null>(null);
+  const revealed = offset <= -80;
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    startXRef.current = e.touches[0].clientX;
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (startXRef.current === null) return;
+    const dx = e.touches[0].clientX - startXRef.current;
+    if (dx < 0) {
+      e.preventDefault();
+      setOffset(Math.max(dx, -80));
+    } else if (dx > 0 && offset < 0) {
+      e.preventDefault();
+      setOffset(Math.min(0, offset + dx));
+    }
+  }, [offset]);
+
+  const handleTouchEnd = useCallback(() => {
+    startXRef.current = null;
+    setOffset(offset <= -40 ? -80 : 0);
+  }, [offset]);
+
+  const h = Math.floor(log.duration / 3600);
+  const m = Math.floor((log.duration % 3600) / 60);
+  const durationStr = h > 0 ? `${h}時間${m}分` : `${m}分`;
+
+  return (
+    <div className="relative overflow-hidden" style={{ borderBottom: '1px solid #eee' }}>
+      {/* Delete button */}
+      <div
+        className="absolute right-0 top-0 bottom-0 w-20 flex items-center justify-center text-white text-sm font-bold"
+        style={{ background: '#E53935' }}
+        onClick={onDelete}
+      >
+        削除
+      </div>
+      {/* Row content */}
+      <div
+        style={{
+          padding: '12px 0',
+          background: 'var(--surface)',
+          transform: `translateX(${offset}px)`,
+          transition: startXRef.current === null ? 'transform 0.2s' : 'none',
+        }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onClick={() => { if (revealed) setOffset(0); }}
+      >
+        <div style={{ fontSize: '13px', color: '#888', marginBottom: '4px' }}>
+          {new Date(log.date).toLocaleDateString('ja-JP', { month: 'long', day: 'numeric', weekday: 'short' })}
+          {log.routeName && <span style={{ marginLeft: '8px', color: '#D4AF37', fontWeight: '600' }}>{log.routeName}</span>}
+        </div>
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'baseline' }}>
+          <span style={{ fontSize: '20px', fontWeight: '700' }}>{log.distance.toFixed(2)}<span style={{ fontSize: '11px', color: '#888', marginLeft: '2px' }}>km</span></span>
+          <span style={{ fontSize: '13px', color: '#555' }}>{durationStr}</span>
+          <span style={{ fontSize: '13px', color: '#555' }}>平均 {log.avgSpeed.toFixed(1)} km/h</span>
+          <span style={{ fontSize: '13px', color: '#555' }}>最高 {log.maxSpeed.toFixed(1)} km/h</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface BottomPanelProps {
   waypoints: LatLng[];
   segments: RouteSegment[];
@@ -285,6 +359,14 @@ export default function BottomPanel({
       if (raw) setRideLogs(JSON.parse(raw) as RideLog[]);
     } catch { /* ignore */ }
   }, [showHistory]);
+
+  const handleDeleteLog = useCallback((id: string) => {
+    setRideLogs((prev) => {
+      const updated = prev.filter((l) => l.id !== id);
+      localStorage.setItem(RIDE_LOG_KEY, JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
 
   const handleOpenShareUrl = () => {
     const input = shareUrlInput.trim();
@@ -622,25 +704,13 @@ export default function BottomPanel({
                   走行記録はありません
                 </p>
               ) : (
-                [...rideLogs].reverse().map((log) => {
-                  const h = Math.floor(log.duration / 3600);
-                  const m = Math.floor((log.duration % 3600) / 60);
-                  const durationStr = h > 0 ? `${h}時間${m}分` : `${m}分`;
-                  return (
-                    <div key={log.id} style={{ padding: '12px 0', borderBottom: '1px solid #eee' }}>
-                      <div style={{ fontSize: '13px', color: '#888', marginBottom: '4px' }}>
-                        {new Date(log.date).toLocaleDateString('ja-JP', { month: 'long', day: 'numeric', weekday: 'short' })}
-                        {log.routeName && <span style={{ marginLeft: '8px', color: '#D4AF37', fontWeight: '600' }}>{log.routeName}</span>}
-                      </div>
-                      <div style={{ display: 'flex', gap: '16px', alignItems: 'baseline' }}>
-                        <span style={{ fontSize: '20px', fontWeight: '700' }}>{log.distance.toFixed(2)}<span style={{ fontSize: '11px', color: '#888', marginLeft: '2px' }}>km</span></span>
-                        <span style={{ fontSize: '13px', color: '#555' }}>{durationStr}</span>
-                        <span style={{ fontSize: '13px', color: '#555' }}>平均 {log.avgSpeed.toFixed(1)} km/h</span>
-                        <span style={{ fontSize: '13px', color: '#555' }}>最高 {log.maxSpeed.toFixed(1)} km/h</span>
-                      </div>
-                    </div>
-                  );
-                })
+                [...rideLogs].reverse().map((log) => (
+                  <SwipeableLogItem
+                    key={log.id}
+                    log={log}
+                    onDelete={() => handleDeleteLog(log.id)}
+                  />
+                ))
               )}
               <div style={{ height: 'calc(20px + env(safe-area-inset-bottom))' }} />
             </div>
