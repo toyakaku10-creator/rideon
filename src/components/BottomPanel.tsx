@@ -618,23 +618,8 @@ export default function BottomPanel({
                 </div>
                 {showUrlInput && (
                   <div style={{ marginTop: '8px' }}>
-                    <p style={{ fontSize: '12px', color: '#888', margin: '0 0 4px' }}>キョリ測URL</p>
-                    <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-                      <input
-                        type="url"
-                        placeholder="https://www.mapion.co.jp/m/route/..."
-                        value={kyorisokuUrl}
-                        onChange={(e) => { setKyorisokuUrl(e.target.value); setKyorisokuError(''); }}
-                        onKeyDown={(e) => e.key === 'Enter' && handleKyorisokuImport()}
-                        style={{ flex: 1, padding: '10px 12px', fontSize: '16px', border: '1px solid #ddd', borderRadius: '8px', boxSizing: 'border-box', minWidth: 0, WebkitAppearance: 'none' } as React.CSSProperties}
-                      />
-                      <button onClick={handleKyorisokuImport} disabled={!kyorisokuUrl.trim() || kyorisokuLoading} style={{ padding: '10px 14px', background: '#D4AF37', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', opacity: !kyorisokuUrl.trim() || kyorisokuLoading ? 0.4 : 1 }}>
-                        {kyorisokuLoading ? '取得中' : '取込み'}
-                      </button>
-                    </div>
-                    {kyorisokuError && <p style={{ fontSize: '12px', color: '#E53935', margin: '-8px 0 8px' }}>{kyorisokuError}</p>}
                     <p style={{ fontSize: '12px', color: '#888', margin: '0 0 4px' }}>シェアURL</p>
-                    <div style={{ display: 'flex', gap: '8px' }}>
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
                       <input
                         type="url"
                         placeholder="https://rideon-map.vercel.app/?share=..."
@@ -647,6 +632,21 @@ export default function BottomPanel({
                         読込み
                       </button>
                     </div>
+                    <p style={{ fontSize: '12px', color: '#888', margin: '0 0 4px' }}>キョリ測URL</p>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <input
+                        type="url"
+                        placeholder="https://www.mapion.co.jp/m/route/..."
+                        value={kyorisokuUrl}
+                        onChange={(e) => { setKyorisokuUrl(e.target.value); setKyorisokuError(''); }}
+                        onKeyDown={(e) => e.key === 'Enter' && handleKyorisokuImport()}
+                        style={{ flex: 1, padding: '10px 12px', fontSize: '16px', border: '1px solid #ddd', borderRadius: '8px', boxSizing: 'border-box', minWidth: 0, WebkitAppearance: 'none' } as React.CSSProperties}
+                      />
+                      <button onClick={handleKyorisokuImport} disabled={!kyorisokuUrl.trim() || kyorisokuLoading} style={{ padding: '10px 14px', background: '#D4AF37', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', opacity: !kyorisokuUrl.trim() || kyorisokuLoading ? 0.4 : 1 }}>
+                        {kyorisokuLoading ? '取得中' : '取込み'}
+                      </button>
+                    </div>
+                    {kyorisokuError && <p style={{ fontSize: '12px', color: '#E53935', margin: '4px 0 0' }}>{kyorisokuError}</p>}
                   </div>
                 )}
                 {showDataMenu && (
