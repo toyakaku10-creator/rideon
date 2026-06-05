@@ -50,6 +50,21 @@ function makeStraightSegment(from: LatLng, to: LatLng): RouteSegment {
 }
 
 
+function calcRouteHeading(lat: number, lng: number, routePoints: LatLng[]): number | null {
+  if (routePoints.length < 2) return null;
+  let minDist = Infinity, minIndex = 0;
+  routePoints.forEach((p, i) => {
+    const d = Math.abs(p.lat - lat) + Math.abs(p.lng - lng);
+    if (d < minDist) { minDist = d; minIndex = i; }
+  });
+  const nextIndex = Math.min(minIndex + 1, routePoints.length - 1);
+  if (nextIndex === minIndex) return null;
+  const { lat: lat1, lng: lng1 } = routePoints[minIndex];
+  const { lat: lat2, lng: lng2 } = routePoints[nextIndex];
+  const angle = Math.atan2(lng2 - lng1, lat2 - lat1) * 180 / Math.PI;
+  return (angle + 360) % 360;
+}
+
 function bearingDeg(a: LatLng, b: LatLng): number {
   const dLng = (b.lng - a.lng) * Math.PI / 180;
   const lat1 = a.lat * Math.PI / 180;
@@ -565,7 +580,14 @@ export default function Home() {
           onStartPointDragged={handleStartPointDragged}
           navSegments={navRoute?.segments}
           rideMode={tab === 'speed'}
-          heading={heading}
+          heading={(() => {
+            if (heading !== null) return heading;
+            if (tab === 'speed' && currentPosition && navRoute) {
+              const pts = navRoute.segments.flatMap((s) => s.geometry);
+              return calcRouteHeading(currentPosition.lat, currentPosition.lng, pts);
+            }
+            return null;
+          })()}
           elevationMarkerPos={elevationMarkerPos}
           elevationMarkerDistance={elevationMarkerDistance}
         />
