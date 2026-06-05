@@ -630,7 +630,7 @@ export default function BottomPanel({
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <input
                         type="url"
-                        placeholder="シェアURL または キョリ測URLを貼り付け"
+                        placeholder="シェアURLを貼り付け"
                         value={urlInput}
                         onChange={(e) => { setUrlInput(e.target.value); setUrlError(''); }}
                         onKeyDown={(e) => e.key === 'Enter' && handleUrlImport()}
