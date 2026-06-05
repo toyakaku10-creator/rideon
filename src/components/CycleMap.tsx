@@ -347,9 +347,9 @@ export default function CycleMap({
           key={`ref-${i}`}
           path={seg.geometry.map((p) => ({ lat: p.lat, lng: p.lng }))}
           options={{
-            strokeColor: '#888888',
+            strokeColor: '#FF0000',
             strokeWeight: 5,
-            strokeOpacity: 0.3,
+            strokeOpacity: 0.25,
             zIndex: 0,
           }}
         />
