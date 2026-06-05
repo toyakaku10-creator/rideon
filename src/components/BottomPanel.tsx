@@ -652,7 +652,7 @@ export default function BottomPanel({
                 </div>
                 {showUrlInput && (
                   <div style={{ marginTop: '8px' }}>
-                    <div style={{ display: 'flex', gap: '8px' }}>
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
                       <input
                         type="url"
                         placeholder="シェアURLを貼り付け"
@@ -665,7 +665,11 @@ export default function BottomPanel({
                         {urlLoading ? '取得中' : '読込み'}
                       </button>
                     </div>
-                    {urlError && <p style={{ fontSize: '12px', color: '#E53935', margin: '4px 0 0' }}>{urlError}</p>}
+                    {urlError && <p style={{ fontSize: '12px', color: '#E53935', margin: '-4px 0 8px' }}>{urlError}</p>}
+                    <label style={{ ...subBtnStyle, width: '100%', flexDirection: 'row', justifyContent: 'center', gap: '6px', cursor: 'pointer' }}>
+                      <FileInput size={16} color="#D4AF37" /><span>GPXファイルを取込み</span>
+                      <input type="file" accept=".gpx" onChange={handleGpxImport} style={{ display: 'none' }} />
+                    </label>
                   </div>
                 )}
                 {showDataMenu && (
@@ -677,10 +681,6 @@ export default function BottomPanel({
                     <button onClick={handleExport} disabled={savedRoutes.length === 0} style={{ ...subBtnStyle, opacity: savedRoutes.length === 0 ? 0.4 : 1 }}>
                       <Upload size={20} color="#D4AF37" /><span>マイルート書出し</span>
                     </button>
-                    <label style={{ ...subBtnStyle, cursor: 'pointer' }}>
-                      <FileInput size={20} color="#D4AF37" /><span>GPX取込み</span>
-                      <input type="file" accept=".gpx" onChange={handleGpxImport} style={{ display: 'none' }} />
-                    </label>
                   </div>
                 )}
               </div>
