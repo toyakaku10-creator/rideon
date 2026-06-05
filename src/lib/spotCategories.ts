@@ -21,11 +21,11 @@ const CUSTOM_SVG_DEFS: Record<string, { inner: string; viewBox: string }> = {
 export const SPOT_CATEGORIES = [
   { id: 'rest',    label: '休憩',   icon: 'custom',         emoji: '🚲' },
   { id: 'water',   label: '補給',   icon: 'Droplets',       emoji: '💧' },
+  { id: 'food',    label: '食事',   icon: 'Utensils',       emoji: '🍴' },
   { id: 'view',    label: '絶景',   icon: 'Mountain',       emoji: '🏔' },
+  { id: 'photo',   label: '撮影',   icon: 'Camera',         emoji: '📷' },
   { id: 'climb',   label: '坂・峠', icon: 'TrendingUp',     emoji: '⛰' },
   { id: 'gravel',  label: '砂利道', icon: 'AlertTriangle',  emoji: '⚠️' },
-  { id: 'photo',   label: '撮影',   icon: 'Camera',         emoji: '📷' },
-  { id: 'food',    label: '食事',   icon: 'Utensils',       emoji: '🍴' },
   { id: 'pin',     label: 'その他', icon: 'MapPin',         emoji: '📍' },
 ];
 
