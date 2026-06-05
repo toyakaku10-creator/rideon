@@ -171,6 +171,7 @@ interface BottomPanelProps {
   onElevationPositionChange?: (index: number) => void;
   onReverseRoute?: () => void;
   onLoadRouteFromUrl?: (shareId: string) => void;
+  onKyorisokuImport?: (points: { lat: number; lng: number }[], distance: number) => void;
 }
 
 export default function BottomPanel({
@@ -196,13 +197,17 @@ export default function BottomPanel({
   onElevationPositionChange,
   onReverseRoute,
   onLoadRouteFromUrl,
+  onKyorisokuImport,
 }: BottomPanelProps) {
   const [showHistory, setShowHistory] = useState(false);
   const [historyTab, setHistoryTab] = useState<'routes' | 'logs'>('routes');
   const [rideLogs, setRideLogs] = useState<RideLog[]>([]);
   const [showDataMenu, setShowDataMenu] = useState(false);
   const [showUrlInput, setShowUrlInput] = useState(false);
-  const [urlInputValue, setUrlInputValue] = useState('');
+  const [kyorisokuUrl, setKyorisokuUrl] = useState('');
+  const [kyorisokuLoading, setKyorisokuLoading] = useState(false);
+  const [kyorisokuError, setKyorisokuError] = useState('');
+  const [shareUrlInput, setShareUrlInput] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showSaveSheet, setShowSaveSheet] = useState(false);
   const [routeName, setRouteName] = useState('');
@@ -263,21 +268,41 @@ export default function BottomPanel({
   }, [showHistory]);
 
   const handleOpenShareUrl = () => {
-    const input = urlInputValue.trim();
+    const input = shareUrlInput.trim();
     if (!input) return;
     let shareId: string | null = null;
     try {
       const url = new URL(input);
       shareId = url.searchParams.get('share');
     } catch {
-      // URLでない場合はそのままIDとして扱う
       shareId = input;
     }
     if (!shareId) { alert('シェアIDが見つかりません'); return; }
     onLoadRouteFromUrl?.(shareId);
-    setUrlInputValue('');
+    setShareUrlInput('');
     setShowUrlInput(false);
     setShowHistory(false);
+  };
+
+  const handleKyorisokuImport = async () => {
+    const input = kyorisokuUrl.trim();
+    if (!input || kyorisokuLoading) return;
+    setKyorisokuLoading(true);
+    setKyorisokuError('');
+    try {
+      const res = await fetch(`/api/kyorisoku?url=${encodeURIComponent(input)}`);
+      const data = await res.json() as { points?: { lat: number; lng: number }[]; distance?: number; error?: string };
+      if (!res.ok) { setKyorisokuError(data.error ?? '取得に失敗しました'); return; }
+      if (!data.points || data.points.length < 2) { setKyorisokuError('座標データが不足しています'); return; }
+      onKyorisokuImport?.(data.points, data.distance ?? 0);
+      setKyorisokuUrl('');
+      setShowUrlInput(false);
+      setShowHistory(false);
+    } catch {
+      setKyorisokuError('ネットワークエラーが発生しました');
+    } finally {
+      setKyorisokuLoading(false);
+    }
   };
 
   const handleImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -460,11 +485,8 @@ export default function BottomPanel({
             return (
               <div style={{ flexShrink: 0, padding: '0 16px 12px', borderBottom: '1px solid #eee' }}>
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <button onClick={() => { setShowHistory(false); onImportClick(); }} style={btnStyle}>
-                    <Download size={20} color="#D4AF37" /><span>キョリ測</span>
-                  </button>
                   <button onClick={() => { setShowUrlInput((prev) => !prev); setShowDataMenu(false); }} style={btnStyle}>
-                    <Link size={20} color="#D4AF37" /><span>URL取込み</span>
+                    <Link size={20} color="#D4AF37" /><span>取込み</span>
                   </button>
                   <button onClick={() => { setShowDataMenu((prev) => !prev); setShowUrlInput(false); }} style={btnStyle}>
                     <Database size={20} color="#D4AF37" /><span>データ管理</span>
@@ -472,19 +494,35 @@ export default function BottomPanel({
                 </div>
                 {showUrlInput && (
                   <div style={{ marginTop: '8px' }}>
-                    <input
-                      type="url"
-                      placeholder="シェアURLを貼り付け"
-                      value={urlInputValue}
-                      onChange={(e) => setUrlInputValue(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && handleOpenShareUrl()}
-                      style={{ display: 'block', width: '100%', boxSizing: 'border-box', padding: '12px', fontSize: '16px', border: '1px solid #ddd', borderRadius: '10px', marginBottom: '8px', WebkitAppearance: 'none' } as React.CSSProperties}
-                    />
-                    <button
-                      onClick={handleOpenShareUrl}
-                      disabled={!urlInputValue.trim()}
-                      style={{ display: 'block', width: '100%', padding: '12px', background: '#D4AF37', color: '#000', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', opacity: !urlInputValue.trim() ? 0.4 : 1 }}
-                    >読み込む</button>
+                    <p style={{ fontSize: '12px', color: '#888', margin: '0 0 4px' }}>キョリ測URL</p>
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                      <input
+                        type="url"
+                        placeholder="https://www.mapion.co.jp/m/route/..."
+                        value={kyorisokuUrl}
+                        onChange={(e) => { setKyorisokuUrl(e.target.value); setKyorisokuError(''); }}
+                        onKeyDown={(e) => e.key === 'Enter' && handleKyorisokuImport()}
+                        style={{ flex: 1, padding: '10px 12px', fontSize: '16px', border: '1px solid #ddd', borderRadius: '8px', boxSizing: 'border-box', minWidth: 0, WebkitAppearance: 'none' } as React.CSSProperties}
+                      />
+                      <button onClick={handleKyorisokuImport} disabled={!kyorisokuUrl.trim() || kyorisokuLoading} style={{ padding: '10px 14px', background: '#D4AF37', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', opacity: !kyorisokuUrl.trim() || kyorisokuLoading ? 0.4 : 1 }}>
+                        {kyorisokuLoading ? '取得中' : '取込み'}
+                      </button>
+                    </div>
+                    {kyorisokuError && <p style={{ fontSize: '12px', color: '#E53935', margin: '-8px 0 8px' }}>{kyorisokuError}</p>}
+                    <p style={{ fontSize: '12px', color: '#888', margin: '0 0 4px' }}>シェアURL</p>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <input
+                        type="url"
+                        placeholder="https://rideon-map.vercel.app/?share=..."
+                        value={shareUrlInput}
+                        onChange={(e) => setShareUrlInput(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && handleOpenShareUrl()}
+                        style={{ flex: 1, padding: '10px 12px', fontSize: '16px', border: '1px solid #ddd', borderRadius: '8px', boxSizing: 'border-box', minWidth: 0, WebkitAppearance: 'none' } as React.CSSProperties}
+                      />
+                      <button onClick={handleOpenShareUrl} disabled={!shareUrlInput.trim()} style={{ padding: '10px 14px', background: '#D4AF37', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', opacity: !shareUrlInput.trim() ? 0.4 : 1 }}>
+                        読込み
+                      </button>
+                    </div>
                   </div>
                 )}
                 {showDataMenu && (

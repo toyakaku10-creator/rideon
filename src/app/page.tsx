@@ -497,6 +497,32 @@ export default function Home() {
     }
   }, []);
 
+  const handleKyorisokuImport = useCallback((points: { lat: number; lng: number }[], distance: number) => {
+    if (!Array.isArray(points) || points.length < 2) return;
+    const latlngs: LatLng[] = points.map((p) => ({ lat: p.lat, lng: p.lng }));
+    const dist = distance > 0 ? distance : latlngs.slice(1).reduce((sum, p, i) => sum + haversineDistance(latlngs[i], p), 0);
+    const seg: RouteSegment = {
+      from: latlngs[0],
+      to: latlngs[latlngs.length - 1],
+      geometry: latlngs,
+      distance: dist,
+      routeType: 'straight',
+    };
+    setWaypoints([latlngs[0], latlngs[latlngs.length - 1]]);
+    setSegments([seg]);
+    setFitBoundsPoints([...latlngs]);
+    setIsImported(true);
+    setIsAdjustingImport(true);
+    fetch('/api/elevation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ points: latlngs }),
+    })
+      .then((r) => r.json())
+      .then((data) => { if (data.elevations) setElevations(data.elevations); })
+      .catch(() => {});
+  }, []);
+
   const handleStartPointDragged = useCallback((deltaLat: number, deltaLng: number) => {
     setWaypoints((prev) => prev.map((wp) => ({ lat: wp.lat + deltaLat, lng: wp.lng + deltaLng })));
     setSegments((prev) =>
@@ -703,6 +729,7 @@ export default function Home() {
           onElevationPositionChange={setElevationIndex}
           onReverseRoute={handleReverseRoute}
           onLoadRouteFromUrl={handleLoadRouteFromUrl}
+          onKyorisokuImport={handleKyorisokuImport}
         />
       ) : (
         <SpeedPanel
