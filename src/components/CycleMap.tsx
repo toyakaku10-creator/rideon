@@ -198,6 +198,7 @@ export default function CycleMap({
   const initializedRef = useRef(false);
   const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressLatLngRef = useRef<{ lat: number; lng: number } | null>(null);
+  const longPressActiveRef = useRef(false);
 
   const handleLoad = useCallback((m: google.maps.Map) => {
     setMap(m);
@@ -243,6 +244,7 @@ export default function CycleMap({
       longPressLatLngRef.current = { lat: e.latLng.lat(), lng: e.latLng.lng() };
       longPressTimerRef.current = setTimeout(() => {
         if (longPressLatLngRef.current) {
+          longPressActiveRef.current = true;
           onLongPress(longPressLatLngRef.current.lat, longPressLatLngRef.current.lng);
         }
       }, 800);
@@ -264,6 +266,7 @@ export default function CycleMap({
       if (!lat || !lng) return;
       longPressLatLngRef.current = { lat, lng };
       longPressTimerRef.current = setTimeout(() => {
+        longPressActiveRef.current = true;
         onLongPress(lat, lng);
       }, 800);
     });
@@ -283,6 +286,10 @@ export default function CycleMap({
 
   const handleMapClick = useCallback(
     (e: google.maps.MapMouseEvent) => {
+      if (longPressActiveRef.current) {
+        longPressActiveRef.current = false;
+        return;
+      }
       if (tab !== 'distance' || !e.latLng) return;
       onMapClick({ lat: e.latLng.lat(), lng: e.latLng.lng() });
     },
