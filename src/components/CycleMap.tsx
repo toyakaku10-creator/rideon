@@ -349,7 +349,7 @@ export default function CycleMap({
           options={{
             strokeColor: '#FF0000',
             strokeWeight: 5,
-            strokeOpacity: 0.25,
+            strokeOpacity: 0.15,
             zIndex: 0,
             clickable: false,
           }}
