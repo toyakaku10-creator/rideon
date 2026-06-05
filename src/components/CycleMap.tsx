@@ -11,10 +11,15 @@ import {
 import type { Tab, LatLng, RouteSegment, Spot } from '@/types';
 import { spotLucidePath } from '@/lib/spotCategories';
 
-function makeSpotIcon(category: string, name: string): google.maps.Icon {
+function getSpotMarkerSizes(zoom: number): { circleSize: number; iconSize: number } {
+  if (zoom >= 16) return { circleSize: 28, iconSize: 16 };
+  if (zoom >= 14) return { circleSize: 22, iconSize: 13 };
+  if (zoom >= 12) return { circleSize: 16, iconSize: 9 };
+  return { circleSize: 12, iconSize: 7 };
+}
+
+function makeSpotIcon(category: string, name: string, circleSize = 24, iconSize = 14): google.maps.Icon {
   const path = spotLucidePath(category);
-  const circleSize = 24;
-  const iconSize = 14;
   const tailH = 7;
   const labelPad = 6;
   const charW = 6.5;
@@ -199,6 +204,7 @@ export default function CycleMap({
   });
 
   const [map, setMap] = useState<google.maps.Map | null>(null);
+  const [zoom, setZoom] = useState(14);
   const initializedRef = useRef(false);
   const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressLatLngRef = useRef<{ lat: number; lng: number } | null>(null);
@@ -211,6 +217,15 @@ export default function CycleMap({
   const handleUnmount = useCallback(() => {
     setMap(null);
   }, []);
+
+  // Track zoom level for responsive spot markers
+  useEffect(() => {
+    if (!map) return;
+    const listener = map.addListener('zoom_changed', () => {
+      setZoom(map.getZoom() ?? 14);
+    });
+    return () => google.maps.event.removeListener(listener);
+  }, [map]);
 
   // fitBounds when import data arrives
   useEffect(() => {
@@ -436,15 +451,18 @@ export default function CycleMap({
       )}
 
       {/* Spot markers */}
-      {spots.map((spot) => (
+      {spots.map((spot) => {
+        const { circleSize, iconSize } = getSpotMarkerSizes(zoom);
+        return (
         <Marker
-          key={spot.id}
+          key={`${spot.id}-${zoom}`}
           position={{ lat: spot.lat, lng: spot.lng }}
-          icon={makeSpotIcon(spot.category, spot.name)}
+          icon={makeSpotIcon(spot.category, spot.name, circleSize, iconSize)}
           zIndex={5}
           onClick={() => onSpotClick?.(spot)}
         />
-      ))}
+        );
+      })}
 
       {/* Current position marker (speed mode) */}
       {tab === 'speed' && currentPosition && (
