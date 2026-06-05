@@ -9,7 +9,7 @@ import {
   type Libraries,
 } from '@react-google-maps/api';
 import type { Tab, LatLng, RouteSegment, Spot } from '@/types';
-import { spotLucidePath } from '@/lib/spotCategories';
+import { spotLucidePath, spotCustomSvg } from '@/lib/spotCategories';
 
 function getSpotMarkerSizes(zoom: number): { circleSize: number; iconSize: number } {
   if (zoom >= 16) return { circleSize: 28, iconSize: 16 };
@@ -19,7 +19,6 @@ function getSpotMarkerSizes(zoom: number): { circleSize: number; iconSize: numbe
 }
 
 function makeSpotIcon(category: string, name: string, circleSize = 24, iconSize = 14): google.maps.Icon {
-  const path = spotLucidePath(category);
   const tailH = 7;
   const labelPad = 6;
   const charW = 6.5;
@@ -33,13 +32,23 @@ function makeSpotIcon(category: string, name: string, circleSize = 24, iconSize 
   const totalH = circleY + circleSize + tailH;
   const iconOffset = (circleSize - iconSize) / 2;
 
+  const customSvg = spotCustomSvg(category);
+  let iconG: string;
+  if (customSvg) {
+    // カスタム SVG: viewBox の幅に合わせてスケール
+    const [, , vw] = customSvg.viewBox.split(' ').map(Number);
+    const scale = iconSize / vw;
+    iconG = `<g transform="translate(${circleX + iconOffset},${circleY + iconOffset}) scale(${scale})" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${customSvg.inner}</g>`;
+  } else {
+    const path = spotLucidePath(category);
+    iconG = `<g transform="translate(${circleX + iconOffset},${circleY + iconOffset}) scale(${iconSize / 24})"><path d="${path}" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>`;
+  }
+
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${totalW}" height="${totalH}">
     <rect x="${labelX}" y="0" width="${labelW}" height="${labelH}" rx="4" fill="white" stroke="#ddd" stroke-width="1"/>
     <text x="${totalW / 2}" y="${labelH - 4}" text-anchor="middle" font-size="10" font-weight="600" font-family="sans-serif" fill="#333">${name}</text>
     <circle cx="${circleX + circleSize / 2}" cy="${circleY + circleSize / 2}" r="${circleSize / 2 - 1}" fill="#D4AF37" stroke="white" stroke-width="1.5"/>
-    <g transform="translate(${circleX + iconOffset},${circleY + iconOffset}) scale(${iconSize / 24})">
-      <path d="${path}" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </g>
+    ${iconG}
     <polygon points="${circleX + circleSize / 2 - 4},${circleY + circleSize - 1} ${circleX + circleSize / 2 + 4},${circleY + circleSize - 1} ${circleX + circleSize / 2},${totalH - 1}" fill="#D4AF37"/>
   </svg>`;
   return {

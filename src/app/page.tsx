@@ -3,14 +3,21 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Bike, Droplets, Mountain, Toilet, MapPin, type LucideProps } from 'lucide-react';
+import { Bike, Droplets, Mountain, MapPin, type LucideProps } from 'lucide-react';
 import type { Tab, RouteType, LatLng, RouteSegment, SavedRoute, RideLog, Spot } from '@/types';
-import { SPOT_CATEGORIES } from '@/lib/spotCategories';
+import { SPOT_CATEGORIES, spotCustomSvg } from '@/lib/spotCategories';
 
 const SPOT_ICON_MAP: Record<string, React.ComponentType<LucideProps>> = {
-  Droplets, Mountain, Toilet, MapPin,
+  Droplets, Mountain, MapPin,
 };
-function SpotCatIcon({ iconName, size = 16, color = '#D4AF37' }: { iconName: string; size?: number; color?: string }) {
+function SpotCatIcon({ iconName, category, size = 16, color = '#D4AF37' }: { iconName: string; category?: string; size?: number; color?: string }) {
+  const custom = category ? spotCustomSvg(category) : null;
+  if (custom) {
+    return (
+      <svg viewBox={custom.viewBox} width={size} height={size} fill="none" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"
+        dangerouslySetInnerHTML={{ __html: custom.inner }} />
+    );
+  }
   const Icon = SPOT_ICON_MAP[iconName] ?? MapPin;
   return <Icon size={size} color={color} />;
 }
@@ -911,7 +918,7 @@ export default function Home() {
                   onClick={() => setSpotCategory(cat.id)}
                   style={{ padding: '6px 12px', borderRadius: '20px', border: `2px solid ${spotCategory === cat.id ? '#D4AF37' : '#ddd'}`, background: spotCategory === cat.id ? '#fff9e6' : '#fff', fontSize: '13px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
                 >
-                  <SpotCatIcon iconName={cat.icon} size={15} color={spotCategory === cat.id ? '#D4AF37' : '#999'} />{cat.label}
+                  <SpotCatIcon iconName={cat.icon} category={cat.id} size={15} color={spotCategory === cat.id ? '#D4AF37' : '#999'} />{cat.label}
                 </button>
               ))}
             </div>

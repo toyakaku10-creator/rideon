@@ -1,15 +1,22 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database, Link, Copy, Droplets, Mountain, Toilet, MapPin, type LucideProps } from 'lucide-react';
+import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database, Link, Copy, Droplets, Mountain, MapPin, type LucideProps } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute, RideLog, Spot } from '@/types';
-import { SPOT_CATEGORIES } from '@/lib/spotCategories';
+import { SPOT_CATEGORIES, spotCustomSvg } from '@/lib/spotCategories';
 
 const SPOT_ICONS: Record<string, React.ComponentType<LucideProps>> = {
-  Droplets, Mountain, Toilet, MapPin,
+  Droplets, Mountain, MapPin,
 };
 
 function SpotIcon({ category, size = 20 }: { category: string; size?: number }) {
+  const custom = spotCustomSvg(category);
+  if (custom) {
+    return (
+      <svg viewBox={custom.viewBox} width={size} height={size} fill="none" stroke="#D4AF37" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"
+        dangerouslySetInnerHTML={{ __html: custom.inner }} />
+    );
+  }
   const cat = SPOT_CATEGORIES.find((c) => c.id === category);
   const Icon = SPOT_ICONS[cat?.icon ?? 'MapPin'] ?? MapPin;
   return <Icon size={size} color="#D4AF37" />;
