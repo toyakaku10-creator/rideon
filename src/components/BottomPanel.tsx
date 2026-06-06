@@ -319,6 +319,7 @@ export default function BottomPanel({
   onGpxImport,
 }: BottomPanelProps) {
   const [showHistory, setShowHistory] = useState(false);
+  const [showShareSheet, setShowShareSheet] = useState(false);
   const [historyTab, setHistoryTab] = useState<'routes' | 'spots' | 'logs'>('routes');
   const [rideLogs, setRideLogs] = useState<RideLog[]>([]);
   const [showDataMenu, setShowDataMenu] = useState(false);
@@ -583,7 +584,7 @@ export default function BottomPanel({
             {
               icon: <Share2 size={24} />,
               label: 'シェア',
-              onClick: handleShare,
+              onClick: () => setShowShareSheet(true),
               disabled: waypoints.length < 2,
             },
           ].map(({ icon, label, onClick, disabled }) => (
@@ -634,6 +635,35 @@ export default function BottomPanel({
         </>
       )}
 
+      {/* シェアボトムシート */}
+      {showShareSheet && (
+        <>
+          <div
+            onClick={() => setShowShareSheet(false)}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000 }}
+          />
+          <div style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '480px', background: '#fff', borderRadius: '16px 16px 0 0', padding: '20px 16px', paddingBottom: 'calc(20px + env(safe-area-inset-bottom))', zIndex: 1001, boxSizing: 'border-box' }}>
+            <h3 style={{ margin: '0 0 16px', fontSize: '16px', fontWeight: '600' }}>シェア</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <button
+                onClick={() => { setShowShareSheet(false); handleShare(); }}
+                style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '14px 16px', background: '#f5f5f5', border: '1px solid #eee', borderRadius: '12px', cursor: 'pointer', fontSize: '15px', fontWeight: '600', color: '#333' }}
+              >
+                <Share2 size={20} color="#D4AF37" />
+                シェアURLを送る
+              </button>
+              <button
+                onClick={() => { setShowShareSheet(false); handleGpxExport(); }}
+                style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '14px 16px', background: '#f5f5f5', border: '1px solid #eee', borderRadius: '12px', cursor: 'pointer', fontSize: '15px', fontWeight: '600', color: '#333' }}
+              >
+                <FileOutput size={20} color="#D4AF37" />
+                GPXを書き出す
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
       {/* History modal */}
       {showHistory && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#ffffff', zIndex: 2000, display: 'flex', flexDirection: 'column', maxWidth: '480px', width: '100%', margin: '0 auto', boxSizing: 'border-box' } as React.CSSProperties}>
@@ -662,7 +692,7 @@ export default function BottomPanel({
                     <Link size={20} color="#D4AF37" /><span>取込み</span>
                   </button>
                   <button onClick={() => { setShowDataMenu((prev) => !prev); setShowUrlInput(false); }} style={btnStyle}>
-                    <Database size={20} color="#D4AF37" /><span>データ管理</span>
+                    <Database size={20} color="#D4AF37" /><span>データ</span>
                   </button>
                 </div>
                 {showUrlInput && (
@@ -686,9 +716,6 @@ export default function BottomPanel({
                         <FileInput size={16} color="#D4AF37" /><span>GPX取込み</span>
                         <input type="file" accept=".gpx" onChange={handleGpxImport} style={{ display: 'none' }} />
                       </label>
-                      <button onClick={handleGpxExport} style={{ ...subBtnStyle, flex: 1, flexDirection: 'row', justifyContent: 'center', gap: '6px' }}>
-                        <FileOutput size={16} color="#D4AF37" /><span>GPX書き出し</span>
-                      </button>
                     </div>
                   </div>
                 )}
