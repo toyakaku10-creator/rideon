@@ -140,6 +140,7 @@ export default function Home() {
   const rideTrackRef = useRef<{ lat: number; lng: number }[]>([]);
   const [logTrack, setLogTrack] = useState<{ lat: number; lng: number }[] | null>(null);
   const [activeRideLog, setActiveRideLog] = useState<RideLog | null>(null);
+  const [showRideLogRoute, setShowRideLogRoute] = useState(false);
 
   // Spots
   const [spots, setSpots] = useState<Spot[]>([]);
@@ -710,8 +711,8 @@ export default function Home() {
         />
 
         {/* Save ride log as route button */}
-        {activeRideLog && tab === 'distance' && (
-          <div style={{ position: 'absolute', top: '12px', left: '50%', transform: 'translateX(-50%)', zIndex: 500 }}>
+        {showRideLogRoute && activeRideLog && tab === 'distance' && (
+          <div style={{ position: 'absolute', top: '12px', left: '50%', transform: 'translateX(-50%)', zIndex: 500, display: 'flex', gap: '8px', alignItems: 'center' }}>
             <button
               onClick={() => {
                 const track = activeRideLog.track!;
@@ -726,11 +727,19 @@ export default function Home() {
                 }]);
                 setLogTrack(null);
                 setActiveRideLog(null);
+                setShowRideLogRoute(false);
                 setTimeout(() => setOpenSaveSheet(true), 100);
               }}
               style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', background: '#1a73e8', color: '#fff', border: 'none', borderRadius: '20px', fontSize: '13px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.25)' }}
             >
               マイルートに保存
+            </button>
+            <button
+              onClick={() => { setShowRideLogRoute(false); setLogTrack(null); setActiveRideLog(null); }}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', background: 'rgba(255,255,255,0.9)', color: '#555', border: 'none', borderRadius: '50%', fontSize: '16px', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.25)' }}
+              aria-label="閉じる"
+            >
+              ✕
             </button>
           </div>
         )}
@@ -855,6 +864,8 @@ export default function Home() {
           onLoadRideLog={(log) => {
             setLogTrack(log.track ?? null);
             setActiveRideLog(log.track && log.track.length >= 2 ? log : null);
+            setShowRideLogRoute(log.track != null && log.track.length >= 2);
+            setElevations([]);
             if (log.track && log.track.length >= 2) setFitBoundsPoints(log.track);
           }}
           onReferenceRoute={(route) => {

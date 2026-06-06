@@ -797,7 +797,7 @@ export default function BottomPanel({
                     key={log.id}
                     log={log}
                     onDelete={() => handleDeleteLog(log.id)}
-                    onTap={() => { if (log.track && log.track.length >= 2) { onLoadRideLog?.(log); } }}
+                    onTap={() => { if (log.track && log.track.length >= 2) { onLoadRideLog?.(log); setShowHistory(false); } }}
                   />
                 ))
               )}
