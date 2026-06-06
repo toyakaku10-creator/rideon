@@ -852,6 +852,7 @@ export default function Home() {
             setWaypoints([]);
             setSegments([]);
           }}
+          onModeChange={(mode) => { if (mode === 'route') setTab('distance'); }}
           onReferenceRoute={(route) => {
             setReferenceRoute(route);
             setWaypoints([]);

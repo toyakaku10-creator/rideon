@@ -180,11 +180,17 @@ function SwipeableRouteItem({
 function SwipeableLogItem({
   log,
   onDelete,
-  onTap,
+  onShowRoute,
+  onSaveAsRoute,
+  onClearRoute,
+  isSelected,
 }: {
   log: RideLog;
   onDelete: () => void;
-  onTap?: () => void;
+  onShowRoute?: () => void;
+  onSaveAsRoute?: () => void;
+  onClearRoute?: () => void;
+  isSelected: boolean;
 }) {
   const [offset, setOffset] = useState(0);
   const startXRef = useRef<number | null>(null);
@@ -217,7 +223,7 @@ function SwipeableLogItem({
 
   return (
     <div className="relative overflow-hidden" style={{ borderBottom: '1px solid #eee' }}>
-      {/* Delete button */}
+      {/* Delete button (revealed on swipe) */}
       <div
         className="absolute right-0 top-0 bottom-0 w-20 flex items-center justify-center text-white text-sm font-bold"
         style={{ background: '#E53935' }}
@@ -236,18 +242,36 @@ function SwipeableLogItem({
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        onClick={() => { if (revealed) { setOffset(0); } else { onTap?.(); } }}
+        onClick={() => { if (revealed) setOffset(0); }}
       >
         <div style={{ fontSize: '13px', color: '#888', marginBottom: '4px' }}>
           {new Date(log.date).toLocaleDateString('ja-JP', { month: 'long', day: 'numeric', weekday: 'short' })}
           {log.routeName && <span style={{ marginLeft: '8px', color: '#D4AF37', fontWeight: '600' }}>{log.routeName}</span>}
         </div>
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'baseline' }}>
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'baseline', marginBottom: '8px', flexWrap: 'wrap' }}>
           <span style={{ fontSize: '20px', fontWeight: '700' }}>{log.distance.toFixed(2)}<span style={{ fontSize: '11px', color: '#888', marginLeft: '2px' }}>km</span></span>
           <span style={{ fontSize: '13px', color: '#555' }}>{durationStr}</span>
           <span style={{ fontSize: '13px', color: '#555' }}>平均 {log.avgSpeed.toFixed(1)} km/h</span>
           <span style={{ fontSize: '13px', color: '#555' }}>最高 {log.maxSpeed.toFixed(1)} km/h</span>
         </div>
+        {log.track && log.track.length >= 2 && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onShowRoute?.(); }}
+            style={{ padding: '6px 12px', background: '#1a73e8', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}
+          >ルート表示</button>
+        )}
+        {isSelected && (
+          <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+            <button
+              onClick={(e) => { e.stopPropagation(); onSaveAsRoute?.(); }}
+              style={{ flex: 1, padding: '8px', background: '#D4AF37', color: '#000', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }}
+            >マイルートに保存</button>
+            <button
+              onClick={(e) => { e.stopPropagation(); onClearRoute?.(); }}
+              style={{ padding: '8px 14px', background: '#f5f5f5', color: '#555', border: '1px solid #eee', borderRadius: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }}
+            >×</button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -284,6 +308,7 @@ interface BottomPanelProps {
   onLoadRideLog?: (log: RideLog) => void;
   onSaveRideLogAsRoute?: (log: RideLog) => void;
   onClearRideLogRoute?: () => void;
+  onModeChange?: (mode: string) => void;
   onReferenceRoute?: (route: SavedRoute) => void;
   onGpxImport?: (points: { lat: number; lng: number }[]) => void;
 }
@@ -319,6 +344,7 @@ export default function BottomPanel({
   onLoadRideLog,
   onSaveRideLogAsRoute,
   onClearRideLogRoute,
+  onModeChange,
   onReferenceRoute,
   onGpxImport,
 }: BottomPanelProps) {
@@ -797,50 +823,17 @@ export default function BottomPanel({
                   走行記録はありません
                 </p>
               ) : (
-                [...rideLogs].reverse().map((log) => {
-                  const h = Math.floor(log.duration / 3600);
-                  const m = Math.floor((log.duration % 3600) / 60);
-                  const durationStr = h > 0 ? `${h}時間${m}分` : `${m}分`;
-                  const isSelected = selectedLogId === log.id;
-                  return (
-                    <div key={log.id} style={{ padding: '12px 0', borderBottom: '1px solid #eee' }}>
-                      <div style={{ fontSize: '13px', color: '#888', marginBottom: '4px' }}>
-                        {new Date(log.date).toLocaleDateString('ja-JP', { month: 'long', day: 'numeric', weekday: 'short' })}
-                        {log.routeName && <span style={{ marginLeft: '8px', color: '#D4AF37', fontWeight: '600' }}>{log.routeName}</span>}
-                      </div>
-                      <div style={{ display: 'flex', gap: '16px', alignItems: 'baseline', marginBottom: '8px', flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: '20px', fontWeight: '700' }}>{log.distance.toFixed(2)}<span style={{ fontSize: '11px', color: '#888', marginLeft: '2px' }}>km</span></span>
-                        <span style={{ fontSize: '13px', color: '#555' }}>{durationStr}</span>
-                        <span style={{ fontSize: '13px', color: '#555' }}>平均 {log.avgSpeed.toFixed(1)} km/h</span>
-                        <span style={{ fontSize: '13px', color: '#555' }}>最高 {log.maxSpeed.toFixed(1)} km/h</span>
-                      </div>
-                      <div style={{ display: 'flex', gap: '8px' }}>
-                        {log.track && log.track.length >= 2 && (
-                          <button
-                            onClick={() => { setSelectedLogId(log.id); onLoadRideLog?.(log); }}
-                            style={{ padding: '6px 12px', background: '#1a73e8', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}
-                          >ルート表示</button>
-                        )}
-                        <button
-                          onClick={() => { handleDeleteLog(log.id); if (isSelected) { setSelectedLogId(null); onClearRideLogRoute?.(); } }}
-                          style={{ padding: '6px 12px', background: '#f5f5f5', color: '#e53935', border: '1px solid #eee', borderRadius: '8px', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}
-                        >削除</button>
-                      </div>
-                      {isSelected && (
-                        <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                          <button
-                            onClick={() => { onSaveRideLogAsRoute?.(log); setSelectedLogId(null); }}
-                            style={{ flex: 1, padding: '8px', background: '#D4AF37', color: '#000', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }}
-                          >マイルートに保存</button>
-                          <button
-                            onClick={() => { setSelectedLogId(null); onClearRideLogRoute?.(); }}
-                            style={{ padding: '8px 14px', background: '#f5f5f5', color: '#555', border: '1px solid #eee', borderRadius: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }}
-                          >×</button>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })
+                [...rideLogs].reverse().map((log) => (
+                  <SwipeableLogItem
+                    key={log.id}
+                    log={log}
+                    isSelected={selectedLogId === log.id}
+                    onDelete={() => { handleDeleteLog(log.id); if (selectedLogId === log.id) { setSelectedLogId(null); onClearRideLogRoute?.(); } }}
+                    onShowRoute={() => { onLoadRideLog?.(log); onModeChange?.('route'); setShowHistory(false); setSelectedLogId(log.id); }}
+                    onSaveAsRoute={() => { onSaveRideLogAsRoute?.(log); setSelectedLogId(null); }}
+                    onClearRoute={() => { setSelectedLogId(null); onClearRideLogRoute?.(); }}
+                  />
+                ))
               )}
               <div style={{ height: 'calc(20px + env(safe-area-inset-bottom))' }} />
             </div>
