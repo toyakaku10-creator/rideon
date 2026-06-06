@@ -199,6 +199,7 @@ export default function Home() {
         }]);
         setWaypoints([latlngs[0], latlngs[latlngs.length - 1]]);
         setFitBoundsPoints(latlngs);
+        setSharedSpots(Array.isArray(data.spots) ? data.spots : []);
 
         // action=save の時は自動で保存ダイアログを開く
         if (action === 'save') {
