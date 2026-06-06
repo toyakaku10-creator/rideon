@@ -138,6 +138,7 @@ export default function Home() {
   const prevGpsPos = useRef<{ lat: number; lng: number } | null>(null);
   const rideStartTimeRef = useRef<number | null>(null);
   const rideTrackRef = useRef<{ lat: number; lng: number }[]>([]);
+  const rideRouteNameRef = useRef<string | undefined>(undefined);
   const [logTrack, setLogTrack] = useState<{ lat: number; lng: number }[] | null>(null);
 
   // Spots
@@ -513,6 +514,7 @@ export default function Home() {
     setWaypoints(route.waypoints);
     setSegments(route.segments);
     setRouteType(route.routeType);
+    rideRouteNameRef.current = route.name;
     if (route.elevations && route.elevations.length >= 2) {
       setElevations(route.elevations);
     }
@@ -726,7 +728,7 @@ export default function Home() {
                     duration,
                     avgSpeed: speedCount > 0 ? speedSum / speedCount : 0,
                     maxSpeed,
-                    routeName: navRoute?.name,
+                    routeName: rideRouteNameRef.current,
                     track: [...rideTrackRef.current],
                   };
                   try {

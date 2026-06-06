@@ -679,7 +679,7 @@ export default function BottomPanel({
           </div>
           {/* Tabs */}
           <div style={{ flexShrink: 0, display: 'flex', gap: '0', padding: '0 16px 0', marginBottom: '8px' }}>
-            {([['routes', 'ルート'], ['spots', 'スポット'], ['logs', '走行履歴']] as const).map(([t, label]) => (
+            {([['routes', 'ルート'], ['spots', 'スポット'], ['logs', '走行記録']] as const).map(([t, label]) => (
               <button key={t} onClick={() => setHistoryTab(t)} style={{ flex: 1, padding: '8px 0', fontSize: '12px', fontWeight: '600', background: 'none', border: 'none', borderBottom: historyTab === t ? '2px solid #D4AF37' : '2px solid #eee', color: historyTab === t ? '#D4AF37' : '#999', cursor: 'pointer' }}>
                 {label}
               </button>
