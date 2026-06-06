@@ -712,7 +712,7 @@ export default function Home() {
 
         {/* Save ride log as route button */}
         {showRideLogRoute && activeRideLog && tab === 'distance' && (
-          <div style={{ position: 'absolute', top: '12px', left: '50%', transform: 'translateX(-50%)', zIndex: 500, display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <div style={{ position: 'absolute', top: '12px', left: '50%', transform: 'translateX(-50%)', zIndex: 500 }}>
             <button
               onClick={() => {
                 const track = activeRideLog.track!;
@@ -734,12 +734,17 @@ export default function Home() {
             >
               マイルートに保存
             </button>
+          </div>
+        )}
+
+        {/* Close ride log track button */}
+        {showRideLogRoute && tab === 'distance' && (
+          <div style={{ position: 'absolute', top: '16px', left: '12px', zIndex: 500 }}>
             <button
-              onClick={() => { setShowRideLogRoute(false); setLogTrack(null); setActiveRideLog(null); }}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', background: 'rgba(255,255,255,0.9)', color: '#555', border: 'none', borderRadius: '50%', fontSize: '16px', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.25)' }}
-              aria-label="閉じる"
+              onClick={() => { setShowRideLogRoute(false); setLogTrack(null); setActiveRideLog(null); setWaypoints([]); setSegments([]); }}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', background: 'rgba(255,255,255,0.9)', color: '#555', border: 'none', borderRadius: '20px', fontSize: '13px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.25)' }}
             >
-              ✕
+              ✕ 軌跡を閉じる
             </button>
           </div>
         )}
