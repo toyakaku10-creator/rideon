@@ -282,6 +282,8 @@ interface BottomPanelProps {
   sharedSpots?: Spot[];
   onSaveSharedSpots?: (spots: Spot[]) => void;
   onLoadRideLog?: (log: RideLog) => void;
+  onSaveRideLogAsRoute?: (log: RideLog) => void;
+  onClearRideLogRoute?: () => void;
   onReferenceRoute?: (route: SavedRoute) => void;
   onGpxImport?: (points: { lat: number; lng: number }[]) => void;
 }
@@ -315,10 +317,13 @@ export default function BottomPanel({
   sharedSpots = [],
   onSaveSharedSpots,
   onLoadRideLog,
+  onSaveRideLogAsRoute,
+  onClearRideLogRoute,
   onReferenceRoute,
   onGpxImport,
 }: BottomPanelProps) {
   const [showHistory, setShowHistory] = useState(false);
+  const [selectedLogId, setSelectedLogId] = useState<string | null>(null);
   const [showShareSheet, setShowShareSheet] = useState(false);
   const [historyTab, setHistoryTab] = useState<'routes' | 'spots' | 'logs'>('routes');
   const [rideLogs, setRideLogs] = useState<RideLog[]>([]);
@@ -792,14 +797,50 @@ export default function BottomPanel({
                   走行記録はありません
                 </p>
               ) : (
-                [...rideLogs].reverse().map((log) => (
-                  <SwipeableLogItem
-                    key={log.id}
-                    log={log}
-                    onDelete={() => handleDeleteLog(log.id)}
-                    onTap={() => { if (log.track && log.track.length >= 2) { onLoadRideLog?.(log); setShowHistory(false); } }}
-                  />
-                ))
+                [...rideLogs].reverse().map((log) => {
+                  const h = Math.floor(log.duration / 3600);
+                  const m = Math.floor((log.duration % 3600) / 60);
+                  const durationStr = h > 0 ? `${h}時間${m}分` : `${m}分`;
+                  const isSelected = selectedLogId === log.id;
+                  return (
+                    <div key={log.id} style={{ padding: '12px 0', borderBottom: '1px solid #eee' }}>
+                      <div style={{ fontSize: '13px', color: '#888', marginBottom: '4px' }}>
+                        {new Date(log.date).toLocaleDateString('ja-JP', { month: 'long', day: 'numeric', weekday: 'short' })}
+                        {log.routeName && <span style={{ marginLeft: '8px', color: '#D4AF37', fontWeight: '600' }}>{log.routeName}</span>}
+                      </div>
+                      <div style={{ display: 'flex', gap: '16px', alignItems: 'baseline', marginBottom: '8px', flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: '20px', fontWeight: '700' }}>{log.distance.toFixed(2)}<span style={{ fontSize: '11px', color: '#888', marginLeft: '2px' }}>km</span></span>
+                        <span style={{ fontSize: '13px', color: '#555' }}>{durationStr}</span>
+                        <span style={{ fontSize: '13px', color: '#555' }}>平均 {log.avgSpeed.toFixed(1)} km/h</span>
+                        <span style={{ fontSize: '13px', color: '#555' }}>最高 {log.maxSpeed.toFixed(1)} km/h</span>
+                      </div>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        {log.track && log.track.length >= 2 && (
+                          <button
+                            onClick={() => { setSelectedLogId(log.id); onLoadRideLog?.(log); }}
+                            style={{ padding: '6px 12px', background: '#1a73e8', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}
+                          >ルート表示</button>
+                        )}
+                        <button
+                          onClick={() => { handleDeleteLog(log.id); if (isSelected) { setSelectedLogId(null); onClearRideLogRoute?.(); } }}
+                          style={{ padding: '6px 12px', background: '#f5f5f5', color: '#e53935', border: '1px solid #eee', borderRadius: '8px', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}
+                        >削除</button>
+                      </div>
+                      {isSelected && (
+                        <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                          <button
+                            onClick={() => { onSaveRideLogAsRoute?.(log); setSelectedLogId(null); }}
+                            style={{ flex: 1, padding: '8px', background: '#D4AF37', color: '#000', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }}
+                          >マイルートに保存</button>
+                          <button
+                            onClick={() => { setSelectedLogId(null); onClearRideLogRoute?.(); }}
+                            style={{ padding: '8px 14px', background: '#f5f5f5', color: '#555', border: '1px solid #eee', borderRadius: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }}
+                          >×</button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
               )}
               <div style={{ height: 'calc(20px + env(safe-area-inset-bottom))' }} />
             </div>
