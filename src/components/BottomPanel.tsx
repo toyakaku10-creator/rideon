@@ -260,18 +260,6 @@ function SwipeableLogItem({
             style={{ padding: '6px 12px', background: '#1a73e8', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}
           >ルート表示</button>
         )}
-        {isSelected && (
-          <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-            <button
-              onClick={(e) => { e.stopPropagation(); onSaveAsRoute?.(); }}
-              style={{ flex: 1, padding: '8px', background: '#D4AF37', color: '#000', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }}
-            >マイルートに保存</button>
-            <button
-              onClick={(e) => { e.stopPropagation(); onClearRoute?.(); }}
-              style={{ padding: '8px 14px', background: '#f5f5f5', color: '#555', border: '1px solid #eee', borderRadius: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }}
-            >×</button>
-          </div>
-        )}
       </div>
     </div>
   );
