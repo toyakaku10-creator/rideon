@@ -257,7 +257,7 @@ function SwipeableLogItem({
         {log.track && log.track.length >= 2 && (
           <button
             onClick={(e) => { e.stopPropagation(); onShowRoute?.(); }}
-            style={{ padding: '6px 12px', background: '#1a73e8', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}
+            style={{ padding: '6px 12px', background: '#D4AF37', color: '#000', border: 'none', borderRadius: '8px', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}
           >ルート表示</button>
         )}
       </div>
