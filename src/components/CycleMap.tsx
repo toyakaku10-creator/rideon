@@ -116,13 +116,13 @@ function makePositionIcon(heading: number | null, isPolkaDot = false): google.ma
     const cx = 17, cy = 17;
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${S}" height="${S}">
       <g transform="rotate(${heading}, ${cx}, ${cy})">
-        <polygon points="${cx},1 ${cx - 5},9 ${cx + 5},9" fill="#4285F4"/>
-        <circle cx="${cx}" cy="${cy}" r="8" fill="rgba(66,133,244,0.35)" stroke="#4285F4" stroke-width="2"/>
-        <circle cx="${cx}" cy="${cy}" r="2" fill="rgba(66,133,244,0.35)" stroke="#4285F4" stroke-width="1.5"/>
-        <line x1="11" y1="11" x2="16" y2="16" stroke="#4285F4" stroke-width="1.5"/>
-        <line x1="18" y1="18" x2="23" y2="23" stroke="#4285F4" stroke-width="1.5"/>
-        <line x1="23" y1="11" x2="18" y2="16" stroke="#4285F4" stroke-width="1.5"/>
-        <line x1="16" y1="18" x2="11" y2="23" stroke="#4285F4" stroke-width="1.5"/>
+        <polygon points="${cx},1 ${cx - 5},9 ${cx + 5},9" fill="#4CAF50"/>
+        <circle cx="${cx}" cy="${cy}" r="8" fill="rgba(76,175,80,0.35)" stroke="#4CAF50" stroke-width="2"/>
+        <circle cx="${cx}" cy="${cy}" r="2" fill="rgba(76,175,80,0.35)" stroke="#4CAF50" stroke-width="1.5"/>
+        <line x1="11" y1="11" x2="16" y2="16" stroke="#4CAF50" stroke-width="1.5"/>
+        <line x1="18" y1="18" x2="23" y2="23" stroke="#4CAF50" stroke-width="1.5"/>
+        <line x1="23" y1="11" x2="18" y2="16" stroke="#4CAF50" stroke-width="1.5"/>
+        <line x1="16" y1="18" x2="11" y2="23" stroke="#4CAF50" stroke-width="1.5"/>
       </g>
     </svg>`;
     return {
@@ -132,7 +132,7 @@ function makePositionIcon(heading: number | null, isPolkaDot = false): google.ma
     };
   } else {
     // ×スポーク車輪（静止）
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="${size}" height="${size}" fill="rgba(66,133,244,0.35)" stroke="#4285F4" stroke-width="2" stroke-linecap="round">
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="${size}" height="${size}" fill="rgba(76,175,80,0.35)" stroke="#4CAF50" stroke-width="2" stroke-linecap="round">
       <circle cx="12" cy="12" r="10" stroke-width="3"/>
       <circle cx="12" cy="12" r="3"/>
       <line x1="4" y1="4" x2="9" y2="9"/>
