@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   AreaChart,
   Area,
@@ -20,6 +20,8 @@ interface ElevationChartProps {
 }
 
 export default function ElevationChart({ elevations, totalDistance, onPositionChange, currentIndex, currentIndexRef }: ElevationChartProps) {
+  const lineId = useRef(`elevation-line-${Math.random().toString(36).slice(2)}`);
+
   useEffect(() => {
     if (!currentIndexRef) return;
     const interval = setInterval(() => {
@@ -27,7 +29,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
       // pointsのインデックスをelevationsのインデックスに変換
       const elevIdx = Math.min(idx, elevations.length - 1);
       const ratio = elevations.length > 1 ? elevIdx / (elevations.length - 1) : 0;
-      const lineEl = document.getElementById('elevation-current-line');
+      const lineEl = document.getElementById(lineId.current);
       if (lineEl) {
         lineEl.setAttribute('x1', `${ratio * 100}%`);
         lineEl.setAttribute('x2', `${ratio * 100}%`);
@@ -35,7 +37,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
     }, 100);
     return () => {
       clearInterval(interval);
-      const lineEl = document.getElementById('elevation-current-line');
+      const lineEl = document.getElementById(lineId.current);
       if (lineEl) {
         lineEl.setAttribute('x1', '0%');
         lineEl.setAttribute('x2', '0%');
@@ -78,7 +80,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
             style={{ position: 'absolute', top: 0, left: 16, right: 4, height: '100%', width: 'calc(100% - 20px)', pointerEvents: 'none', zIndex: 10 }}
           >
             <line
-              id="elevation-current-line"
+              id={lineId.current}
               x1="0%" y1="0" x2="0%" y2="100%"
               stroke="#D4AF37"
               strokeWidth={2}
