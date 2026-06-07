@@ -670,8 +670,8 @@ export default function BottomPanel({
               <button onClick={() => { setShowShareSheet(false); handleShare(); }} style={{
                 display: 'flex', alignItems: 'center', gap: '10px',
                 width: '100%', padding: '12px 16px',
-                background: '#D4AF37', color: '#000',
-                border: 'none', borderRadius: '10px',
+                background: 'rgba(212, 175, 55, 0.15)', color: '#D4AF37',
+                border: '1px solid #D4AF37', borderRadius: '10px',
                 fontSize: '15px', fontWeight: '600', cursor: 'pointer',
               }}>
                 <Upload size={18} />
