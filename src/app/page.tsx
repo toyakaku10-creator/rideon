@@ -733,6 +733,7 @@ export default function Home() {
     const demoDurationMs = (totalDist / 16000) * 3600 * 1000 / 100; // 1/100速
 
     const startTime = performance.now();
+    let lastStateUpdate = 0;
 
     const animate = (now: number) => {
       const elapsed = now - startTime;
@@ -775,8 +776,12 @@ export default function Home() {
       }
       mapInstanceRef.current?.setCenter(pos);
 
-      // 速度（16km/h固定＋ゆらぎ）
-      setCurrentSpeed(16 + (Math.random() - 0.5) * 2);
+      // 速度・走行距離を100msに1回更新
+      if (now - lastStateUpdate > 100) {
+        setCurrentSpeed(16 + (Math.random() - 0.5) * 2);
+        setRideDistance(cumDist[Math.min(idx, cumDist.length - 1)] / 1000);
+        lastStateUpdate = now;
+      }
 
       demoRAFRef.current = requestAnimationFrame(animate);
     };
