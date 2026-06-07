@@ -301,6 +301,7 @@ interface BottomPanelProps {
   onReferenceRoute?: (route: SavedRoute) => void;
   onGpxImport?: (points: { lat: number; lng: number }[]) => void;
   onDemoStart?: () => void;
+  onShare?: () => void;
 }
 
 export default function BottomPanel({
@@ -339,6 +340,7 @@ export default function BottomPanel({
   onReferenceRoute,
   onGpxImport,
   onDemoStart,
+  onShare,
 }: BottomPanelProps) {
   const [showHistory, setShowHistory] = useState(false);
   const [selectedLogId, setSelectedLogId] = useState<string | null>(null);
@@ -708,7 +710,7 @@ export default function BottomPanel({
             return (
               <div style={{ flexShrink: 0, padding: '0 16px 12px', borderBottom: '2px solid #D4AF37' }}>
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <button onClick={() => { setShowUrlInput((prev) => !prev); setShowGpxMenu(false); setShowDataMenu(false); }} style={btnStyle}>
+                  <button onClick={() => { onShare ? onShare() : handleShare(); }} style={btnStyle}>
                     <Share2 size={20} color="#D4AF37" /><span>シェア</span>
                   </button>
                   <button onClick={() => { setShowGpxMenu((prev) => !prev); setShowUrlInput(false); setShowDataMenu(false); }} style={btnStyle}>
