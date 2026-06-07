@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function POST(request: NextRequest) {
   const { points } = await request.json()
 
-  const MAX_POINTS = 100
+  const MAX_POINTS = 512
   const step = Math.max(1, Math.floor(points.length / MAX_POINTS))
   const sampled = points.filter((_: unknown, i: number) => i % step === 0)
 
