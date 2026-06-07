@@ -778,12 +778,22 @@ export default function Home() {
     if (navElevationIndex === null || elevations.length < 3) return 0;
     const i = navElevationIndex;
     const n = elevations.length;
-    const i0 = Math.max(0, i - 1);
-    const i1 = Math.min(n - 1, i + 1);
-    const elevDelta = elevations[i1] - elevations[i0];
-    const distPerIndex = totalDistance / (n - 1);
-    const dist = distPerIndex * (i1 - i0);
-    return dist > 0 ? (elevDelta / dist) * 100 : 0;
+    const range = 5;
+    const from = Math.max(0, i - range);
+    const to = Math.min(n - 1, i + range);
+    if (from === to) return 0;
+    const elevDiff = elevations[to] - elevations[from];
+    // 対応するルートポイントを使って実距離を計算
+    const allPoints = segments.flatMap((s) => s.geometry);
+    const m = allPoints.length;
+    if (m < 2) return 0;
+    const fromPtIdx = Math.round((from / (n - 1)) * (m - 1));
+    const toPtIdx = Math.round((to / (n - 1)) * (m - 1));
+    let dist = 0;
+    for (let k = fromPtIdx; k < toPtIdx; k++) {
+      dist += haversineDistance(allPoints[k], allPoints[k + 1]);
+    }
+    return dist > 0 ? (elevDiff / dist) * 100 : 0;
   })();
 
   const elevationMarkerPos = (() => {
