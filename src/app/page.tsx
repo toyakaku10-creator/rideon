@@ -102,6 +102,10 @@ function getWheelSvg(stroke: string, fill: string): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="${fill}" stroke="${stroke}" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10" stroke-width="3"/><circle cx="12" cy="12" r="3"/><line x1="4" y1="4" x2="9" y2="9"/><line x1="15" y1="15" x2="20" y2="20"/><line x1="20" y1="4" x2="15" y2="9"/><line x1="9" y1="15" x2="4" y2="20"/></svg>`;
 }
 
+function getHeadingWheelSvg(heading: number, stroke: string, fill: string): string {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34"><g transform="rotate(${heading}, 17, 17)"><polygon points="17,1 12,9 22,9" fill="${stroke}"/><circle cx="17" cy="17" r="8" fill="${fill}" stroke="${stroke}" stroke-width="2"/><circle cx="17" cy="17" r="2" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/><line x1="11" y1="11" x2="16" y2="16" stroke="${stroke}" stroke-width="1.5"/><line x1="18" y1="18" x2="23" y2="23" stroke="${stroke}" stroke-width="1.5"/><line x1="23" y1="11" x2="18" y2="16" stroke="${stroke}" stroke-width="1.5"/><line x1="16" y1="18" x2="11" y2="23" stroke="${stroke}" stroke-width="1.5"/></g></svg>`;
+}
+
 function angleDiff(a: number, b: number): number {
   const d = ((b - a + 540) % 360) - 180;
   return d; // positive = right, negative = left
@@ -758,9 +762,14 @@ export default function Home() {
       const lng = pts[idx][1] + (pts[nextIdx][1] - pts[idx][1]) * t;
       const pos = { lat, lng };
 
-      // マーカーと地図を更新
+      // 進行方向を計算してマーカーを更新
+      const heading = calcHeading([pts[idx][0], pts[idx][1]], [pts[nextIdx][0], pts[nextIdx][1]]);
       if (currentMarkerRef.current) {
         currentMarkerRef.current.setPosition(pos);
+        currentMarkerRef.current.setIcon({
+          url: 'data:image/svg+xml,' + encodeURIComponent(getHeadingWheelSvg(heading, '#4CAF50', 'rgba(76,175,80,0.35)')),
+          anchor: new google.maps.Point(17, 17),
+        });
       }
       mapInstanceRef.current?.setCenter(pos);
 
