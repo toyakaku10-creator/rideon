@@ -787,7 +787,9 @@ export default function Home() {
 
       if (now - lastStateUpdate > 50) {
         setCurrentSpeed(16 + (Math.random() - 0.5) * 2);
-        setRideDistance(totalDist * progress);
+        // cumDistの現在値をtotalDistanceにスケーリングして表示
+        const scaledDist = cumDist[idx] * (totalDistance / cumDist[cumDist.length - 1]);
+        setRideDistance(scaledDist);
         lastStateUpdate = now;
       }
 
