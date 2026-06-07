@@ -831,15 +831,13 @@ export default function Home() {
 
   const toggleOverview = () => {
     if (!isOverview) {
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.setZoom(13);
-      }
+      mapInstanceRef.current?.setZoom(13);
       setIsOverview(true);
     } else {
       setIsOverview(false);
       if (currentPosition && mapInstanceRef.current) {
-        mapInstanceRef.current.setZoom(15.5);
         mapInstanceRef.current.setCenter(currentPosition);
+        mapInstanceRef.current.setZoom(15.5);
       }
     }
   };
