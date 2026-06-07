@@ -88,7 +88,11 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
               dataKey="idx"
               type="number"
               domain={[0, elevations.length - 1]}
-              ticks={Array.from({length: 9}, (_, i) => Math.round(i / 8 * (elevations.length - 1)))}
+              ticks={Array.from({length: 9}, (_, i) => {
+                if (i === 0) return 0;
+                if (i === 8) return elevations.length - 1;
+                return Math.round(i / 8 * (elevations.length - 1));
+              })}
               tick={{ fontSize: 9, fill: 'var(--text-muted)' }}
               tickFormatter={(v) => {
                 const km = (v / (elevations.length - 1)) * totalDistance / 1000;
