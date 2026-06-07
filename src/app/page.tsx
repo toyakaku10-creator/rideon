@@ -779,7 +779,7 @@ export default function Home() {
       // 速度・走行距離を100msに1回更新
       if (now - lastStateUpdate > 100) {
         setCurrentSpeed(16 + (Math.random() - 0.5) * 2);
-        setRideDistance(cumDist[Math.min(idx, cumDist.length - 1)] / 1000);
+        setRideDistance(cumDist[Math.min(idx, cumDist.length - 1)]);
         lastStateUpdate = now;
       }
 
