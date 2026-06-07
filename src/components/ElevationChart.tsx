@@ -16,25 +16,25 @@ interface ElevationChartProps {
   totalDistance: number; // meters
   onPositionChange?: (index: number) => void;
   currentIndex?: number;
-  rideDistance?: number; // meters
+  currentIndexRef?: React.RefObject<number>;
 }
 
-export default function ElevationChart({ elevations, totalDistance, onPositionChange, currentIndex, rideDistance }: ElevationChartProps) {
+export default function ElevationChart({ elevations, totalDistance, onPositionChange, currentIndex, currentIndexRef }: ElevationChartProps) {
   const lineId = useRef(`elevation-line-${Math.random().toString(36).slice(2)}`);
 
   useEffect(() => {
-    console.log('ElevationChart rideDistance:', rideDistance, 'totalDistance:', totalDistance);
-    const ratio = (totalDistance && totalDistance > 0 && rideDistance)
-      ? Math.min(rideDistance / totalDistance, 1)
-      : 0;
-    console.log('ratio:', ratio);
-    const lineEl = document.getElementById(lineId.current);
-    console.log('lineEl:', lineEl);
-    if (lineEl) {
-      lineEl.setAttribute('x1', `${ratio * 100}%`);
-      lineEl.setAttribute('x2', `${ratio * 100}%`);
-    }
-  }, [rideDistance, totalDistance]);
+    if (!currentIndexRef) return;
+    const interval = setInterval(() => {
+      const idx = currentIndexRef.current ?? 0;
+      const ratio = elevations.length > 1 ? idx / (elevations.length - 1) : 0;
+      const lineEl = document.getElementById(lineId.current);
+      if (lineEl) {
+        lineEl.setAttribute('x1', `${ratio * 100}%`);
+        lineEl.setAttribute('x2', `${ratio * 100}%`);
+      }
+    }, 50);
+    return () => clearInterval(interval);
+  }, [currentIndexRef, elevations.length]);
 
   if (elevations.length < 2) return null;
 
@@ -48,15 +48,15 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
   };
 
   const data = elevations.map((elev, i) => ({
-    dist: parseFloat(((i / (elevations.length - 1)) * totalDistance / 1000).toFixed(2)),
+    idx: i,
     elev: Math.round(elev),
+    dist: parseFloat(((i / (elevations.length - 1)) * totalDistance / 1000).toFixed(1)),
   }));
 
   const minElev = Math.min(...elevations);
   const maxElev = Math.max(...elevations);
   const yMin = Math.floor(minElev / 10) * 10;
   const yMax = Math.ceil(maxElev / 10) * 10;
-  const totalKm = totalDistance / 1000;
 
   return (
     <div className="mt-2 mb-1">
@@ -67,7 +67,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
         style={{ position: 'relative', touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none' } as React.CSSProperties}
       >
         {/* 現在位置インジケーター（走行中・DOM直接操作） */}
-        {rideDistance != null && (
+        {currentIndexRef != null && (
           <svg
             style={{ position: 'absolute', top: 0, left: 36, width: 'calc(100% - 40px)', height: '100%', pointerEvents: 'none', zIndex: 10 }}
           >
@@ -89,14 +89,15 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
               </linearGradient>
             </defs>
             <XAxis
-              dataKey="dist"
+              dataKey="idx"
               type="number"
-              domain={[0, totalDistance / 1000]}
-              ticks={Array.from({length: 9}, (_, i) =>
-                Math.floor(totalKm / 8 * i)
-              )}
+              domain={[0, elevations.length - 1]}
+              ticks={Array.from({length: 9}, (_, i) => Math.round(i / 8 * (elevations.length - 1)))}
               tick={{ fontSize: 9, fill: 'var(--text-muted)' }}
-              tickFormatter={(v) => `${v}km`}
+              tickFormatter={(v) => {
+                const km = (v / (elevations.length - 1)) * totalDistance / 1000;
+                return `${Math.round(km * 10) / 10}km`;
+              }}
             />
             <YAxis
               domain={[yMin, yMax]}
@@ -113,7 +114,10 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
                 padding: '4px 8px',
               }}
               formatter={(value) => [`${value}m`, '標高']}
-              labelFormatter={(label) => `${label}km`}
+              labelFormatter={(v) => {
+                const km = (Number(v) / (elevations.length - 1)) * totalDistance / 1000;
+                return `${Math.round(km * 10) / 10}km`;
+              }}
             />
             <Area
               type="monotone"
@@ -126,7 +130,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
             />
             {currentIndex != null && (
               <ReferenceLine
-                x={data[Math.min(currentIndex, data.length - 1)]?.dist}
+                x={Math.min(currentIndex, data.length - 1)}
                 stroke="#D4AF37"
                 strokeWidth={2}
                 strokeDasharray="4 2"

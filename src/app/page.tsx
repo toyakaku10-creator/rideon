@@ -161,6 +161,7 @@ export default function Home() {
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const currentMarkerRef = useRef<google.maps.Marker | null>(null);
   const skipElevationFetchRef = useRef(false);
+  const demoElevIndexRef = useRef<number>(0);
 
   // Spots
   const [spots, setSpots] = useState<Spot[]>([]);
@@ -1073,6 +1074,7 @@ export default function Home() {
           navTotalDistance={totalDistance}
           navElevationIndex={navElevationIndex ?? undefined}
           rideDistance={rideDistance}
+          demoElevIndexRef={demoElevIndexRef}
         />
       )}
 

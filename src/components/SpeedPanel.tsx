@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import type { SavedRoute } from '@/types';
 import ElevationChart from '@/components/ElevationChart';
 
@@ -15,6 +15,7 @@ interface SpeedPanelProps {
   navTotalDistance?: number;
   navElevationIndex?: number;
   rideDistance?: number; // meters
+  demoElevIndexRef?: React.RefObject<number>;
 }
 
 const SpeedMeter = ({ speed }: { speed: number }) => {
@@ -54,6 +55,7 @@ export default function SpeedPanel({
   navTotalDistance = 0,
   navElevationIndex,
   rideDistance = 0,
+  demoElevIndexRef,
 }: SpeedPanelProps) {
   const [showMax, setShowMax] = useState(false);
   const [showRemaining, setShowRemaining] = useState(false);
@@ -133,7 +135,12 @@ export default function SpeedPanel({
         {/* Elevation chart for loaded route */}
         {navElevations.length >= 2 && (
           <div style={{ padding: '0 16px 8px' }}>
-            <ElevationChart elevations={navElevations} totalDistance={navTotalDistance} currentIndex={navElevationIndex} rideDistance={rideDistance} />
+            <ElevationChart
+              elevations={navElevations}
+              totalDistance={navTotalDistance}
+              currentIndex={navElevationIndex}
+              currentIndexRef={demoElevIndexRef}
+            />
           </div>
         )}
       </div>

@@ -564,7 +564,7 @@ export default function BottomPanel({
         {/* Elevation chart */}
         {elevations.length >= 2 && (
           <div className="px-4">
-            <ElevationChart elevations={elevations} totalDistance={totalDistance} onPositionChange={onElevationPositionChange} rideDistance={rideDistance} />
+            <ElevationChart elevations={elevations} totalDistance={totalDistance} onPositionChange={onElevationPositionChange} />
           </div>
         )}
 
