@@ -133,6 +133,10 @@ function makePositionIcon(heading: number | null, gradient = 0): google.maps.Ico
         <line x1="18" y1="18" x2="23" y2="23" stroke="${wheelColor}" stroke-width="1.5"/>
         <line x1="23" y1="11" x2="18" y2="16" stroke="${wheelColor}" stroke-width="1.5"/>
         <line x1="16" y1="18" x2="11" y2="23" stroke="${wheelColor}" stroke-width="1.5"/>
+        <line x1="17" y1="9" x2="17" y2="15" stroke="${wheelColor}" stroke-width="1.5"/>
+        <line x1="17" y1="19" x2="17" y2="25" stroke="${wheelColor}" stroke-width="1.5"/>
+        <line x1="9" y1="17" x2="15" y2="17" stroke="${wheelColor}" stroke-width="1.5"/>
+        <line x1="19" y1="17" x2="25" y2="17" stroke="${wheelColor}" stroke-width="1.5"/>
       </g>
     </svg>`;
     return {
@@ -149,6 +153,10 @@ function makePositionIcon(heading: number | null, gradient = 0): google.maps.Ico
       <line x1="15" y1="15" x2="20" y2="20"/>
       <line x1="20" y1="4" x2="15" y2="9"/>
       <line x1="9" y1="15" x2="4" y2="20"/>
+      <line x1="12" y1="2" x2="12" y2="9"/>
+      <line x1="12" y1="15" x2="12" y2="22"/>
+      <line x1="2" y1="12" x2="9" y2="12"/>
+      <line x1="15" y1="12" x2="22" y2="12"/>
     </svg>`;
     return {
       url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
