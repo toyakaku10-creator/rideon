@@ -380,10 +380,11 @@ export default function Home() {
     return () => navigator.geolocation.clearWatch(watchId);
   }, [tab]);
 
-  // Pan map to follow current position in speed/demo mode
+  // Follow current position in speed/demo mode
   useEffect(() => {
     if (!currentPosition || tab !== 'speed' || !mapInstanceRef.current) return;
-    mapInstanceRef.current.panTo({ lat: currentPosition.lat, lng: currentPosition.lng });
+    mapInstanceRef.current.setCenter({ lat: currentPosition.lat, lng: currentPosition.lng });
+    mapInstanceRef.current.panBy(0, 30);
   }, [currentPosition, tab]);
 
   // Navigation turn detection
