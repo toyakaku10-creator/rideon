@@ -713,6 +713,9 @@ export default function Home() {
       });
       currentMarkerRef.current = marker;
     }
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.setCenter({ lat: pts[0][0], lng: pts[0][1] });
+    }
     rideTrackRef.current = [];
     rideStartTimeRef.current = Date.now();
     setLogTrack(null);
