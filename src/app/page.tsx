@@ -680,7 +680,10 @@ export default function Home() {
     setTab('speed');
 
     const totalSteps = points.length;
-    const intervalTime = 30000 / totalSteps;
+    const totalDistanceKm = totalDistance / 1000;
+    const realDurationSec = (totalDistanceKm / 16) * 3600;
+    const demoDurationSec = realDurationSec / 10;
+    const intervalTime = (demoDurationSec * 1000) / totalSteps;
     let step = 0;
 
     demoIntervalRef.current = setInterval(() => {
@@ -807,6 +810,7 @@ export default function Home() {
           <button
             onTouchStart={handleRideButtonPressStart}
             onTouchEnd={handleRideButtonPressEnd}
+            onContextMenu={(e) => e.preventDefault()}
             onClick={() => {
               if (isDemoMode) {
                 stopDemo();
@@ -861,6 +865,7 @@ export default function Home() {
               boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
               backdropFilter: 'blur(4px)',
               userSelect: 'none',
+              WebkitUserSelect: 'none',
               whiteSpace: 'nowrap',
               transition: 'all 0.2s',
             } as React.CSSProperties}
