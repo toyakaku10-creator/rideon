@@ -665,30 +665,41 @@ export default function BottomPanel({
           />
           <div style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '480px', background: '#fff', borderRadius: '16px 16px 0 0', padding: '20px 16px', paddingBottom: 'calc(20px + env(safe-area-inset-bottom))', zIndex: 1001, boxSizing: 'border-box' }}>
             <h3 style={{ margin: '0 0 16px', fontSize: '16px', fontWeight: '600' }}>シェア</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <button
-                onClick={() => { setShowShareSheet(false); handleShare(); }}
-                style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '14px 16px', background: '#f5f5f5', border: '1px solid #eee', borderRadius: '12px', cursor: 'pointer', fontSize: '15px', fontWeight: '600', color: '#333' }}
-              >
-                <Share2 size={20} color="#D4AF37" />
-                URLをシェア
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {/* 送る */}
+              <button onClick={() => { setShowShareSheet(false); handleShare(); }} style={{
+                display: 'flex', alignItems: 'center', gap: '10px',
+                width: '100%', padding: '12px 16px',
+                background: '#D4AF37', color: '#000',
+                border: 'none', borderRadius: '10px',
+                fontSize: '15px', fontWeight: '600', cursor: 'pointer',
+              }}>
+                <Upload size={18} />
+                シェアURLを送る
               </button>
-              <div>
-                <div style={{ display: 'flex', gap: '8px', marginBottom: urlError ? '4px' : '0' }}>
+              {/* 受け取る */}
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ position: 'relative', flex: 1 }}>
+                  <Download size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#888' }} />
                   <input
                     type="url"
-                    placeholder="シェアURLを貼り付けて読み込み"
+                    placeholder="シェアURLを貼り付け"
                     value={urlInput}
                     onChange={(e) => { setUrlInput(e.target.value); setUrlError(''); }}
                     onKeyDown={(e) => e.key === 'Enter' && handleUrlImport()}
-                    style={{ flex: 1, padding: '10px 12px', fontSize: '15px', border: '1px solid #ddd', borderRadius: '10px', boxSizing: 'border-box', minWidth: 0, WebkitAppearance: 'none' } as React.CSSProperties}
+                    style={{ width: '100%', boxSizing: 'border-box', padding: '10px 12px 10px 32px', fontSize: '16px', border: '1px solid #ddd', borderRadius: '10px', WebkitAppearance: 'none' } as React.CSSProperties}
                   />
-                  <button onClick={handleUrlImport} disabled={!urlInput.trim() || urlLoading} style={{ padding: '10px 14px', background: '#D4AF37', border: 'none', borderRadius: '10px', fontWeight: '600', cursor: 'pointer', opacity: !urlInput.trim() || urlLoading ? 0.4 : 1 }}>
-                    {urlLoading ? '取得中' : '読み込み'}
-                  </button>
                 </div>
-                {urlError && <p style={{ fontSize: '12px', color: '#E53935', margin: '4px 0 0' }}>{urlError}</p>}
+                <button onClick={handleUrlImport} style={{
+                  padding: '10px 14px',
+                  background: '#f5f5f5', border: '1px solid #ddd',
+                  borderRadius: '10px', fontWeight: '600', cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                }}>
+                  {urlLoading ? '取得中' : '読み込み'}
+                </button>
               </div>
+              {urlError && <p style={{ color: '#E53935', fontSize: '12px', margin: 0 }}>{urlError}</p>}
             </div>
           </div>
         </>
