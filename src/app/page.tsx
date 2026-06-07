@@ -160,6 +160,7 @@ export default function Home() {
   const pressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const currentMarkerRef = useRef<google.maps.Marker | null>(null);
+  const skipElevationFetchRef = useRef(false);
 
   // Spots
   const [spots, setSpots] = useState<Spot[]>([]);
@@ -306,6 +307,10 @@ export default function Home() {
 
   // Fetch elevation data whenever segments change
   useEffect(() => {
+    if (skipElevationFetchRef.current) {
+      skipElevationFetchRef.current = false;
+      return;
+    }
     const points = segments.flatMap((s) => s.geometry);
     if (points.length < 2) { setElevations([]); return; }
     let cancelled = false;
@@ -541,41 +546,16 @@ export default function Home() {
 
   const handleLoadRoute = useCallback((route: SavedRoute) => {
     setWaypoints(route.waypoints);
-    setSegments(route.segments);
     setRouteType(route.routeType);
     rideRouteNameRef.current = route.name;
-    if (route.elevations && route.elevations.length >= 512) {
-      // 既に高精度なのでそのまま使う
-      setElevations(route.elevations);
-    } else {
-      // 低精度または未取得の場合は再取得
-      const allPoints = route.segments.flatMap((s: RouteSegment) => s.geometry);
-      if (allPoints.length >= 2) {
-        fetch('/api/elevation', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ points: allPoints }),
-        })
-          .then(res => res.json())
-          .then(data => {
-            if (data.elevations) {
-              setElevations(data.elevations);
-              // localStorageも更新
-              const updated = savedRoutes.map(r =>
-                r.id === route.id ? { ...r, elevations: data.elevations } : r
-              );
-              setSavedRoutes(updated);
-              localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-            }
-          })
-          .catch(() => {});
-      }
-    }
+    skipElevationFetchRef.current = true;
+    setElevations(route.elevations && route.elevations.length > 0 ? route.elevations : []);
+    setSegments(route.segments);
     const loadedPoints = route.segments.flatMap((s) => s.geometry);
     if (loadedPoints.length > 0) {
       setFitBoundsPoints(loadedPoints);
     }
-  }, [savedRoutes, setSavedRoutes]);
+  }, []);
 
   const handleDeleteRoute = useCallback(
     (id: string) => {
