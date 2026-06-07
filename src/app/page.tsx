@@ -144,6 +144,7 @@ export default function Home() {
   const isDemoModeRef = useRef(false);
   const demoIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const mapInstanceRef = useRef<google.maps.Map | null>(null);
 
   // Spots
   const [spots, setSpots] = useState<Spot[]>([]);
@@ -378,6 +379,12 @@ export default function Home() {
     );
     return () => navigator.geolocation.clearWatch(watchId);
   }, [tab]);
+
+  // Pan map to follow current position in speed/demo mode
+  useEffect(() => {
+    if (!currentPosition || tab !== 'speed' || !mapInstanceRef.current) return;
+    mapInstanceRef.current.panTo({ lat: currentPosition.lat, lng: currentPosition.lng });
+  }, [currentPosition, tab]);
 
   // Navigation turn detection
   useEffect(() => {
@@ -843,6 +850,7 @@ export default function Home() {
           onSpotClick={(spot) => { if (spots.some((s) => s.id === spot.id)) setSpotDeleteConfirm(spot); }}
           logTrack={logTrack}
           referenceSegments={referenceRoute?.segments}
+          onMapReady={(m) => { mapInstanceRef.current = m; }}
         />
 
 

@@ -226,6 +226,7 @@ interface CycleMapProps {
   logTrack?: { lat: number; lng: number }[] | null;
   referenceSegments?: RouteSegment[];
   gradient?: number;
+  onMapReady?: (map: google.maps.Map) => void;
 }
 
 export default function CycleMap({
@@ -249,6 +250,7 @@ export default function CycleMap({
   logTrack,
   referenceSegments,
   gradient = 0,
+  onMapReady,
 }: CycleMapProps) {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
@@ -265,7 +267,8 @@ export default function CycleMap({
 
   const handleLoad = useCallback((m: google.maps.Map) => {
     setMap(m);
-  }, []);
+    onMapReady?.(m);
+  }, [onMapReady]);
 
   const handleUnmount = useCallback(() => {
     setMap(null);
