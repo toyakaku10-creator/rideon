@@ -157,7 +157,8 @@ export default function Home() {
   const [isDemoMode, setIsDemoMode] = useState(false);
   const isDemoModeRef = useRef(false);
   const demoRAFRef = useRef<number | null>(null);
-  const pressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const tapCountRef = useRef(0);
+  const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const currentMarkerRef = useRef<google.maps.Marker | null>(null);
   const skipElevationFetchRef = useRef(false);
@@ -813,19 +814,52 @@ export default function Home() {
     setTab('distance');
   };
 
-  const handleRideButtonPressStart = () => {
-    pressTimerRef.current = setTimeout(() => {
-      pressTimerRef.current = null;
+  const handleRideButtonTap = () => {
+    tapCountRef.current += 1;
+    if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
+    tapTimerRef.current = setTimeout(() => {
+      const count = tapCountRef.current;
+      tapCountRef.current = 0;
       const pts = segments.flatMap((s) => s.geometry).map((p): [number, number] => [p.lat, p.lng]);
-      startDemoRide(pts);
-    }, 1500);
-  };
-
-  const handleRideButtonPressEnd = () => {
-    if (pressTimerRef.current) {
-      clearTimeout(pressTimerRef.current);
-      pressTimerRef.current = null;
-    }
+      if (count === 3 && pts.length >= 2) {
+        startDemoRide(pts);
+      } else if (count === 1) {
+        if (isDemoMode) {
+          stopDemo();
+        } else if (tab === 'speed') {
+          // ライドモード終了 → 走行記録を保存
+          const endTime = Date.now();
+          const duration = rideStartTimeRef.current ? Math.round((endTime - rideStartTimeRef.current) / 1000) : 0;
+          const distanceKm = rideDistance / 1000;
+          if (distanceKm >= 0.1 && duration > 0) {
+            const log: RideLog = {
+              id: endTime.toString(),
+              date: new Date().toISOString(),
+              distance: distanceKm,
+              duration,
+              avgSpeed: speedCount > 0 ? speedSum / speedCount : 0,
+              maxSpeed,
+              routeName: rideRouteNameRef.current,
+              track: [...rideTrackRef.current],
+            };
+            try {
+              const raw = localStorage.getItem(RIDE_LOG_KEY);
+              const logs: RideLog[] = raw ? JSON.parse(raw) : [];
+              logs.push(log);
+              localStorage.setItem(RIDE_LOG_KEY, JSON.stringify(logs));
+            } catch { /* ignore */ }
+          }
+          rideStartTimeRef.current = null;
+          setTab('distance');
+        } else {
+          // ライドモード開始
+          rideTrackRef.current = [];
+          setLogTrack(null);
+          rideStartTimeRef.current = Date.now();
+          setTab('speed');
+        }
+      }
+    }, 300);
   };
 
   const mapCenter =
@@ -909,47 +943,7 @@ export default function Home() {
         {/* Floating RideOn button */}
         <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 500 }}>
           <button
-            onTouchStart={handleRideButtonPressStart}
-            onTouchEnd={handleRideButtonPressEnd}
-            onContextMenu={(e) => e.preventDefault()}
-            onClick={() => {
-              if (isDemoMode) {
-                stopDemo();
-                return;
-              }
-              if (tab === 'speed') {
-                // ライドモード終了 → 走行記録を保存
-                const endTime = Date.now();
-                const duration = rideStartTimeRef.current ? Math.round((endTime - rideStartTimeRef.current) / 1000) : 0;
-                const distanceKm = rideDistance / 1000;
-                if (distanceKm >= 0.1 && duration > 0) {
-                  const log: RideLog = {
-                    id: endTime.toString(),
-                    date: new Date().toISOString(),
-                    distance: distanceKm,
-                    duration,
-                    avgSpeed: speedCount > 0 ? speedSum / speedCount : 0,
-                    maxSpeed,
-                    routeName: rideRouteNameRef.current,
-                    track: [...rideTrackRef.current],
-                  };
-                  try {
-                    const raw = localStorage.getItem(RIDE_LOG_KEY);
-                    const logs: RideLog[] = raw ? JSON.parse(raw) : [];
-                    logs.push(log);
-                    localStorage.setItem(RIDE_LOG_KEY, JSON.stringify(logs));
-                  } catch { /* ignore */ }
-                }
-                rideStartTimeRef.current = null;
-                setTab('distance');
-              } else {
-                // ライドモード開始
-                rideTrackRef.current = [];
-                setLogTrack(null);
-                rideStartTimeRef.current = Date.now();
-                setTab('speed');
-              }
-            }}
+            onClick={handleRideButtonTap}
             style={{
               display: 'flex',
               alignItems: 'center',
