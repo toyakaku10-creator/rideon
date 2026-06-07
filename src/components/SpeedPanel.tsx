@@ -133,7 +133,7 @@ export default function SpeedPanel({
         {/* Elevation chart for loaded route */}
         {navElevations.length >= 2 && (
           <div style={{ padding: '0 16px 8px' }}>
-            <ElevationChart elevations={navElevations} totalDistance={navTotalDistance} currentIndex={navElevationIndex} />
+            <ElevationChart elevations={navElevations} totalDistance={navTotalDistance} currentIndex={navElevationIndex} rideDistance={rideDistance} />
           </div>
         )}
       </div>
