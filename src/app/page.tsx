@@ -776,7 +776,7 @@ export default function Home() {
     pressTimerRef.current = setTimeout(() => {
       pressTimerRef.current = null;
       startDemoRide();
-    }, 800);
+    }, 1500);
   };
 
   const handleRideButtonPressEnd = () => {
