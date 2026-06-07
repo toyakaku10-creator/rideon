@@ -800,7 +800,9 @@ export default function Home() {
       demoRAFRef.current = requestAnimationFrame(animate);
     };
 
-    demoRAFRef.current = requestAnimationFrame(animate);
+    setTimeout(() => {
+      demoRAFRef.current = requestAnimationFrame(animate);
+    }, 100);
   };
 
   const stopDemo = () => {
