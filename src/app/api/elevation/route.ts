@@ -5,7 +5,9 @@ export async function POST(request: NextRequest) {
 
   const MAX_POINTS = 512
   const step = Math.max(1, Math.floor(points.length / MAX_POINTS))
-  const sampled = points.filter((_: unknown, i: number) => i % step === 0)
+  const sampled = points.filter((_: unknown, i: number) =>
+    i % step === 0 || i === points.length - 1
+  )
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
   const locations = sampled
