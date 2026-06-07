@@ -160,6 +160,7 @@ export default function Home() {
   const pressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const currentMarkerRef = useRef<google.maps.Marker | null>(null);
+  const demoElevIndexRef = useRef<number>(0);
 
   // Spots
   const [spots, setSpots] = useState<Spot[]>([]);
@@ -688,110 +689,55 @@ export default function Home() {
   }, [isImported, segments]);
 
   const startDemoRide = (pts: [number, number][]) => {
-    if (pts.length < 2) return;
-    isDemoModeRef.current = true;
-    setIsDemoMode(true);
-    if (currentMarkerRef.current) {
-      currentMarkerRef.current.setMap(null);
-      currentMarkerRef.current = null;
-    }
-    // 新しいマーカーを作成
-    if (mapInstanceRef.current) {
-      const marker = new google.maps.Marker({
-        position: { lat: pts[0][0], lng: pts[0][1] },
-        map: mapInstanceRef.current,
-        icon: {
-          url: 'data:image/svg+xml,' + encodeURIComponent(getWheelSvg('#4CAF50', 'rgba(76,175,80,0.35)')),
-          anchor: new google.maps.Point(9, 9),
-        },
-        zIndex: 999,
-      });
-      currentMarkerRef.current = marker;
-    }
-    rideTrackRef.current = [];
-    rideStartTimeRef.current = Date.now();
-    setLogTrack(null);
-    setMaxSpeed(0);
-    setSpeedSum(0);
-    setSpeedCount(0);
-    setRideDistance(0);
-    prevGpsPos.current = null;
-    setTab('speed');
+    if (pts.length < 2) return
+    isDemoModeRef.current = true
+    setIsDemoMode(true)
+    setMaxSpeed(0)
+    setSpeedCount(0)
+    setSpeedSum(0)
+    setRideDistance(0)
+    setTab('speed')
 
-    // 各ポイントの累積距離を計算
-    const cumDist: number[] = [0];
-    for (let i = 1; i < pts.length; i++) {
-      const [lat1, lng1] = pts[i - 1];
-      const [lat2, lng2] = pts[i];
-      const dLat = (lat2 - lat1) * Math.PI / 180;
-      const dLng = (lng2 - lng1) * Math.PI / 180;
-      const d = Math.sqrt(dLat * dLat + dLng * dLng) * 6371000;
-      cumDist.push(cumDist[i - 1] + d);
-    }
-    const cumTotalDist = cumDist[cumDist.length - 1]; // cumDistの合計
-    const totalDist = totalDistance; // 正確な総距離はstateから取得
-    const demoDurationMs = (totalDist / 16000) * 3600 * 1000 / 100; // 1/100速
-    console.log('pts.length:', pts.length);
-    console.log('totalDist (km):', totalDist / 1000);
-    console.log('demoDurationMs (sec):', demoDurationMs / 1000);
-
-    const startTime = performance.now();
-    let lastStateUpdate = 0;
+    const demoDurationMs = (totalDistance / 16000) * 3600 * 1000 / 100
+    const startTime = performance.now()
 
     const animate = (now: number) => {
-      const elapsed = now - startTime;
-      const progress = elapsed / demoDurationMs;
-      const targetDist = totalDist * progress;
-
+      const elapsed = now - startTime
       if (elapsed >= demoDurationMs) {
-        console.log('final elapsed (sec):', elapsed / 1000);
-        console.log('final progress:', progress);
-        console.log('final targetDist (km):', targetDist / 1000);
-        isDemoModeRef.current = false;
-        setIsDemoMode(false);
-        setCurrentSpeed(0);
-        setRideDistance(totalDist);
-        setTab('distance');
-        return;
+        isDemoModeRef.current = false
+        setIsDemoMode(false)
+        setCurrentSpeed(0)
+        setRideDistance(totalDistance)
+        setTab('distance')
+        return
       }
 
-      // targetDistをcumDistのスケールに変換してポイントを探す
-      const targetDistInCum = progress * cumTotalDist;
-      let idx = 0;
-      for (let i = 1; i < cumDist.length; i++) {
-        if (cumDist[i] >= targetDistInCum) { idx = i - 1; break; }
-        idx = i;
-      }
-      const nextIdx = Math.min(idx + 1, pts.length - 1);
+      const progress = elapsed / demoDurationMs
+      const floatIdx = progress * (pts.length - 1)
+      const idx = Math.floor(floatIdx)
+      const nextIdx = Math.min(idx + 1, pts.length - 1)
+      const t = floatIdx - idx
 
-      // 2点間を補間
-      const segDist = cumDist[nextIdx] - cumDist[idx];
-      const t = segDist > 0 ? (targetDistInCum - cumDist[idx]) / segDist : 0;
-      const lat = pts[idx][0] + (pts[nextIdx][0] - pts[idx][0]) * t;
-      const lng = pts[idx][1] + (pts[nextIdx][1] - pts[idx][1]) * t;
-      const pos = { lat, lng };
+      const lat = pts[idx][0] + (pts[nextIdx][0] - pts[idx][0]) * t
+      const lng = pts[idx][1] + (pts[nextIdx][1] - pts[idx][1]) * t
+      const pos = { lat, lng }
 
-      // 進行方向を計算してマーカーを更新
-      const heading = calcHeading([pts[idx][0], pts[idx][1]], [pts[nextIdx][0], pts[nextIdx][1]]);
       if (currentMarkerRef.current) {
-        currentMarkerRef.current.setPosition(pos);
-        currentMarkerRef.current.setIcon({
-          url: 'data:image/svg+xml,' + encodeURIComponent(getHeadingWheelSvg(heading, '#4CAF50', 'rgba(76,175,80,0.35)')),
-          anchor: new google.maps.Point(17, 17),
-        });
+        currentMarkerRef.current.setPosition(pos)
       }
-      mapInstanceRef.current?.setCenter(pos);
-
-      if (now - lastStateUpdate > 50) {
-        setCurrentSpeed(16 + (Math.random() - 0.5) * 2);
-        setRideDistance(totalDist * progress);
-        lastStateUpdate = now;
+      if (Math.floor(elapsed / 300) !== Math.floor((elapsed - 16) / 300)) {
+        mapInstanceRef.current?.panTo(pos)
       }
 
-      demoRAFRef.current = requestAnimationFrame(animate);
-    };
+      setRideDistance(progress * totalDistance)
+      setCurrentSpeed(16 + (Math.random() - 0.5) * 2)
 
-    demoRAFRef.current = requestAnimationFrame(animate);
+      demoElevIndexRef.current = idx
+
+      demoRAFRef.current = requestAnimationFrame(animate)
+    }
+
+    demoRAFRef.current = requestAnimationFrame(animate)
   };
 
   const stopDemo = () => {
