@@ -98,6 +98,10 @@ function calcHeading(from: [number, number], to: [number, number]): number {
   return (Math.atan2(dLng, dLat) * 180 / Math.PI + 360) % 360;
 }
 
+function getWheelSvg(stroke: string, fill: string): string {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="${fill}" stroke="${stroke}" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10" stroke-width="3"/><circle cx="12" cy="12" r="3"/><line x1="4" y1="4" x2="9" y2="9"/><line x1="15" y1="15" x2="20" y2="20"/><line x1="20" y1="4" x2="15" y2="9"/><line x1="9" y1="15" x2="4" y2="20"/></svg>`;
+}
+
 function angleDiff(a: number, b: number): number {
   const d = ((b - a + 540) % 360) - 180;
   return d; // positive = right, negative = left
@@ -686,6 +690,19 @@ export default function Home() {
     if (currentMarkerRef.current) {
       currentMarkerRef.current.setMap(null);
       currentMarkerRef.current = null;
+    }
+    // 新しいマーカーを作成
+    if (mapInstanceRef.current) {
+      const marker = new google.maps.Marker({
+        position: { lat: pts[0][0], lng: pts[0][1] },
+        map: mapInstanceRef.current,
+        icon: {
+          url: 'data:image/svg+xml,' + encodeURIComponent(getWheelSvg('#4CAF50', 'rgba(76,175,80,0.35)')),
+          anchor: new google.maps.Point(9, 9),
+        },
+        zIndex: 999,
+      });
+      currentMarkerRef.current = marker;
     }
     rideTrackRef.current = [];
     rideStartTimeRef.current = Date.now();
