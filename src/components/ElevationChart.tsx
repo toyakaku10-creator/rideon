@@ -39,16 +39,14 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
 
   useEffect(() => {
     if (!progressRef) return;
-    const interval = setInterval(() => {
-      const ratio = progressRef.current ?? 0;
-      const lineEl = document.getElementById(lineId.current);
-      if (lineEl) {
-        lineEl.setAttribute('x1', `${ratio * 100}%`);
-        lineEl.setAttribute('x2', `${ratio * 100}%`);
-      }
-    }, 50);
-    return () => clearInterval(interval);
-  }, [progressRef]);
+    const ratio = progressRef.current ?? 0;
+    const lineEl = document.getElementById(lineId.current);
+    if (lineEl) {
+      lineEl.setAttribute('x1', `${ratio * 100}%`);
+      lineEl.setAttribute('x2', `${ratio * 100}%`);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [progressRef?.current]);
 
   if (elevations.length < 2) return null;
 
