@@ -775,7 +775,7 @@ export default function Home() {
               borderRadius: '20px',
               padding: '5px 14px',
               cursor: 'pointer',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
               backdropFilter: 'blur(4px)',
               userSelect: 'none',
               whiteSpace: 'nowrap',
