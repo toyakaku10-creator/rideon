@@ -715,8 +715,10 @@ export default function Home() {
       const pos = { lat: pt.lat, lng: pt.lng };
       setCurrentPosition(pos);
       rideTrackRef.current.push(pos);
-      // 直接地図を操作（useEffectを経由しない）
-      mapInstanceRef.current?.setCenter(pos);
+      // 数ポイントに1回だけ地図を動かす
+      if (step % 3 === 0) {
+        mapInstanceRef.current?.panTo(pos);
+      }
       if (step > 0) {
         const prev = demoPoints[step - 1];
         const dist = haversineDistance(prev, pt);
