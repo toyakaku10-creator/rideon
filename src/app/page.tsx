@@ -831,13 +831,16 @@ export default function Home() {
 
   const toggleOverview = () => {
     if (!isOverview) {
+      mapInstanceRef.current?.setOptions({ disableDefaultUI: false });
       mapInstanceRef.current?.setZoom(13);
       setIsOverview(true);
     } else {
       setIsOverview(false);
       if (currentPosition && mapInstanceRef.current) {
-        mapInstanceRef.current.setCenter(currentPosition);
-        mapInstanceRef.current.setZoom(15.5);
+        mapInstanceRef.current?.setOptions({ gestureHandling: 'none' });
+        mapInstanceRef.current?.setCenter(currentPosition);
+        mapInstanceRef.current?.setZoom(15.5);
+        setTimeout(() => mapInstanceRef.current?.setOptions({ gestureHandling: 'greedy' }), 100);
       }
     }
   };
