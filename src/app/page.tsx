@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Bike, Play, Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin, type LucideProps } from 'lucide-react';
+import { Bike, Play, Square, Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin, type LucideProps } from 'lucide-react';
 import type { Tab, RouteType, LatLng, RouteSegment, SavedRoute, RideLog, Spot } from '@/types';
 import { SPOT_CATEGORIES, spotCustomSvg } from '@/lib/spotCategories';
 
@@ -935,7 +935,7 @@ export default function Home() {
               transition: 'all 0.2s',
             } as React.CSSProperties}
           >
-            <Play size={12} fill="currentColor" />
+            {(tab === 'speed' || isDemoMode) ? <Square size={12} fill="currentColor" /> : <Play size={12} fill="currentColor" />}
             {isDemoMode ? 'Demo' : 'RideOn'}
             <Bike size={18} />
           </button>
