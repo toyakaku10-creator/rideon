@@ -682,8 +682,8 @@ export default function Home() {
     const totalSteps = points.length;
     const totalDistanceKm = totalDistance / 1000;
     const realDurationSec = (totalDistanceKm / 16) * 3600;
-    const demoDurationSec = realDurationSec / 10;
-    const intervalTime = (demoDurationSec * 1000) / totalSteps;
+    const intervalTime = (realDurationSec / 100 * 1000) / totalSteps;
+    const demoElevations = elevations.length >= 2 ? elevations : [];
     let step = 0;
 
     demoIntervalRef.current = setInterval(() => {
@@ -702,10 +702,20 @@ export default function Home() {
       if (step > 0) {
         const prev = points[step - 1];
         const dist = haversineDistance(prev, pt);
-        const speed = Math.min((dist / (intervalTime / 1000)) * 3.6, 60);
-        setCurrentSpeed(speed);
-        setMaxSpeed((p) => Math.max(p, speed));
-        setSpeedSum((p) => p + speed);
+        // 勾配考慮の速度
+        let demoSpeed = 16;
+        if (demoElevations.length > step) {
+          const elevStep = Math.round((step / totalSteps) * (demoElevations.length - 1));
+          const elevPrev = Math.round(((step - 1) / totalSteps) * (demoElevations.length - 1));
+          const gradient = elevStep > elevPrev
+            ? ((demoElevations[elevStep] - demoElevations[elevPrev]) / Math.max(dist, 1)) * 100
+            : 0;
+          demoSpeed = Math.max(8, Math.min(28, 16 - gradient * 0.8));
+        }
+        demoSpeed += (Math.random() - 0.5) * 2;
+        setCurrentSpeed(demoSpeed);
+        setMaxSpeed((p) => Math.max(p, demoSpeed));
+        setSpeedSum((p) => p + demoSpeed);
         setSpeedCount((p) => p + 1);
         setRideDistance((p) => p + dist);
         setHeading(bearingDeg(prev, pt));
