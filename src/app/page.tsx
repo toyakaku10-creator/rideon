@@ -729,6 +729,9 @@ export default function Home() {
       cumDist.push(cumDist[i - 1] + d);
     }
     const totalDist = cumDist[cumDist.length - 1];
+    console.log('totalDist (meters):', totalDist);
+    console.log('totalDist (km):', totalDist / 1000);
+    console.log('pts.length:', pts.length);
     const demoDurationMs = (totalDist / 16000) * 3600 * 1000 / 100; // 1/100速
 
     const startTime = performance.now();
