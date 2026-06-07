@@ -732,6 +732,10 @@ export default function Home() {
       setRideDistance(progress * totalDistance)
       setCurrentSpeed(16 + (Math.random() - 0.5) * 2)
 
+      const heading = (Math.atan2(
+        pts[nextIdx][1] - pts[idx][1],
+        pts[nextIdx][0] - pts[idx][0]
+      ) * 180 / Math.PI + 360) % 360
       demoElevIndexRef.current = idx
 
       demoRAFRef.current = requestAnimationFrame(animate)
