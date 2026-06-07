@@ -158,6 +158,7 @@ export default function Home() {
   const isDemoModeRef = useRef(false);
   const [demoSpeed, setDemoSpeed] = useState(1);
   const demoSpeedRef = useRef(1);
+  const demoStartTimeRef = useRef(0);
   const demoRAFRef = useRef<number | null>(null);
   const pressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
@@ -697,6 +698,8 @@ export default function Home() {
   const handleDemoSpeedChange = (speed: number) => {
     setDemoSpeed(speed);
     demoSpeedRef.current = speed;
+    const baseDuration = (totalDistance / 16000) * 3600 * 1000 / 100;
+    demoStartTimeRef.current = performance.now() - demoProgressRef.current * baseDuration / speed;
   };
 
   const startDemoRide = (pts: [number, number][]) => {
@@ -747,12 +750,12 @@ export default function Home() {
     console.log('totalDist (km):', totalDist / 1000);
     console.log('baseDuration (sec):', baseDuration / 1000);
 
-    const startTime = performance.now();
+    demoStartTimeRef.current = performance.now();
     let lastStateUpdate = 0;
 
     const animate = (now: number) => {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed * demoSpeedRef.current / baseDuration, 1);
+      const elapsed = (now - demoStartTimeRef.current) * demoSpeedRef.current;
+      const progress = Math.min(elapsed / baseDuration, 1);
       const targetDist = totalDist * progress;
 
       if (progress >= 1) {
