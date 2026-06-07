@@ -92,7 +92,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
               type="number"
               domain={[0, totalDistance / 1000]}
               ticks={Array.from({length: 9}, (_, i) =>
-                Math.floor(totalDistance / 1000 / 8 * i)
+                Math.round(totalDistance / 1000 / 8 * i * 10) / 10
               )}
               tick={{ fontSize: 9, fill: 'var(--text-muted)' }}
               tickFormatter={(v) => `${v}km`}
