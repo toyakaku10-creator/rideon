@@ -385,7 +385,6 @@ export default function Home() {
     if (!currentPosition || tab !== 'speed' || isDemoModeRef.current) return;
     if (!mapInstanceRef.current) return;
     mapInstanceRef.current.setCenter({ lat: currentPosition.lat, lng: currentPosition.lng });
-    mapInstanceRef.current.panBy(0, 30);
   }, [currentPosition, tab]);
 
   // Navigation turn detection
@@ -713,7 +712,6 @@ export default function Home() {
         const m = mapInstanceRef.current;
         if (m) {
           m.setCenter(pos);
-          m.panBy(0, 30);
         }
         if (t < 1) requestAnimationFrame(animate);
       };
