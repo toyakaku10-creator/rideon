@@ -76,29 +76,41 @@ function makeLabelIcon(label: string, bg: string, size = 28): google.maps.Icon {
   };
 }
 
-function makePositionIcon(heading: number | null, isPolkaDot = false): google.maps.Icon {
+function makePositionIcon(heading: number | null, gradient = 0): google.maps.Icon {
   const hasHeading = heading != null && !isNaN(heading);
+  const abs = Math.abs(gradient);
   const size = 18;
 
+  // 色を勾配で決定: 緑(default) / 黄(2〜8%) / 水玉赤(8%以上)
+  let wheelColor = '#4CAF50';
+  let wheelFill = 'rgba(76,175,80,0.35)';
+  if (abs >= 8) {
+    wheelColor = '#CC0000';
+    wheelFill = 'rgba(204,0,0,0.35)';
+  } else if (abs >= 2) {
+    wheelColor = '#FFD700';
+    wheelFill = 'rgba(255,215,0,0.35)';
+  }
+
   // 急坂（8%以上）: 水玉の丸
-  if (isPolkaDot) {
+  if (abs >= 8) {
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
       <defs><clipPath id="pc"><circle cx="9" cy="9" r="7"/></clipPath></defs>
-      <circle cx="9" cy="9" r="8" fill="white" stroke="#CC0000" stroke-width="2"/>
+      <circle cx="9" cy="9" r="8" fill="white" stroke="${wheelColor}" stroke-width="2"/>
       <g clip-path="url(#pc)">
-        <circle cx="3" cy="3" r="1.5" fill="#CC0000"/>
-        <circle cx="9" cy="3" r="1.5" fill="#CC0000"/>
-        <circle cx="15" cy="3" r="1.5" fill="#CC0000"/>
-        <circle cx="3" cy="9" r="1.5" fill="#CC0000"/>
-        <circle cx="9" cy="9" r="1.5" fill="#CC0000"/>
-        <circle cx="15" cy="9" r="1.5" fill="#CC0000"/>
-        <circle cx="3" cy="15" r="1.5" fill="#CC0000"/>
-        <circle cx="9" cy="15" r="1.5" fill="#CC0000"/>
-        <circle cx="15" cy="15" r="1.5" fill="#CC0000"/>
-        <circle cx="6" cy="6" r="1.5" fill="#CC0000"/>
-        <circle cx="12" cy="6" r="1.5" fill="#CC0000"/>
-        <circle cx="6" cy="12" r="1.5" fill="#CC0000"/>
-        <circle cx="12" cy="12" r="1.5" fill="#CC0000"/>
+        <circle cx="3" cy="3" r="1.5" fill="${wheelColor}"/>
+        <circle cx="9" cy="3" r="1.5" fill="${wheelColor}"/>
+        <circle cx="15" cy="3" r="1.5" fill="${wheelColor}"/>
+        <circle cx="3" cy="9" r="1.5" fill="${wheelColor}"/>
+        <circle cx="9" cy="9" r="1.5" fill="${wheelColor}"/>
+        <circle cx="15" cy="9" r="1.5" fill="${wheelColor}"/>
+        <circle cx="3" cy="15" r="1.5" fill="${wheelColor}"/>
+        <circle cx="9" cy="15" r="1.5" fill="${wheelColor}"/>
+        <circle cx="15" cy="15" r="1.5" fill="${wheelColor}"/>
+        <circle cx="6" cy="6" r="1.5" fill="${wheelColor}"/>
+        <circle cx="12" cy="6" r="1.5" fill="${wheelColor}"/>
+        <circle cx="6" cy="12" r="1.5" fill="${wheelColor}"/>
+        <circle cx="12" cy="12" r="1.5" fill="${wheelColor}"/>
       </g>
     </svg>`;
     return {
@@ -110,19 +122,17 @@ function makePositionIcon(heading: number | null, isPolkaDot = false): google.ma
 
   if (hasHeading) {
     // 三角＋×スポーク車輪を一体でheading方向に回転
-    // 正方形SVG(34×34)の中央(17,17)を車輪中心にし、そこを回転軸＆アンカーにする
-    // 三角は車輪中心から上方8px離れた位置 (tip at y=1, base at y=9)
     const S = 34;
     const cx = 17, cy = 17;
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${S}" height="${S}">
       <g transform="rotate(${heading}, ${cx}, ${cy})">
-        <polygon points="${cx},1 ${cx - 5},9 ${cx + 5},9" fill="#4CAF50"/>
-        <circle cx="${cx}" cy="${cy}" r="8" fill="rgba(76,175,80,0.35)" stroke="#4CAF50" stroke-width="2"/>
-        <circle cx="${cx}" cy="${cy}" r="2" fill="rgba(76,175,80,0.35)" stroke="#4CAF50" stroke-width="1.5"/>
-        <line x1="11" y1="11" x2="16" y2="16" stroke="#4CAF50" stroke-width="1.5"/>
-        <line x1="18" y1="18" x2="23" y2="23" stroke="#4CAF50" stroke-width="1.5"/>
-        <line x1="23" y1="11" x2="18" y2="16" stroke="#4CAF50" stroke-width="1.5"/>
-        <line x1="16" y1="18" x2="11" y2="23" stroke="#4CAF50" stroke-width="1.5"/>
+        <polygon points="${cx},1 ${cx - 5},9 ${cx + 5},9" fill="${wheelColor}"/>
+        <circle cx="${cx}" cy="${cy}" r="8" fill="${wheelFill}" stroke="${wheelColor}" stroke-width="2"/>
+        <circle cx="${cx}" cy="${cy}" r="2" fill="${wheelFill}" stroke="${wheelColor}" stroke-width="1.5"/>
+        <line x1="11" y1="11" x2="16" y2="16" stroke="${wheelColor}" stroke-width="1.5"/>
+        <line x1="18" y1="18" x2="23" y2="23" stroke="${wheelColor}" stroke-width="1.5"/>
+        <line x1="23" y1="11" x2="18" y2="16" stroke="${wheelColor}" stroke-width="1.5"/>
+        <line x1="16" y1="18" x2="11" y2="23" stroke="${wheelColor}" stroke-width="1.5"/>
       </g>
     </svg>`;
     return {
@@ -132,7 +142,7 @@ function makePositionIcon(heading: number | null, isPolkaDot = false): google.ma
     };
   } else {
     // ×スポーク車輪（静止）
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="${size}" height="${size}" fill="rgba(76,175,80,0.35)" stroke="#4CAF50" stroke-width="2" stroke-linecap="round">
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="${size}" height="${size}" fill="${wheelFill}" stroke="${wheelColor}" stroke-width="2" stroke-linecap="round">
       <circle cx="12" cy="12" r="10" stroke-width="3"/>
       <circle cx="12" cy="12" r="3"/>
       <line x1="4" y1="4" x2="9" y2="9"/>
@@ -215,7 +225,7 @@ interface CycleMapProps {
   onSpotClick?: (spot: Spot) => void;
   logTrack?: { lat: number; lng: number }[] | null;
   referenceSegments?: RouteSegment[];
-  isPolkaDot?: boolean;
+  gradient?: number;
 }
 
 export default function CycleMap({
@@ -238,7 +248,7 @@ export default function CycleMap({
   onSpotClick,
   logTrack,
   referenceSegments,
-  isPolkaDot = false,
+  gradient = 0,
 }: CycleMapProps) {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
@@ -513,7 +523,7 @@ export default function CycleMap({
       {tab === 'speed' && currentPosition && (
         <Marker
           position={{ lat: currentPosition.lat, lng: currentPosition.lng }}
-          icon={makePositionIcon(heading, isPolkaDot)}
+          icon={makePositionIcon(heading, gradient)}
           zIndex={10}
         />
       )}
