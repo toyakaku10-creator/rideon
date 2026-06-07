@@ -352,7 +352,6 @@ export default function BottomPanel({
   const [urlLoading, setUrlLoading] = useState(false);
   const [urlError, setUrlError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const demoPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showSaveSheet, setShowSaveSheet] = useState(false);
   const [routeName, setRouteName] = useState('');
 
@@ -610,28 +609,15 @@ export default function BottomPanel({
             {
               icon: <Clapperboard size={24} />,
               label: 'デモ',
-              onClick: () => {},
+              onClick: () => onDemoStart?.(),
               disabled: waypoints.length < 2,
-              demo: true,
+              demo: false,
             },
-          ].map(({ icon, label, onClick, disabled, demo }) => (
+          ].map(({ icon, label, onClick, disabled }) => (
             <button
               key={label}
               onClick={onClick}
               disabled={disabled}
-              onTouchStart={demo ? () => {
-                demoPressTimerRef.current = setTimeout(() => {
-                  demoPressTimerRef.current = null;
-                  onDemoStart?.();
-                }, 1500);
-              } : undefined}
-              onTouchEnd={demo ? () => {
-                if (demoPressTimerRef.current) {
-                  clearTimeout(demoPressTimerRef.current);
-                  demoPressTimerRef.current = null;
-                }
-              } : undefined}
-              onContextMenu={demo ? (e) => e.preventDefault() : undefined}
               className="flex-1 py-2 flex flex-col items-center gap-0.5 text-[var(--text-muted)] disabled:opacity-35 active:text-[#D4AF37] transition-colors"
             >
               {icon}
