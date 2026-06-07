@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database, Link, Copy, FileInput, FileOutput, Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin, type LucideProps } from 'lucide-react';
+import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database, Link, Copy, FileInput, FileOutput, Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin, Map, type LucideProps } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute, RideLog, Spot } from '@/types';
 import { SPOT_CATEGORIES, spotCustomSvg } from '@/lib/spotCategories';
 
@@ -719,7 +719,7 @@ export default function BottomPanel({
               <div style={{ flexShrink: 0, padding: '0 16px 12px', borderBottom: '1px solid #eee' }}>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <button onClick={() => { setShowUrlInput((prev) => !prev); setShowDataMenu(false); }} style={btnStyle}>
-                    <Link size={20} color="#D4AF37" /><span>GPX</span>
+                    <Map size={20} color="#D4AF37" /><span>GPX</span>
                   </button>
                   <button onClick={() => { setShowDataMenu((prev) => !prev); setShowUrlInput(false); }} style={btnStyle}>
                     <Database size={20} color="#D4AF37" /><span>データ</span>
