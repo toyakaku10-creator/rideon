@@ -56,6 +56,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
   const maxElev = Math.max(...elevations);
   const yMin = Math.floor(minElev / 10) * 10;
   const yMax = Math.ceil(maxElev / 10) * 10;
+  const totalKm = totalDistance / 1000;
 
   return (
     <div className="mt-2 mb-1">
@@ -91,7 +92,9 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
               dataKey="dist"
               type="number"
               domain={[0, totalDistance / 1000]}
-              ticks={(() => { const totalKm = totalDistance / 1000; const step = totalKm / 8; return [0, step, step*2, step*3, step*4, step*5, step*6, step*7, totalKm].map(v => Math.round(v * 10) / 10); })()}
+              ticks={Array.from({length: 9}, (_, i) =>
+                Math.floor(totalKm / 8 * i)
+              )}
               tick={{ fontSize: 9, fill: 'var(--text-muted)' }}
               tickFormatter={(v) => `${v}km`}
             />
