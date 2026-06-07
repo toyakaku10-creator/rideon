@@ -68,7 +68,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
         {/* 現在位置インジケーター（走行中・DOM直接操作） */}
         {rideDistance != null && (
           <svg
-            style={{ position: 'absolute', top: 0, left: 16, right: 4, height: '100%', width: 'calc(100% - 20px)', pointerEvents: 'none', zIndex: 10 }}
+            style={{ position: 'absolute', top: 0, left: 36, width: 'calc(100% - 40px)', height: '100%', pointerEvents: 'none', zIndex: 10 }}
           >
             <line
               id={lineId.current}
