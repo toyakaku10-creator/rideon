@@ -141,8 +141,7 @@ export default function SpeedPanel({
               elevations={navElevations}
               totalDistance={navTotalDistance}
               currentIndex={navElevationIndex}
-              currentIndexRef={demoElevIndexRef}
-              progressRef={demoProgressRef}
+              rideDistance={rideDistance}
             />
           </div>
         )}

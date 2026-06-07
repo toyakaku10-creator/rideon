@@ -16,37 +16,21 @@ interface ElevationChartProps {
   totalDistance: number; // meters
   onPositionChange?: (index: number) => void;
   currentIndex?: number;
-  currentIndexRef?: React.RefObject<number>;
-  progressRef?: React.RefObject<number>;
+  rideDistance?: number;
 }
 
-export default function ElevationChart({ elevations, totalDistance, onPositionChange, currentIndex, currentIndexRef, progressRef }: ElevationChartProps) {
+export default function ElevationChart({ elevations, totalDistance, onPositionChange, currentIndex, rideDistance }: ElevationChartProps) {
   const lineId = useRef(`elevation-line-${Math.random().toString(36).slice(2)}`);
 
   useEffect(() => {
-    if (!currentIndexRef) return;
-    const interval = setInterval(() => {
-      const idx = currentIndexRef.current ?? 0;
-      const ratio = elevations.length > 1 ? idx / (elevations.length - 1) : 0;
-      const lineEl = document.getElementById(lineId.current);
-      if (lineEl) {
-        lineEl.setAttribute('x1', `${ratio * 100}%`);
-        lineEl.setAttribute('x2', `${ratio * 100}%`);
-      }
-    }, 50);
-    return () => clearInterval(interval);
-  }, [currentIndexRef, elevations.length]);
-
-  useEffect(() => {
-    if (!progressRef) return;
-    const ratio = progressRef.current ?? 0;
+    if (rideDistance == null || !totalDistance) return;
+    const ratio = Math.min(rideDistance / totalDistance, 1);
     const lineEl = document.getElementById(lineId.current);
     if (lineEl) {
       lineEl.setAttribute('x1', `${ratio * 100}%`);
       lineEl.setAttribute('x2', `${ratio * 100}%`);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [progressRef?.current]);
+  }, [rideDistance, totalDistance]);
 
   if (elevations.length < 2) return null;
 
@@ -79,7 +63,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
         style={{ position: 'relative', touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none' } as React.CSSProperties}
       >
         {/* 現在位置インジケーター（走行中・DOM直接操作） */}
-        {(currentIndexRef != null || progressRef != null) && (
+        {rideDistance != null && (
           <svg
             style={{ position: 'absolute', top: 0, left: 36, width: 'calc(100% - 40px)', height: '100%', pointerEvents: 'none', zIndex: 10 }}
           >
