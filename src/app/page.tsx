@@ -732,6 +732,7 @@ export default function Home() {
     const demoDurationMs = (totalDist / 16000) * 3600 * 1000 / 100; // 1/100速
 
     const startTime = performance.now();
+    let lastStateUpdate = 0;
 
     const animate = (now: number) => {
       const elapsed = now - startTime;
@@ -772,6 +773,12 @@ export default function Home() {
         });
       }
       mapInstanceRef.current?.setCenter(pos);
+
+      // 200msに1回だけstateを更新（高低差グラフ用）
+      if (now - lastStateUpdate > 200) {
+        setCurrentPosition(pos);
+        lastStateUpdate = now;
+      }
 
       // 速度（16km/h固定＋ゆらぎ）
       setCurrentSpeed(16 + (Math.random() - 0.5) * 2);
