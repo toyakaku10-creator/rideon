@@ -673,13 +673,22 @@ export default function BottomPanel({
                 <Share2 size={20} color="#D4AF37" />
                 シェアURLを送る
               </button>
-              <button
-                onClick={() => { setShowShareSheet(false); handleGpxExport(); }}
-                style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '14px 16px', background: '#f5f5f5', border: '1px solid #eee', borderRadius: '12px', cursor: 'pointer', fontSize: '15px', fontWeight: '600', color: '#333' }}
-              >
-                <FileOutput size={20} color="#D4AF37" />
-                GPXを書き出す
-              </button>
+              <div>
+                <div style={{ display: 'flex', gap: '8px', marginBottom: urlError ? '4px' : '0' }}>
+                  <input
+                    type="url"
+                    placeholder="シェアURLを貼り付けて読み込む"
+                    value={urlInput}
+                    onChange={(e) => { setUrlInput(e.target.value); setUrlError(''); }}
+                    onKeyDown={(e) => e.key === 'Enter' && handleUrlImport()}
+                    style={{ flex: 1, padding: '10px 12px', fontSize: '15px', border: '1px solid #ddd', borderRadius: '10px', boxSizing: 'border-box', minWidth: 0, WebkitAppearance: 'none' } as React.CSSProperties}
+                  />
+                  <button onClick={handleUrlImport} disabled={!urlInput.trim() || urlLoading} style={{ padding: '10px 14px', background: '#D4AF37', border: 'none', borderRadius: '10px', fontWeight: '600', cursor: 'pointer', opacity: !urlInput.trim() || urlLoading ? 0.4 : 1 }}>
+                    {urlLoading ? '取得中' : '読込み'}
+                  </button>
+                </div>
+                {urlError && <p style={{ fontSize: '12px', color: '#E53935', margin: '4px 0 0' }}>{urlError}</p>}
+              </div>
             </div>
           </div>
         </>
@@ -717,27 +726,14 @@ export default function BottomPanel({
                   </button>
                 </div>
                 {showUrlInput && (
-                  <div style={{ marginTop: '8px' }}>
-                    <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
-                      <input
-                        type="url"
-                        placeholder="シェアURLを貼り付け"
-                        value={urlInput}
-                        onChange={(e) => { setUrlInput(e.target.value); setUrlError(''); }}
-                        onKeyDown={(e) => e.key === 'Enter' && handleUrlImport()}
-                        style={{ flex: 1, padding: '10px 12px', fontSize: '16px', border: '1px solid #ddd', borderRadius: '8px', boxSizing: 'border-box', minWidth: 0, WebkitAppearance: 'none' } as React.CSSProperties}
-                      />
-                      <button onClick={handleUrlImport} disabled={!urlInput.trim() || urlLoading} style={{ padding: '10px 14px', background: '#D4AF37', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', opacity: !urlInput.trim() || urlLoading ? 0.4 : 1 }}>
-                        {urlLoading ? '取得中' : '読込み'}
-                      </button>
-                    </div>
-                    {urlError && <p style={{ fontSize: '12px', color: '#E53935', margin: '-4px 0 8px' }}>{urlError}</p>}
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      <label style={{ ...subBtnStyle, flex: 1, flexDirection: 'row', justifyContent: 'center', gap: '6px', cursor: 'pointer' }}>
-                        <FileInput size={16} color="#D4AF37" /><span>GPX取込み</span>
-                        <input type="file" accept=".gpx" onChange={handleGpxImport} style={{ display: 'none' }} />
-                      </label>
-                    </div>
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                    <label style={{ ...subBtnStyle, cursor: 'pointer' }}>
+                      <FileInput size={20} color="#D4AF37" /><span>GPX取込み</span>
+                      <input type="file" accept=".gpx" onChange={handleGpxImport} style={{ display: 'none' }} />
+                    </label>
+                    <button onClick={() => { handleGpxExport(); }} style={subBtnStyle}>
+                      <FileOutput size={20} color="#D4AF37" /><span>GPX書き出し</span>
+                    </button>
                   </div>
                 )}
                 {showDataMenu && (
