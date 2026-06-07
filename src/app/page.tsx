@@ -156,6 +156,7 @@ export default function Home() {
   const [logTrack, setLogTrack] = useState<{ lat: number; lng: number }[] | null>(null);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const isDemoModeRef = useRef(false);
+  const [demoSpeed, setDemoSpeed] = useState(1);
   const demoRAFRef = useRef<number | null>(null);
   const pressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
@@ -735,7 +736,7 @@ export default function Home() {
     }
     const cumTotalDist = cumDist[cumDist.length - 1]; // cumDistの合計
     const totalDist = totalDistance; // 正確な総距離はstateから取得
-    const demoDurationMs = (totalDist / 16000) * 3600 * 1000 / 100; // 1/100速
+    const demoDurationMs = (totalDist / 16000) * 3600 * 1000 / 100 / demoSpeed;
     console.log('pts.length:', pts.length);
     console.log('totalDist (km):', totalDist / 1000);
     console.log('demoDurationMs (sec):', demoDurationMs / 1000);
@@ -978,6 +979,37 @@ export default function Home() {
             <Bike size={18} />
           </button>
         </div>
+
+        {isDemoMode && (
+          <div style={{
+            position: 'absolute',
+            bottom: '120px',
+            right: '12px',
+            zIndex: 500,
+            display: 'flex',
+            gap: '6px',
+          }}>
+            {[1, 2, 4].map(speed => (
+              <button
+                key={speed}
+                onClick={() => setDemoSpeed(speed)}
+                style={{
+                  background: demoSpeed === speed ? '#D4AF37' : 'rgba(255,255,255,0.9)',
+                  color: demoSpeed === speed ? '#000' : '#D4AF37',
+                  border: '1px solid #D4AF37',
+                  borderRadius: '16px',
+                  padding: '4px 10px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                }}
+              >
+                {speed}x
+              </button>
+            ))}
+          </div>
+        )}
 
         {tab === 'speed' && navInstruction && (
           <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[900] bg-[#D4AF37] text-white text-sm font-bold px-5 py-2 rounded-full shadow-lg pointer-events-none">
