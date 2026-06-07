@@ -785,7 +785,9 @@ export default function Home() {
         });
       }
       mapInstanceRef.current?.setCenter(pos);
-      demoElevIndexRef.current = idx;
+      // pointsのidxをelevationsのインデックスに変換
+      const elevIdx = Math.round(idx / (pts.length - 1) * (elevations.length - 1));
+      demoElevIndexRef.current = elevIdx;
 
       setRideDistance(totalDist * progress);
       if (now - lastStateUpdate > 50) {
