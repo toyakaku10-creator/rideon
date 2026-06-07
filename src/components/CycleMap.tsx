@@ -299,12 +299,6 @@ export default function CycleMap({
     initializedRef.current = true; // prevent subsequent center effect from overriding
   }, [map, fitBoundsPoints]);
 
-  // Zoom in when switching to ride mode
-  useEffect(() => {
-    if (!map || !rideMode) return;
-    map.setZoom(15.5);
-  }, [map, rideMode]);
-
   // Center / follow logic (mirrors Leaflet MapController behaviour)
   useEffect(() => {
     if (!map || !center) return;
