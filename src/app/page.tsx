@@ -728,7 +728,7 @@ export default function Home() {
       const d = Math.sqrt(dLat * dLat + dLng * dLng) * 6371000;
       cumDist.push(cumDist[i - 1] + d);
     }
-    const totalDist = cumDist[cumDist.length - 1];
+    const totalDist = totalDistance; // 正確な総距離はstateから取得
     const demoDurationMs = (totalDist / 16000) * 3600 * 1000 / 100; // 1/100速
     console.log('pts.length:', pts.length);
     console.log('totalDist (km):', totalDist / 1000);
