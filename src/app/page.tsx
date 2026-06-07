@@ -907,6 +907,7 @@ export default function Home() {
               backdropFilter: 'blur(4px)',
               userSelect: 'none',
               WebkitUserSelect: 'none',
+              minWidth: '120px',
               whiteSpace: 'nowrap',
               transition: 'all 0.2s',
             } as React.CSSProperties}
