@@ -762,9 +762,7 @@ export default function Home() {
       if (currentMarkerRef.current) {
         currentMarkerRef.current.setPosition(pos);
       }
-      if (elapsed % 300 < 16) { // 300msに1回だけpanTo
-        mapInstanceRef.current?.panTo(pos);
-      }
+      mapInstanceRef.current?.setCenter(pos);
 
       // 速度（16km/h固定＋ゆらぎ）
       setCurrentSpeed(16 + (Math.random() - 0.5) * 2);
