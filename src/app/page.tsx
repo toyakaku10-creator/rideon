@@ -157,6 +157,7 @@ export default function Home() {
   const [isDemoMode, setIsDemoMode] = useState(false);
   const isDemoModeRef = useRef(false);
   const [demoSpeed, setDemoSpeed] = useState(1);
+  const demoSpeedRef = useRef(1);
   const demoRAFRef = useRef<number | null>(null);
   const pressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
@@ -693,6 +694,11 @@ export default function Home() {
     setOpenSaveSheet(true);
   }, [isImported, segments]);
 
+  const handleDemoSpeedChange = (speed: number) => {
+    setDemoSpeed(speed);
+    demoSpeedRef.current = speed;
+  };
+
   const startDemoRide = (pts: [number, number][]) => {
     if (pts.length < 2) return;
     isDemoModeRef.current = true;
@@ -736,20 +742,20 @@ export default function Home() {
     }
     const cumTotalDist = cumDist[cumDist.length - 1]; // cumDistの合計
     const totalDist = totalDistance; // 正確な総距離はstateから取得
-    const demoDurationMs = (totalDist / 16000) * 3600 * 1000 / 100 / demoSpeed;
+    const baseDuration = (totalDist / 16000) * 3600 * 1000 / 100;
     console.log('pts.length:', pts.length);
     console.log('totalDist (km):', totalDist / 1000);
-    console.log('demoDurationMs (sec):', demoDurationMs / 1000);
+    console.log('baseDuration (sec):', baseDuration / 1000);
 
     const startTime = performance.now();
     let lastStateUpdate = 0;
 
     const animate = (now: number) => {
       const elapsed = now - startTime;
-      const progress = elapsed / demoDurationMs;
+      const progress = Math.min(elapsed * demoSpeedRef.current / baseDuration, 1);
       const targetDist = totalDist * progress;
 
-      if (elapsed >= demoDurationMs) {
+      if (progress >= 1) {
         console.log('final elapsed (sec):', elapsed / 1000);
         console.log('final progress:', progress);
         console.log('final targetDist (km):', targetDist / 1000);
@@ -992,7 +998,7 @@ export default function Home() {
             {[1, 2, 4].map(speed => (
               <button
                 key={speed}
-                onClick={() => setDemoSpeed(speed)}
+                onClick={() => handleDemoSpeedChange(speed)}
                 style={{
                   background: demoSpeed === speed ? '#D4AF37' : 'rgba(255,255,255,0.9)',
                   color: demoSpeed === speed ? '#000' : '#D4AF37',
