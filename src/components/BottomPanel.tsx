@@ -684,7 +684,7 @@ export default function BottomPanel({
                     style={{ flex: 1, padding: '10px 12px', fontSize: '15px', border: '1px solid #ddd', borderRadius: '10px', boxSizing: 'border-box', minWidth: 0, WebkitAppearance: 'none' } as React.CSSProperties}
                   />
                   <button onClick={handleUrlImport} disabled={!urlInput.trim() || urlLoading} style={{ padding: '10px 14px', background: '#D4AF37', border: 'none', borderRadius: '10px', fontWeight: '600', cursor: 'pointer', opacity: !urlInput.trim() || urlLoading ? 0.4 : 1 }}>
-                    {urlLoading ? '取得中' : '読込み'}
+                    {urlLoading ? '取得中' : '読み込み'}
                   </button>
                 </div>
                 {urlError && <p style={{ fontSize: '12px', color: '#E53935', margin: '4px 0 0' }}>{urlError}</p>}
@@ -739,11 +739,11 @@ export default function BottomPanel({
                 {showDataMenu && (
                   <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                     <label style={subBtnStyle}>
-                      <Download size={20} color="#D4AF37" /><span>マイルート読込み</span>
+                      <Download size={20} color="#D4AF37" /><span>マイルート読み込み</span>
                       <input ref={fileInputRef} type="file" accept=".json" onChange={handleImportFile} style={{ display: 'none' }} />
                     </label>
                     <button onClick={handleExport} disabled={savedRoutes.length === 0} style={{ ...subBtnStyle, opacity: savedRoutes.length === 0 ? 0.4 : 1 }}>
-                      <Upload size={20} color="#D4AF37" /><span>マイルート書出し</span>
+                      <Upload size={20} color="#D4AF37" /><span>マイルート書き出し</span>
                     </button>
                   </div>
                 )}
