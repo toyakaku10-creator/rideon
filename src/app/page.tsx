@@ -1009,7 +1009,7 @@ export default function Home() {
           isImported={isImported}
           elevations={elevations}
           onElevationPositionChange={setElevationIndex}
-          rideDistance={isDemoMode ? rideDistance : undefined}
+          rideDistance={rideDistance}
           onReverseRoute={handleReverseRoute}
           onLoadRouteFromUrl={handleLoadRouteFromUrl}
           onKyorisokuImport={handleKyorisokuImport}
