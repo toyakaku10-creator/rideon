@@ -16,34 +16,22 @@ interface ElevationChartProps {
   totalDistance: number; // meters
   onPositionChange?: (index: number) => void;
   currentIndex?: number;
-  currentIndexRef?: React.MutableRefObject<number>;
+  rideDistance?: number; // meters
 }
 
-export default function ElevationChart({ elevations, totalDistance, onPositionChange, currentIndex, currentIndexRef }: ElevationChartProps) {
+export default function ElevationChart({ elevations, totalDistance, onPositionChange, currentIndex, rideDistance }: ElevationChartProps) {
   const lineId = useRef(`elevation-line-${Math.random().toString(36).slice(2)}`);
 
   useEffect(() => {
-    if (!currentIndexRef) return;
-    const interval = setInterval(() => {
-      const idx = currentIndexRef.current;
-      // pointsのインデックスをelevationsのインデックスに変換
-      const elevIdx = Math.min(idx, elevations.length - 1);
-      const ratio = elevations.length > 1 ? elevIdx / (elevations.length - 1) : 0;
-      const lineEl = document.getElementById(lineId.current);
-      if (lineEl) {
-        lineEl.setAttribute('x1', `${ratio * 100}%`);
-        lineEl.setAttribute('x2', `${ratio * 100}%`);
-      }
-    }, 100);
-    return () => {
-      clearInterval(interval);
-      const lineEl = document.getElementById(lineId.current);
-      if (lineEl) {
-        lineEl.setAttribute('x1', '0%');
-        lineEl.setAttribute('x2', '0%');
-      }
-    };
-  }, [currentIndexRef, elevations.length]);
+    const ratio = (totalDistance && totalDistance > 0 && rideDistance)
+      ? Math.min(rideDistance / totalDistance, 1)
+      : 0;
+    const lineEl = document.getElementById(lineId.current);
+    if (lineEl) {
+      lineEl.setAttribute('x1', `${ratio * 100}%`);
+      lineEl.setAttribute('x2', `${ratio * 100}%`);
+    }
+  }, [rideDistance, totalDistance]);
 
   if (elevations.length < 2) return null;
 
@@ -74,8 +62,8 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
         onTouchMove={handleTouch}
         style={{ position: 'relative', touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none' } as React.CSSProperties}
       >
-        {/* 現在位置インジケーター（デモ走行用・DOM直接操作） */}
-        {currentIndexRef && (
+        {/* 現在位置インジケーター（走行中・DOM直接操作） */}
+        {rideDistance != null && (
           <svg
             style={{ position: 'absolute', top: 0, left: 16, right: 4, height: '100%', width: 'calc(100% - 20px)', pointerEvents: 'none', zIndex: 10 }}
           >

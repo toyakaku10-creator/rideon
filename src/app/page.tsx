@@ -160,7 +160,6 @@ export default function Home() {
   const pressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const currentMarkerRef = useRef<google.maps.Marker | null>(null);
-  const demoElevIndexRef = useRef<number>(0);
 
   // Spots
   const [spots, setSpots] = useState<Spot[]>([]);
@@ -756,7 +755,6 @@ export default function Home() {
         idx = i;
       }
       const nextIdx = Math.min(idx + 1, pts.length - 1);
-      demoElevIndexRef.current = idx;
 
       // 2点間を補間
       const segDist = cumDist[nextIdx] - cumDist[idx];
@@ -1011,7 +1009,7 @@ export default function Home() {
           isImported={isImported}
           elevations={elevations}
           onElevationPositionChange={setElevationIndex}
-          elevationIndexRef={isDemoMode ? demoElevIndexRef : undefined}
+          rideDistance={isDemoMode ? rideDistance : undefined}
           onReverseRoute={handleReverseRoute}
           onLoadRouteFromUrl={handleLoadRouteFromUrl}
           onKyorisokuImport={handleKyorisokuImport}

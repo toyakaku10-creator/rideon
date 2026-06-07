@@ -286,7 +286,7 @@ interface BottomPanelProps {
   isImported: boolean;
   elevations?: number[];
   onElevationPositionChange?: (index: number) => void;
-  elevationIndexRef?: React.MutableRefObject<number>;
+  rideDistance?: number;
   onReverseRoute?: () => void;
   onLoadRouteFromUrl?: (shareId: string) => void;
   onKyorisokuImport?: (points: { lat: number; lng: number }[], distance: number) => void;
@@ -323,7 +323,7 @@ export default function BottomPanel({
   isImported,
   elevations = [],
   onElevationPositionChange,
-  elevationIndexRef,
+  rideDistance,
   onReverseRoute,
   onLoadRouteFromUrl,
   onKyorisokuImport,
@@ -564,7 +564,7 @@ export default function BottomPanel({
         {/* Elevation chart */}
         {elevations.length >= 2 && (
           <div className="px-4">
-            <ElevationChart elevations={elevations} totalDistance={totalDistance} onPositionChange={onElevationPositionChange} currentIndexRef={elevationIndexRef} />
+            <ElevationChart elevations={elevations} totalDistance={totalDistance} onPositionChange={onElevationPositionChange} rideDistance={rideDistance} />
           </div>
         )}
 
