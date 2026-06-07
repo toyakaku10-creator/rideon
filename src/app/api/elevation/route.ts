@@ -4,10 +4,28 @@ export async function POST(request: NextRequest) {
   const { points } = await request.json()
 
   const MAX_POINTS = 512
-  const step = Math.max(1, Math.floor(points.length / MAX_POINTS))
-  const sampled = points.filter((_: unknown, i: number) =>
-    i % step === 0 || i === points.length - 1
-  )
+
+  // 累積距離を計算
+  const cumDist: number[] = [0]
+  for (let i = 1; i < points.length; i++) {
+    const dLat = (points[i].lat - points[i-1].lat) * Math.PI / 180
+    const dLng = (points[i].lng - points[i-1].lng) * Math.PI / 180
+    const d = Math.sqrt(dLat * dLat + dLng * dLng) * 6371000
+    cumDist.push(cumDist[i-1] + d)
+  }
+  const totalDist = cumDist[cumDist.length - 1]
+
+  // 距離ベースで均等にMAX_POINTS点を選ぶ
+  const sampled: {lat: number, lng: number}[] = []
+  for (let i = 0; i < MAX_POINTS; i++) {
+    const targetDist = (i / (MAX_POINTS - 1)) * totalDist
+    let idx = 0
+    for (let j = 1; j < cumDist.length; j++) {
+      if (cumDist[j] >= targetDist) { idx = j - 1; break }
+      idx = j
+    }
+    sampled.push(points[idx])
+  }
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
   const locations = sampled
@@ -18,8 +36,6 @@ export async function POST(request: NextRequest) {
 
   const res = await fetch(url)
   const text = await res.text()
-  console.log('Elevation response status:', res.status)
-  console.log('Elevation response:', text.substring(0, 300))
 
   let data
   try {
