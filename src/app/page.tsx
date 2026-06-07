@@ -728,6 +728,7 @@ export default function Home() {
       const d = Math.sqrt(dLat * dLat + dLng * dLng) * 6371000;
       cumDist.push(cumDist[i - 1] + d);
     }
+    const cumTotalDist = cumDist[cumDist.length - 1]; // cumDistの合計
     const totalDist = totalDistance; // 正確な総距離はstateから取得
     const demoDurationMs = (totalDist / 16000) * 3600 * 1000 / 100; // 1/100速
     console.log('pts.length:', pts.length);
@@ -754,17 +755,18 @@ export default function Home() {
         return;
       }
 
-      // targetDistに対応するポイントを探す
+      // targetDistをcumDistのスケールに変換してポイントを探す
+      const targetDistInCum = progress * cumTotalDist;
       let idx = 0;
       for (let i = 1; i < cumDist.length; i++) {
-        if (cumDist[i] >= targetDist) { idx = i - 1; break; }
+        if (cumDist[i] >= targetDistInCum) { idx = i - 1; break; }
         idx = i;
       }
       const nextIdx = Math.min(idx + 1, pts.length - 1);
 
       // 2点間を補間
       const segDist = cumDist[nextIdx] - cumDist[idx];
-      const t = segDist > 0 ? (targetDist - cumDist[idx]) / segDist : 0;
+      const t = segDist > 0 ? (targetDistInCum - cumDist[idx]) / segDist : 0;
       const lat = pts[idx][0] + (pts[nextIdx][0] - pts[idx][0]) * t;
       const lng = pts[idx][1] + (pts[nextIdx][1] - pts[idx][1]) * t;
       const pos = { lat, lng };
