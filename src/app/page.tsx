@@ -787,9 +787,9 @@ export default function Home() {
       mapInstanceRef.current?.setCenter(pos);
       demoElevIndexRef.current = idx;
 
+      setRideDistance(totalDist * progress);
       if (now - lastStateUpdate > 50) {
         setCurrentSpeed(16 + (Math.random() - 0.5) * 2);
-        setRideDistance(totalDist * progress);
         lastStateUpdate = now;
       }
 
