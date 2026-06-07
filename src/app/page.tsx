@@ -722,6 +722,7 @@ export default function Home() {
     setRideDistance(0);
     prevGpsPos.current = null;
     setTab('speed');
+    mapInstanceRef.current?.setZoom(14.5);
 
     // 各ポイントの累積距離を計算
     const cumDist: number[] = [0];
