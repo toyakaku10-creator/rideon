@@ -349,6 +349,7 @@ export default function BottomPanel({
   const [rideLogs, setRideLogs] = useState<RideLog[]>([]);
   const [showDataMenu, setShowDataMenu] = useState(false);
   const [showGpxMenu, setShowGpxMenu] = useState(false);
+  const [showShareExpand, setShowShareExpand] = useState(false);
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [urlInput, setUrlInput] = useState('');
   const [urlLoading, setUrlLoading] = useState(false);
@@ -710,20 +711,22 @@ export default function BottomPanel({
             return (
               <div style={{ flexShrink: 0, padding: '0 16px 12px', borderBottom: '2px solid #D4AF37' }}>
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <button onClick={() => { onShare ? onShare() : handleShare(); }} style={btnStyle}>
+                  <button onClick={() => { setShowShareExpand((prev) => !prev); setShowGpxMenu(false); setShowDataMenu(false); }} style={btnStyle}>
                     <Share2 size={20} color="#D4AF37" /><span>シェア</span>
                   </button>
-                  <button onClick={() => { setShowGpxMenu((prev) => !prev); setShowUrlInput(false); setShowDataMenu(false); }} style={btnStyle}>
+                  <button onClick={() => { setShowGpxMenu((prev) => !prev); setShowShareExpand(false); setShowDataMenu(false); }} style={btnStyle}>
                     <Map size={20} color="#D4AF37" /><span>GPX</span>
                   </button>
-                  <button onClick={() => { setShowDataMenu((prev) => !prev); setShowUrlInput(false); setShowGpxMenu(false); }} style={btnStyle}>
+                  <button onClick={() => { setShowDataMenu((prev) => !prev); setShowShareExpand(false); setShowGpxMenu(false); }} style={btnStyle}>
                     <Database size={20} color="#D4AF37" /><span>データ</span>
                   </button>
                 </div>
-                {showUrlInput && (
+                {showShareExpand && (
                   <>
-                    <p style={{ fontSize: '11px', color: '#888', margin: '8px 0 4px' }}>シェアURLで読み込み</p>
-                    <div style={{ display: 'flex', gap: '8px' }}>
+                    <button onClick={() => { onShare ? onShare() : handleShare(); setShowShareExpand(false); }} style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', marginTop: '8px', padding: '10px 14px', background: 'rgba(212,175,55,0.15)', color: '#D4AF37', border: '1px solid #D4AF37', borderRadius: '8px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', boxSizing: 'border-box' as const }}>
+                      <Upload size={16} />シェアURLを送る
+                    </button>
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                       <input
                         type="url"
                         placeholder="シェアURLを貼り付け"
