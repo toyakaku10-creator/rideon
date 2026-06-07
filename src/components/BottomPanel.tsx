@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database, Link, Copy, FileInput, FileOutput, Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin, type LucideProps } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute, RideLog, Spot } from '@/types';
 import { SPOT_CATEGORIES, spotCustomSvg } from '@/lib/spotCategories';
@@ -286,6 +286,7 @@ interface BottomPanelProps {
   isImported: boolean;
   elevations?: number[];
   onElevationPositionChange?: (index: number) => void;
+  elevationIndexRef?: React.MutableRefObject<number>;
   onReverseRoute?: () => void;
   onLoadRouteFromUrl?: (shareId: string) => void;
   onKyorisokuImport?: (points: { lat: number; lng: number }[], distance: number) => void;
@@ -322,6 +323,7 @@ export default function BottomPanel({
   isImported,
   elevations = [],
   onElevationPositionChange,
+  elevationIndexRef,
   onReverseRoute,
   onLoadRouteFromUrl,
   onKyorisokuImport,
@@ -562,7 +564,7 @@ export default function BottomPanel({
         {/* Elevation chart */}
         {elevations.length >= 2 && (
           <div className="px-4">
-            <ElevationChart elevations={elevations} totalDistance={totalDistance} onPositionChange={onElevationPositionChange} />
+            <ElevationChart elevations={elevations} totalDistance={totalDistance} onPositionChange={onElevationPositionChange} currentIndexRef={elevationIndexRef} />
           </div>
         )}
 

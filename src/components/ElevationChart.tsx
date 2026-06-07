@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import {
   AreaChart,
   Area,
@@ -15,9 +16,19 @@ interface ElevationChartProps {
   totalDistance: number; // meters
   onPositionChange?: (index: number) => void;
   currentIndex?: number;
+  currentIndexRef?: React.MutableRefObject<number>;
 }
 
-export default function ElevationChart({ elevations, totalDistance, onPositionChange, currentIndex }: ElevationChartProps) {
+export default function ElevationChart({ elevations, totalDistance, onPositionChange, currentIndex, currentIndexRef }: ElevationChartProps) {
+  const [liveIndex, setLiveIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!currentIndexRef) return;
+    const interval = setInterval(() => {
+      setLiveIndex(currentIndexRef.current);
+    }, 100);
+    return () => clearInterval(interval);
+  }, [currentIndexRef, elevations.length]);
   if (elevations.length < 2) return null;
 
   const handleTouch = (e: React.TouchEvent<HTMLDivElement>) => {
@@ -87,21 +98,24 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
             dot={false}
             isAnimationActive={false}
           />
-          {currentIndex != null && (
-            <ReferenceLine
-              x={data[Math.min(currentIndex, data.length - 1)]?.dist}
-              stroke="#D4AF37"
-              strokeWidth={2}
-              strokeDasharray="4 2"
-              label={{
-                value: `${Math.round(elevations[Math.min(currentIndex, elevations.length - 1)])}m`,
-                fill: '#D4AF37',
-                fontSize: 11,
-                fontWeight: 'bold',
-                position: 'top',
-              }}
-            />
-          )}
+          {(liveIndex ?? currentIndex) != null && (() => {
+            const ci = (liveIndex ?? currentIndex)!;
+            return (
+              <ReferenceLine
+                x={data[Math.min(ci, data.length - 1)]?.dist}
+                stroke="#D4AF37"
+                strokeWidth={2}
+                strokeDasharray="4 2"
+                label={{
+                  value: `${Math.round(elevations[Math.min(ci, elevations.length - 1)])}m`,
+                  fill: '#D4AF37',
+                  fontSize: 11,
+                  fontWeight: 'bold',
+                  position: 'top',
+                }}
+              />
+            );
+          })()}
         </AreaChart>
       </ResponsiveContainer>
       </div>
