@@ -162,6 +162,7 @@ export default function Home() {
   const currentMarkerRef = useRef<google.maps.Marker | null>(null);
   const skipElevationFetchRef = useRef(false);
   const demoElevIndexRef = useRef<number>(0);
+  const demoProgressRef = useRef<number>(0);
 
   // Spots
   const [spots, setSpots] = useState<Spot[]>([]);
@@ -788,6 +789,7 @@ export default function Home() {
       // pointsのidxをelevationsのインデックスに変換
       const elevIdx = Math.round(idx / (pts.length - 1) * (elevations.length - 1));
       demoElevIndexRef.current = elevIdx;
+      demoProgressRef.current = progress;
 
       setRideDistance(totalDist * progress);
       if (now - lastStateUpdate > 50) {
@@ -1078,6 +1080,7 @@ export default function Home() {
           navElevationIndex={navElevationIndex ?? undefined}
           rideDistance={rideDistance}
           demoElevIndexRef={demoElevIndexRef}
+          demoProgressRef={demoProgressRef}
         />
       )}
 

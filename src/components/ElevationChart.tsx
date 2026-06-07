@@ -17,9 +17,10 @@ interface ElevationChartProps {
   onPositionChange?: (index: number) => void;
   currentIndex?: number;
   currentIndexRef?: React.RefObject<number>;
+  progressRef?: React.RefObject<number>;
 }
 
-export default function ElevationChart({ elevations, totalDistance, onPositionChange, currentIndex, currentIndexRef }: ElevationChartProps) {
+export default function ElevationChart({ elevations, totalDistance, onPositionChange, currentIndex, currentIndexRef, progressRef }: ElevationChartProps) {
   const lineId = useRef(`elevation-line-${Math.random().toString(36).slice(2)}`);
 
   useEffect(() => {
@@ -35,6 +36,19 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
     }, 50);
     return () => clearInterval(interval);
   }, [currentIndexRef, elevations.length]);
+
+  useEffect(() => {
+    if (!progressRef) return;
+    const interval = setInterval(() => {
+      const ratio = progressRef.current ?? 0;
+      const lineEl = document.getElementById(lineId.current);
+      if (lineEl) {
+        lineEl.setAttribute('x1', `${ratio * 100}%`);
+        lineEl.setAttribute('x2', `${ratio * 100}%`);
+      }
+    }, 50);
+    return () => clearInterval(interval);
+  }, [progressRef]);
 
   if (elevations.length < 2) return null;
 
@@ -67,7 +81,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
         style={{ position: 'relative', touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none' } as React.CSSProperties}
       >
         {/* 現在位置インジケーター（走行中・DOM直接操作） */}
-        {currentIndexRef != null && (
+        {(currentIndexRef != null || progressRef != null) && (
           <svg
             style={{ position: 'absolute', top: 0, left: 36, width: 'calc(100% - 40px)', height: '100%', pointerEvents: 'none', zIndex: 10 }}
           >

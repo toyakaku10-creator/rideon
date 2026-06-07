@@ -16,6 +16,7 @@ interface SpeedPanelProps {
   navElevationIndex?: number;
   rideDistance?: number; // meters
   demoElevIndexRef?: React.RefObject<number>;
+  demoProgressRef?: React.RefObject<number>;
 }
 
 const SpeedMeter = ({ speed }: { speed: number }) => {
@@ -56,6 +57,7 @@ export default function SpeedPanel({
   navElevationIndex,
   rideDistance = 0,
   demoElevIndexRef,
+  demoProgressRef,
 }: SpeedPanelProps) {
   const [showMax, setShowMax] = useState(false);
   const [showRemaining, setShowRemaining] = useState(false);
@@ -140,6 +142,7 @@ export default function SpeedPanel({
               totalDistance={navTotalDistance}
               currentIndex={navElevationIndex}
               currentIndexRef={demoElevIndexRef}
+              progressRef={demoProgressRef}
             />
           </div>
         )}
