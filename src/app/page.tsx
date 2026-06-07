@@ -959,7 +959,7 @@ export default function Home() {
             } as React.CSSProperties}
           >
             {(tab === 'speed' || isDemoMode) ? <Square size={12} fill="currentColor" /> : <Play size={12} fill="currentColor" />}
-            RideOn
+            {isDemoMode ? 'Demo' : 'RideOn'}
             <Bike size={18} />
           </button>
         </div>
