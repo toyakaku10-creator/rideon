@@ -702,7 +702,7 @@ export default function BottomPanel({
             const btnStyle: React.CSSProperties = { flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '10px 4px', background: '#f5f5f5', border: '1px solid #eee', borderRadius: '10px', cursor: 'pointer', fontSize: '12px', color: '#333' };
             const subBtnStyle: React.CSSProperties = { flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '10px 4px', background: '#f5f5f5', border: '1px solid #eee', borderRadius: '10px', cursor: 'pointer', fontSize: '12px', color: '#333' };
             return (
-              <div style={{ flexShrink: 0, padding: '0 16px 12px', borderBottom: '1px solid #eee' }}>
+              <div style={{ flexShrink: 0, padding: '0 16px 12px', borderBottom: '2px solid #D4AF37' }}>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <button onClick={() => { setShowUrlInput((prev) => !prev); setShowGpxMenu(false); setShowDataMenu(false); }} style={btnStyle}>
                     <Share2 size={20} color="#D4AF37" /><span>シェア</span>
