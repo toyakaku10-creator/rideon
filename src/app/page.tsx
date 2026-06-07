@@ -156,7 +156,6 @@ export default function Home() {
   const [logTrack, setLogTrack] = useState<{ lat: number; lng: number }[] | null>(null);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const isDemoModeRef = useRef(false);
-  const [isOverview, setIsOverview] = useState(false);
   const demoRAFRef = useRef<number | null>(null);
   const pressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
@@ -829,22 +828,6 @@ export default function Home() {
     }
   };
 
-  const toggleOverview = () => {
-    if (!isOverview) {
-      mapInstanceRef.current?.setOptions({ disableDefaultUI: false });
-      mapInstanceRef.current?.setZoom(13);
-      setIsOverview(true);
-    } else {
-      setIsOverview(false);
-      if (currentPosition && mapInstanceRef.current) {
-        mapInstanceRef.current?.setOptions({ gestureHandling: 'none' });
-        mapInstanceRef.current?.setCenter(currentPosition);
-        mapInstanceRef.current?.setZoom(15.5);
-        setTimeout(() => mapInstanceRef.current?.setOptions({ gestureHandling: 'greedy' }), 100);
-      }
-    }
-  };
-
   const mapCenter =
     tab === 'speed' ? (currentPosition ?? initialCenter) : initialCenter;
   const mapFollow = tab === 'speed' && currentPosition !== null;
@@ -995,28 +978,6 @@ export default function Home() {
             <Bike size={18} />
           </button>
         </div>
-
-        {/* Overview/Tracking toggle button (ride mode only) */}
-        {tab === 'speed' && (
-          <div style={{ position: 'absolute', top: '60px', right: '12px', zIndex: 500 }}>
-            <button
-              onClick={toggleOverview}
-              style={{
-                background: isOverview ? '#D4AF37' : 'rgba(255,255,255,0.9)',
-                color: isOverview ? '#fff' : '#333',
-                border: '1px solid #D4AF37',
-                borderRadius: '20px',
-                padding: '6px 14px',
-                fontSize: '13px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-              }}
-            >
-              {isOverview ? '追尾' : '概観'}
-            </button>
-          </div>
-        )}
 
         {tab === 'speed' && navInstruction && (
           <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[900] bg-[#D4AF37] text-white text-sm font-bold px-5 py-2 rounded-full shadow-lg pointer-events-none">
