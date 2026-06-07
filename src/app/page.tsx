@@ -729,17 +729,23 @@ export default function Home() {
       cumDist.push(cumDist[i - 1] + d);
     }
     const totalDist = cumDist[cumDist.length - 1];
-    console.log('totalDist (meters):', totalDist);
-    console.log('totalDist (km):', totalDist / 1000);
-    console.log('pts.length:', pts.length);
     const demoDurationMs = (totalDist / 16000) * 3600 * 1000 / 100; // 1/100速
+    console.log('pts.length:', pts.length);
+    console.log('totalDist (km):', totalDist / 1000);
+    console.log('demoDurationMs (sec):', demoDurationMs / 1000);
 
     const startTime = performance.now();
     let lastStateUpdate = 0;
 
     const animate = (now: number) => {
       const elapsed = now - startTime;
+      const progress = elapsed / demoDurationMs;
+      const targetDist = totalDist * progress;
+
       if (elapsed >= demoDurationMs) {
+        console.log('final elapsed (sec):', elapsed / 1000);
+        console.log('final progress:', progress);
+        console.log('final targetDist (km):', targetDist / 1000);
         isDemoModeRef.current = false;
         setIsDemoMode(false);
         setCurrentSpeed(0);
@@ -747,10 +753,6 @@ export default function Home() {
         setTab('distance');
         return;
       }
-
-      // 経過時間から現在の距離を計算
-      const progress = elapsed / demoDurationMs;
-      const targetDist = totalDist * progress;
 
       // targetDistに対応するポイントを探す
       let idx = 0;
