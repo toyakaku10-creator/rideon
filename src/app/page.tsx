@@ -148,7 +148,7 @@ export default function Home() {
   const [logTrack, setLogTrack] = useState<{ lat: number; lng: number }[] | null>(null);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const isDemoModeRef = useRef(false);
-  const demoIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const demoRAFRef = useRef<number | null>(null);
   const pressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const currentMarkerRef = useRef<google.maps.Marker | null>(null);
@@ -679,9 +679,8 @@ export default function Home() {
     setOpenSaveSheet(true);
   }, [isImported, segments]);
 
-  const startDemoRide = () => {
-    const allPoints = segments.flatMap((s) => s.geometry);
-    if (allPoints.length < 2) return;
+  const startDemoRide = (pts: [number, number][]) => {
+    if (pts.length < 2) return;
     isDemoModeRef.current = true;
     setIsDemoMode(true);
     if (currentMarkerRef.current) {
@@ -698,66 +697,69 @@ export default function Home() {
     prevGpsPos.current = null;
     setTab('speed');
 
-    const totalDistanceKm = totalDistance / 1000;
-    const realDurationSec = (totalDistanceKm / 16) * 3600;
-    const demoDurationMs = (realDurationSec / 100) * 1000;
-    const demoElevations = elevations.length >= 2 ? elevations : [];
+    // 各ポイントの累積距離を計算
+    const cumDist: number[] = [0];
+    for (let i = 1; i < pts.length; i++) {
+      const [lat1, lng1] = pts[i - 1];
+      const [lat2, lng2] = pts[i];
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLng = (lng2 - lng1) * Math.PI / 180;
+      const d = Math.sqrt(dLat * dLat + dLng * dLng) * 6371000;
+      cumDist.push(cumDist[i - 1] + d);
+    }
+    const totalDist = cumDist[cumDist.length - 1];
+    const demoDurationMs = (totalDist / 16000) * 3600 * 1000 / 100; // 1/100速
 
-    // インターバルを最低200ms以上に、ポイントを間引く
-    const MIN_INTERVAL = 200;
-    const rawInterval = demoDurationMs / allPoints.length;
-    const skipRate = Math.max(1, Math.ceil(MIN_INTERVAL / rawInterval));
-    const demoPoints = allPoints.filter((_, i) => i % skipRate === 0 || i === allPoints.length - 1);
-    const intervalTime = demoDurationMs / demoPoints.length;
-    const totalSteps = demoPoints.length;
-    let step = 0;
+    const startTime = performance.now();
 
-    demoIntervalRef.current = setInterval(() => {
-      if (step >= totalSteps) {
-        clearInterval(demoIntervalRef.current!);
-        demoIntervalRef.current = null;
+    const animate = (now: number) => {
+      const elapsed = now - startTime;
+      if (elapsed >= demoDurationMs) {
         isDemoModeRef.current = false;
         setIsDemoMode(false);
         setCurrentSpeed(0);
         setTab('distance');
         return;
       }
-      const pt = demoPoints[step];
-      const pos = { lat: pt.lat, lng: pt.lng };
-      currentMarkerRef.current?.setPosition(pos);
-      rideTrackRef.current.push(pos);
-      if (step % 3 === 0) {
+
+      // 経過時間から現在の距離を計算
+      const progress = elapsed / demoDurationMs;
+      const targetDist = totalDist * progress;
+
+      // targetDistに対応するポイントを探す
+      let idx = 0;
+      for (let i = 1; i < cumDist.length; i++) {
+        if (cumDist[i] >= targetDist) { idx = i - 1; break; }
+        idx = i;
+      }
+      const nextIdx = Math.min(idx + 1, pts.length - 1);
+
+      // 2点間を補間
+      const segDist = cumDist[nextIdx] - cumDist[idx];
+      const t = segDist > 0 ? (targetDist - cumDist[idx]) / segDist : 0;
+      const lat = pts[idx][0] + (pts[nextIdx][0] - pts[idx][0]) * t;
+      const lng = pts[idx][1] + (pts[nextIdx][1] - pts[idx][1]) * t;
+      const pos = { lat, lng };
+
+      // マーカーと地図を更新
+      if (currentMarkerRef.current) {
+        currentMarkerRef.current.setPosition(pos);
+      }
+      if (elapsed % 300 < 16) { // 300msに1回だけpanTo
         mapInstanceRef.current?.panTo(pos);
       }
-      if (step > 0) {
-        const prev = demoPoints[step - 1];
-        const dist = haversineDistance(prev, pt);
-        let demoSpeed = 16;
-        if (demoElevations.length > step) {
-          const elevStep = Math.round((step / totalSteps) * (demoElevations.length - 1));
-          const elevPrev = Math.round(((step - 1) / totalSteps) * (demoElevations.length - 1));
-          const gradient = elevStep > elevPrev
-            ? ((demoElevations[elevStep] - demoElevations[elevPrev]) / Math.max(dist, 1)) * 100
-            : 0;
-          demoSpeed = Math.max(8, Math.min(28, 16 - gradient * 0.8));
-        }
-        demoSpeed += (Math.random() - 0.5) * 2;
-        setCurrentSpeed(demoSpeed);
-        setMaxSpeed((p) => Math.max(p, demoSpeed));
-        setSpeedSum((p) => p + demoSpeed);
-        setSpeedCount((p) => p + 1);
-        setRideDistance((p) => p + dist);
-        setHeading(calcHeading([prev.lat, prev.lng], [pt.lat, pt.lng]));
-      }
-      step++;
-    }, intervalTime);
+
+      // 速度（16km/h固定＋ゆらぎ）
+      setCurrentSpeed(16 + (Math.random() - 0.5) * 2);
+
+      demoRAFRef.current = requestAnimationFrame(animate);
+    };
+
+    demoRAFRef.current = requestAnimationFrame(animate);
   };
 
   const stopDemo = () => {
-    if (demoIntervalRef.current) {
-      clearInterval(demoIntervalRef.current);
-      demoIntervalRef.current = null;
-    }
+    if (demoRAFRef.current) cancelAnimationFrame(demoRAFRef.current);
     isDemoModeRef.current = false;
     setIsDemoMode(false);
     setCurrentSpeed(0);
@@ -767,7 +769,8 @@ export default function Home() {
   const handleRideButtonPressStart = () => {
     pressTimerRef.current = setTimeout(() => {
       pressTimerRef.current = null;
-      startDemoRide();
+      const pts = segments.flatMap((s) => s.geometry).map((p): [number, number] => [p.lat, p.lng]);
+      startDemoRide(pts);
     }, 1500);
   };
 
