@@ -684,6 +684,10 @@ export default function Home() {
     if (allPoints.length < 2) return;
     isDemoModeRef.current = true;
     setIsDemoMode(true);
+    if (currentMarkerRef.current) {
+      currentMarkerRef.current.setMap(null);
+      currentMarkerRef.current = null;
+    }
     rideTrackRef.current = [];
     rideStartTimeRef.current = Date.now();
     setLogTrack(null);
@@ -708,19 +712,6 @@ export default function Home() {
     const totalSteps = demoPoints.length;
     let step = 0;
 
-    const animateBetweenPoints = (from: [number, number], to: [number, number], duration: number) => {
-      const start = performance.now();
-      const animate = (now: number) => {
-        if (!isDemoModeRef.current) return;
-        const t = Math.min((now - start) / duration, 1);
-        const lat = from[0] + (to[0] - from[0]) * t;
-        const lng = from[1] + (to[1] - from[1]) * t;
-        currentMarkerRef.current?.setPosition({ lat, lng });
-        if (t < 1) requestAnimationFrame(animate);
-      };
-      requestAnimationFrame(animate);
-    };
-
     demoIntervalRef.current = setInterval(() => {
       if (step >= totalSteps) {
         clearInterval(demoIntervalRef.current!);
@@ -733,18 +724,14 @@ export default function Home() {
       }
       const pt = demoPoints[step];
       const pos = { lat: pt.lat, lng: pt.lng };
-      setCurrentPosition(pos);
+      currentMarkerRef.current?.setPosition(pos);
       rideTrackRef.current.push(pos);
-      // 数ポイントに1回だけ地図を動かす
       if (step % 3 === 0) {
         mapInstanceRef.current?.panTo(pos);
       }
       if (step > 0) {
         const prev = demoPoints[step - 1];
         const dist = haversineDistance(prev, pt);
-        // ポイント間を滑らかに補間
-        animateBetweenPoints([prev.lat, prev.lng], [pt.lat, pt.lng], intervalTime);
-        // 勾配考慮の速度
         let demoSpeed = 16;
         if (demoElevations.length > step) {
           const elevStep = Math.round((step / totalSteps) * (demoElevations.length - 1));
