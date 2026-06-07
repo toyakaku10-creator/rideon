@@ -910,8 +910,8 @@ export default function Home() {
             } as React.CSSProperties}
           >
             <Play size={12} fill="currentColor" />
-            <Bike size={18} />
             {isDemoMode ? 'Demo' : 'RideOn'}
+            <Bike size={18} />
           </button>
         </div>
 
