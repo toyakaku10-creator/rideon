@@ -998,7 +998,7 @@ export default function Home() {
             display: 'flex',
             gap: '6px',
           }}>
-            {[1, 2, 4].map(speed => (
+            {[1, 2, 4, 10].map(speed => (
               <button
                 key={speed}
                 onClick={() => handleDemoSpeedChange(speed)}
