@@ -98,12 +98,12 @@ function calcHeading(from: [number, number], to: [number, number]): number {
   return (Math.atan2(dLng, dLat) * 180 / Math.PI + 360) % 360;
 }
 
-function getWheelSvg(stroke: string, fill: string): string {
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="${fill}" stroke="${stroke}" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10" stroke-width="3"/><circle cx="12" cy="12" r="3"/><line x1="4" y1="4" x2="9" y2="9"/><line x1="15" y1="15" x2="20" y2="20"/><line x1="20" y1="4" x2="15" y2="9"/><line x1="9" y1="15" x2="4" y2="20"/><line x1="12" y1="2" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="22"/><line x1="2" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="22" y2="12"/></svg>`;
+function getWheelSvg(stroke: string): string {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10" stroke-width="3"/><circle cx="12" cy="12" r="3"/><line x1="4" y1="4" x2="9" y2="9"/><line x1="15" y1="15" x2="20" y2="20"/><line x1="20" y1="4" x2="15" y2="9"/><line x1="9" y1="15" x2="4" y2="20"/><line x1="12" y1="2" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="22"/><line x1="2" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="22" y2="12"/></svg>`;
 }
 
-function getHeadingWheelSvg(heading: number, stroke: string, fill: string): string {
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34"><g transform="rotate(${heading}, 17, 17)"><polygon points="17,1 12,9 22,9" fill="${stroke}"/><circle cx="17" cy="17" r="8" fill="${fill}" stroke="${stroke}" stroke-width="2"/><circle cx="17" cy="17" r="2" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/><line x1="11" y1="11" x2="16" y2="16" stroke="${stroke}" stroke-width="1.5"/><line x1="18" y1="18" x2="23" y2="23" stroke="${stroke}" stroke-width="1.5"/><line x1="23" y1="11" x2="18" y2="16" stroke="${stroke}" stroke-width="1.5"/><line x1="16" y1="18" x2="11" y2="23" stroke="${stroke}" stroke-width="1.5"/><line x1="17" y1="9" x2="17" y2="15" stroke="${stroke}" stroke-width="1.5"/><line x1="17" y1="19" x2="17" y2="25" stroke="${stroke}" stroke-width="1.5"/><line x1="9" y1="17" x2="15" y2="17" stroke="${stroke}" stroke-width="1.5"/><line x1="19" y1="17" x2="25" y2="17" stroke="${stroke}" stroke-width="1.5"/></g></svg>`;
+function getHeadingWheelSvg(heading: number, stroke: string): string {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34"><g transform="rotate(${heading}, 17, 17)"><polygon points="17,1 12,9 22,9" fill="${stroke}"/><circle cx="17" cy="17" r="8" fill="none" stroke="${stroke}" stroke-width="2"/><circle cx="17" cy="17" r="2" fill="none" stroke="${stroke}" stroke-width="1.5"/><line x1="11" y1="11" x2="16" y2="16" stroke="${stroke}" stroke-width="1.5"/><line x1="18" y1="18" x2="23" y2="23" stroke="${stroke}" stroke-width="1.5"/><line x1="23" y1="11" x2="18" y2="16" stroke="${stroke}" stroke-width="1.5"/><line x1="16" y1="18" x2="11" y2="23" stroke="${stroke}" stroke-width="1.5"/><line x1="17" y1="9" x2="17" y2="15" stroke="${stroke}" stroke-width="1.5"/><line x1="17" y1="19" x2="17" y2="25" stroke="${stroke}" stroke-width="1.5"/><line x1="9" y1="17" x2="15" y2="17" stroke="${stroke}" stroke-width="1.5"/><line x1="19" y1="17" x2="25" y2="17" stroke="${stroke}" stroke-width="1.5"/></g></svg>`;
 }
 
 function angleDiff(a: number, b: number): number {
@@ -707,7 +707,7 @@ export default function Home() {
         position: { lat: pts[0][0], lng: pts[0][1] },
         map: mapInstanceRef.current,
         icon: {
-          url: 'data:image/svg+xml,' + encodeURIComponent(getWheelSvg('#4CAF50', 'rgba(76,175,80,0.35)')),
+          url: 'data:image/svg+xml,' + encodeURIComponent(getWheelSvg('#4CAF50')),
           anchor: new google.maps.Point(9, 9),
         },
         zIndex: 999,
@@ -782,7 +782,7 @@ export default function Home() {
       if (currentMarkerRef.current) {
         currentMarkerRef.current.setPosition(pos);
         currentMarkerRef.current.setIcon({
-          url: 'data:image/svg+xml,' + encodeURIComponent(getHeadingWheelSvg(heading, '#4CAF50', 'rgba(76,175,80,0.35)')),
+          url: 'data:image/svg+xml,' + encodeURIComponent(getHeadingWheelSvg(heading, '#4CAF50')),
           anchor: new google.maps.Point(17, 17),
         });
       }

@@ -83,13 +83,10 @@ function makePositionIcon(heading: number | null, gradient = 0): google.maps.Ico
 
   // 色を勾配で決定: 緑(default) / 黄(2〜8%) / 水玉赤(8%以上)
   let wheelColor = '#4CAF50';
-  let wheelFill = 'rgba(76,175,80,0.35)';
   if (abs >= 8) {
     wheelColor = '#CC0000';
-    wheelFill = 'rgba(204,0,0,0.35)';
   } else if (abs >= 2) {
     wheelColor = '#FFD700';
-    wheelFill = 'rgba(255,215,0,0.35)';
   }
 
   // 急坂（8%以上）: 水玉の丸
@@ -127,8 +124,8 @@ function makePositionIcon(heading: number | null, gradient = 0): google.maps.Ico
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${S}" height="${S}">
       <g transform="rotate(${heading}, ${cx}, ${cy})">
         <polygon points="${cx},1 ${cx - 5},9 ${cx + 5},9" fill="${wheelColor}"/>
-        <circle cx="${cx}" cy="${cy}" r="8" fill="${wheelFill}" stroke="${wheelColor}" stroke-width="2"/>
-        <circle cx="${cx}" cy="${cy}" r="2" fill="${wheelFill}" stroke="${wheelColor}" stroke-width="1.5"/>
+        <circle cx="${cx}" cy="${cy}" r="8" fill="none" stroke="${wheelColor}" stroke-width="2"/>
+        <circle cx="${cx}" cy="${cy}" r="2" fill="none" stroke="${wheelColor}" stroke-width="1.5"/>
         <line x1="11" y1="11" x2="16" y2="16" stroke="${wheelColor}" stroke-width="1.5"/>
         <line x1="18" y1="18" x2="23" y2="23" stroke="${wheelColor}" stroke-width="1.5"/>
         <line x1="23" y1="11" x2="18" y2="16" stroke="${wheelColor}" stroke-width="1.5"/>
@@ -146,7 +143,7 @@ function makePositionIcon(heading: number | null, gradient = 0): google.maps.Ico
     };
   } else {
     // ×スポーク車輪（静止）
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="${size}" height="${size}" fill="${wheelFill}" stroke="${wheelColor}" stroke-width="2" stroke-linecap="round">
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="${wheelColor}" stroke-width="2" stroke-linecap="round">
       <circle cx="12" cy="12" r="10" stroke-width="3"/>
       <circle cx="12" cy="12" r="3"/>
       <line x1="4" y1="4" x2="9" y2="9"/>
