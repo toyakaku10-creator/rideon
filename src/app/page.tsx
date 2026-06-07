@@ -140,6 +140,10 @@ export default function Home() {
   const rideTrackRef = useRef<{ lat: number; lng: number }[]>([]);
   const rideRouteNameRef = useRef<string | undefined>(undefined);
   const [logTrack, setLogTrack] = useState<{ lat: number; lng: number }[] | null>(null);
+  const [isDemoMode, setIsDemoMode] = useState(false);
+  const isDemoModeRef = useRef(false);
+  const demoIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Spots
   const [spots, setSpots] = useState<Spot[]>([]);
@@ -341,9 +345,10 @@ export default function Home() {
     setNavElevationIndex(elevIdx);
   }, [currentPosition, segments, elevations]);
 
-  // GPS speed tracking — only active in speed tab
+  // GPS speed tracking — only active in speed tab (skip in demo mode)
   useEffect(() => {
     if (tab !== 'speed') return;
+    if (isDemoModeRef.current) return;
     prevGpsPos.current = null;
     rideTrackRef.current = [];
     setRideDistance(0);
@@ -659,6 +664,78 @@ export default function Home() {
     setOpenSaveSheet(true);
   }, [isImported, segments]);
 
+  const startDemoRide = () => {
+    const points = segments.flatMap((s) => s.geometry);
+    if (points.length < 2) return;
+    isDemoModeRef.current = true;
+    setIsDemoMode(true);
+    rideTrackRef.current = [];
+    rideStartTimeRef.current = Date.now();
+    setLogTrack(null);
+    setMaxSpeed(0);
+    setSpeedSum(0);
+    setSpeedCount(0);
+    setRideDistance(0);
+    prevGpsPos.current = null;
+    setTab('speed');
+
+    const totalSteps = points.length;
+    const intervalTime = 30000 / totalSteps;
+    let step = 0;
+
+    demoIntervalRef.current = setInterval(() => {
+      if (step >= totalSteps) {
+        clearInterval(demoIntervalRef.current!);
+        demoIntervalRef.current = null;
+        isDemoModeRef.current = false;
+        setIsDemoMode(false);
+        setCurrentSpeed(0);
+        setTab('distance');
+        return;
+      }
+      const pt = points[step];
+      setCurrentPosition({ lat: pt.lat, lng: pt.lng });
+      rideTrackRef.current.push({ lat: pt.lat, lng: pt.lng });
+      if (step > 0) {
+        const prev = points[step - 1];
+        const dist = haversineDistance(prev, pt);
+        const speed = Math.min((dist / (intervalTime / 1000)) * 3.6, 60);
+        setCurrentSpeed(speed);
+        setMaxSpeed((p) => Math.max(p, speed));
+        setSpeedSum((p) => p + speed);
+        setSpeedCount((p) => p + 1);
+        setRideDistance((p) => p + dist);
+        setHeading(bearingDeg(prev, pt));
+      }
+      step++;
+    }, intervalTime);
+  };
+
+  const stopDemo = () => {
+    if (demoIntervalRef.current) {
+      clearInterval(demoIntervalRef.current);
+      demoIntervalRef.current = null;
+    }
+    isDemoModeRef.current = false;
+    setIsDemoMode(false);
+    setCurrentSpeed(0);
+    setTab('distance');
+  };
+
+  const handleRideButtonPressStart = () => {
+    pressTimerRef.current = setTimeout(() => {
+      pressTimerRef.current = null;
+      startDemoRide();
+    }, 800);
+  };
+
+  const handleRideButtonPressEnd = () => {
+    if (pressTimerRef.current) {
+      clearTimeout(pressTimerRef.current);
+      pressTimerRef.current = null;
+    }
+  };
+
   const mapCenter =
     tab === 'speed' ? (currentPosition ?? initialCenter) : initialCenter;
   const mapFollow = tab === 'speed' && currentPosition !== null;
@@ -728,7 +805,13 @@ export default function Home() {
         {/* Floating RideOn button */}
         <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 500 }}>
           <button
+            onTouchStart={handleRideButtonPressStart}
+            onTouchEnd={handleRideButtonPressEnd}
             onClick={() => {
+              if (isDemoMode) {
+                stopDemo();
+                return;
+              }
               if (tab === 'speed') {
                 // ライドモード終了 → 走行記録を保存
                 const endTime = Date.now();
@@ -783,7 +866,7 @@ export default function Home() {
             } as React.CSSProperties}
           >
             <Bike size={18} color={tab === 'speed' ? '#fff' : '#D4AF37'} />
-            RideOn
+            {isDemoMode ? 'Demo' : 'RideOn'}
           </button>
         </div>
 
