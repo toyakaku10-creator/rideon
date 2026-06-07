@@ -740,6 +740,7 @@ export default function Home() {
         isDemoModeRef.current = false;
         setIsDemoMode(false);
         setCurrentSpeed(0);
+        setRideDistance(totalDist);
         setTab('distance');
         return;
       }
