@@ -762,39 +762,16 @@ export default function Home() {
       const lng = pts[idx][1] + (pts[nextIdx][1] - pts[idx][1]) * t;
       const pos = { lat, lng };
 
-      // 勾配計算して車輪の色を決定
-      let wheelColor = '#4CAF50';
-      let wheelFill = 'rgba(76,175,80,0.35)';
-      if (elevations.length > 1) {
-        const elevIdx = Math.min(idx, elevations.length - 1);
-        const prevElevIdx = Math.max(0, elevIdx - 3);
-        const elevDiff = elevations[elevIdx] - elevations[prevElevIdx];
-        const distRange = cumDist[Math.min(idx, cumDist.length - 1)] - cumDist[Math.max(0, idx - 3)];
-        const absG = Math.abs(distRange > 0 ? (elevDiff / distRange) * 100 : 0);
-        if (absG >= 8) {
-          wheelColor = '#CC0000';
-          wheelFill = 'rgba(204,0,0,0.35)';
-        } else if (absG >= 2) {
-          wheelColor = '#FFD700';
-          wheelFill = 'rgba(255,215,0,0.35)';
-        }
-      }
-
       // 進行方向を計算してマーカーを更新
       const heading = calcHeading([pts[idx][0], pts[idx][1]], [pts[nextIdx][0], pts[nextIdx][1]]);
       if (currentMarkerRef.current) {
         currentMarkerRef.current.setPosition(pos);
         currentMarkerRef.current.setIcon({
-          url: 'data:image/svg+xml,' + encodeURIComponent(getHeadingWheelSvg(heading, wheelColor, wheelFill)),
+          url: 'data:image/svg+xml,' + encodeURIComponent(getHeadingWheelSvg(heading, '#4CAF50', 'rgba(76,175,80,0.35)')),
           anchor: new google.maps.Point(17, 17),
         });
       }
       mapInstanceRef.current?.setCenter(pos);
-
-      // 高低差グラフ更新（約100msに1回）
-      if (Math.floor(elapsed / 100) !== Math.floor((elapsed - 16) / 100)) {
-        setCurrentPosition(pos);
-      }
 
       // 速度（16km/h固定＋ゆらぎ）
       setCurrentSpeed(16 + (Math.random() - 0.5) * 2);
