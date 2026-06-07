@@ -671,13 +671,13 @@ export default function BottomPanel({
                 style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '14px 16px', background: '#f5f5f5', border: '1px solid #eee', borderRadius: '12px', cursor: 'pointer', fontSize: '15px', fontWeight: '600', color: '#333' }}
               >
                 <Share2 size={20} color="#D4AF37" />
-                シェアURLを送る
+                URLをシェア
               </button>
               <div>
                 <div style={{ display: 'flex', gap: '8px', marginBottom: urlError ? '4px' : '0' }}>
                   <input
                     type="url"
-                    placeholder="シェアURLを貼り付けて読み込む"
+                    placeholder="シェアURLを貼り付けて読み込み"
                     value={urlInput}
                     onChange={(e) => { setUrlInput(e.target.value); setUrlError(''); }}
                     onKeyDown={(e) => e.key === 'Enter' && handleUrlImport()}
@@ -728,7 +728,7 @@ export default function BottomPanel({
                 {showUrlInput && (
                   <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                     <label style={{ ...subBtnStyle, cursor: 'pointer' }}>
-                      <FileInput size={20} color="#D4AF37" /><span>GPX取込み</span>
+                      <FileInput size={20} color="#D4AF37" /><span>GPX読み込み</span>
                       <input type="file" accept=".gpx" onChange={handleGpxImport} style={{ display: 'none' }} />
                     </label>
                     <button onClick={() => { handleGpxExport(); }} style={subBtnStyle}>
