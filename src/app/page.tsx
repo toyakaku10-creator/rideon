@@ -544,15 +544,38 @@ export default function Home() {
     setSegments(route.segments);
     setRouteType(route.routeType);
     rideRouteNameRef.current = route.name;
-    if (route.elevations && route.elevations.length >= 2) {
+    if (route.elevations && route.elevations.length >= 512) {
+      // 既に高精度なのでそのまま使う
       setElevations(route.elevations);
+    } else {
+      // 低精度または未取得の場合は再取得
+      const allPoints = route.segments.flatMap((s: RouteSegment) => s.geometry);
+      if (allPoints.length >= 2) {
+        fetch('/api/elevation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ points: allPoints }),
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.elevations) {
+              setElevations(data.elevations);
+              // localStorageも更新
+              const updated = savedRoutes.map(r =>
+                r.id === route.id ? { ...r, elevations: data.elevations } : r
+              );
+              setSavedRoutes(updated);
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+            }
+          })
+          .catch(() => {});
+      }
     }
-    // else: segments change will trigger the elevation fetch effect
     const loadedPoints = route.segments.flatMap((s) => s.geometry);
     if (loadedPoints.length > 0) {
       setFitBoundsPoints(loadedPoints);
     }
-  }, []);
+  }, [savedRoutes, setSavedRoutes]);
 
   const handleDeleteRoute = useCallback(
     (id: string) => {
