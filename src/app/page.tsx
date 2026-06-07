@@ -733,8 +733,6 @@ export default function Home() {
 
     const startTime = performance.now();
     let lastStateUpdate = 0;
-    let displayDist = 0;
-    let prevTargetDist = 0;
 
     const animate = (now: number) => {
       const elapsed = now - startTime;
@@ -776,14 +774,9 @@ export default function Home() {
       }
       mapInstanceRef.current?.setCenter(pos);
 
-      // 表示用距離を滑らかに補間
-      const distDiff = targetDist - prevTargetDist;
-      prevTargetDist = targetDist;
-      displayDist = Math.min(displayDist + distDiff * 0.3, targetDist);
-
       if (now - lastStateUpdate > 50) {
         setCurrentSpeed(16 + (Math.random() - 0.5) * 2);
-        setRideDistance(displayDist);
+        setRideDistance(totalDist * progress);
         lastStateUpdate = now;
       }
 
