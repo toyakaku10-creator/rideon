@@ -673,8 +673,8 @@ export default function Home() {
   }, [isImported, segments]);
 
   const startDemoRide = () => {
-    const points = segments.flatMap((s) => s.geometry);
-    if (points.length < 2) return;
+    const allPoints = segments.flatMap((s) => s.geometry);
+    if (allPoints.length < 2) return;
     isDemoModeRef.current = true;
     setIsDemoMode(true);
     rideTrackRef.current = [];
@@ -687,11 +687,18 @@ export default function Home() {
     prevGpsPos.current = null;
     setTab('speed');
 
-    const totalSteps = points.length;
     const totalDistanceKm = totalDistance / 1000;
     const realDurationSec = (totalDistanceKm / 16) * 3600;
-    const intervalTime = (realDurationSec / 100 * 1000) / totalSteps;
+    const demoDurationMs = (realDurationSec / 100) * 1000;
     const demoElevations = elevations.length >= 2 ? elevations : [];
+
+    // インターバルを最低200ms以上に、ポイントを間引く
+    const MIN_INTERVAL = 200;
+    const rawInterval = demoDurationMs / allPoints.length;
+    const skipRate = Math.max(1, Math.ceil(MIN_INTERVAL / rawInterval));
+    const demoPoints = allPoints.filter((_, i) => i % skipRate === 0 || i === allPoints.length - 1);
+    const intervalTime = demoDurationMs / demoPoints.length;
+    const totalSteps = demoPoints.length;
     let step = 0;
 
     demoIntervalRef.current = setInterval(() => {
@@ -704,11 +711,14 @@ export default function Home() {
         setTab('distance');
         return;
       }
-      const pt = points[step];
-      setCurrentPosition({ lat: pt.lat, lng: pt.lng });
-      rideTrackRef.current.push({ lat: pt.lat, lng: pt.lng });
+      const pt = demoPoints[step];
+      const pos = { lat: pt.lat, lng: pt.lng };
+      setCurrentPosition(pos);
+      rideTrackRef.current.push(pos);
+      // 直接地図を操作（useEffectを経由しない）
+      mapInstanceRef.current?.setCenter(pos);
       if (step > 0) {
-        const prev = points[step - 1];
+        const prev = demoPoints[step - 1];
         const dist = haversineDistance(prev, pt);
         // 勾配考慮の速度
         let demoSpeed = 16;
@@ -889,7 +899,7 @@ export default function Home() {
               background: tab === 'speed' ? '#D4AF37' : 'rgba(255,255,255,0.9)',
               border: '2px solid #D4AF37',
               borderRadius: '20px',
-              padding: '5px 14px',
+              padding: '5px 16px',
               cursor: 'pointer',
               boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
               backdropFilter: 'blur(4px)',
