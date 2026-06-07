@@ -726,26 +726,32 @@ export default function BottomPanel({
                   </button>
                 </div>
                 {showUrlInput && (
-                  <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                    <label style={{ ...subBtnStyle, cursor: 'pointer' }}>
-                      <FileInput size={20} color="#D4AF37" /><span>GPX読み込み</span>
-                      <input type="file" accept=".gpx" onChange={handleGpxImport} style={{ display: 'none' }} />
-                    </label>
-                    <button onClick={() => { handleGpxExport(); }} style={subBtnStyle}>
-                      <FileOutput size={20} color="#D4AF37" /><span>GPX書き出し</span>
-                    </button>
-                  </div>
+                  <>
+                    <p style={{ fontSize: '11px', color: '#888', margin: '8px 0 4px' }}>外部アプリとのルート共有</p>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <label style={{ ...subBtnStyle, cursor: 'pointer' }}>
+                        <FileInput size={20} color="#D4AF37" /><span>GPX読み込み</span>
+                        <input type="file" accept=".gpx" onChange={handleGpxImport} style={{ display: 'none' }} />
+                      </label>
+                      <button onClick={() => { handleGpxExport(); }} style={subBtnStyle}>
+                        <FileOutput size={20} color="#D4AF37" /><span>GPX書き出し</span>
+                      </button>
+                    </div>
+                  </>
                 )}
                 {showDataMenu && (
-                  <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                    <label style={subBtnStyle}>
-                      <Download size={20} color="#D4AF37" /><span>マイルート読み込み</span>
-                      <input ref={fileInputRef} type="file" accept=".json" onChange={handleImportFile} style={{ display: 'none' }} />
-                    </label>
-                    <button onClick={handleExport} disabled={savedRoutes.length === 0} style={{ ...subBtnStyle, opacity: savedRoutes.length === 0 ? 0.4 : 1 }}>
-                      <Upload size={20} color="#D4AF37" /><span>マイルート書き出し</span>
-                    </button>
-                  </div>
+                  <>
+                    <p style={{ fontSize: '11px', color: '#888', margin: '8px 0 4px' }}>機種変更時のマイルート引き継ぎ</p>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <label style={subBtnStyle}>
+                        <Download size={20} color="#D4AF37" /><span>マイルート読み込み</span>
+                        <input ref={fileInputRef} type="file" accept=".json" onChange={handleImportFile} style={{ display: 'none' }} />
+                      </label>
+                      <button onClick={handleExport} disabled={savedRoutes.length === 0} style={{ ...subBtnStyle, opacity: savedRoutes.length === 0 ? 0.4 : 1 }}>
+                        <Upload size={20} color="#D4AF37" /><span>マイルート書き出し</span>
+                      </button>
+                    </div>
+                  </>
                 )}
               </div>
             );
