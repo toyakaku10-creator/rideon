@@ -23,10 +23,13 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
   const lineId = useRef(`elevation-line-${Math.random().toString(36).slice(2)}`);
 
   useEffect(() => {
+    console.log('ElevationChart rideDistance:', rideDistance, 'totalDistance:', totalDistance);
     const ratio = (totalDistance && totalDistance > 0 && rideDistance)
       ? Math.min(rideDistance / totalDistance, 1)
       : 0;
+    console.log('ratio:', ratio);
     const lineEl = document.getElementById(lineId.current);
+    console.log('lineEl:', lineEl);
     if (lineEl) {
       lineEl.setAttribute('x1', `${ratio * 100}%`);
       lineEl.setAttribute('x2', `${ratio * 100}%`);
