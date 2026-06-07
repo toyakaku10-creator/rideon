@@ -1109,6 +1109,10 @@ export default function Home() {
             if (pts.length > 0) setFitBoundsPoints(pts);
           }}
           onGpxImport={handleGpxImport}
+          onDemoStart={() => {
+            const pts = segments.flatMap((s) => s.geometry).map((p): [number, number] => [p.lat, p.lng]);
+            if (pts.length >= 2) startDemoRide(pts);
+          }}
         />
       ) : (
         <SpeedPanel

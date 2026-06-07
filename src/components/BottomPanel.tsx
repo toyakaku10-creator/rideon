@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database, Link, Copy, FileInput, FileOutput, Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin, Map, type LucideProps } from 'lucide-react';
+import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database, Link, Copy, FileInput, FileOutput, Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin, Map, Clapperboard, type LucideProps } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute, RideLog, Spot } from '@/types';
 import { SPOT_CATEGORIES, spotCustomSvg } from '@/lib/spotCategories';
 
@@ -300,6 +300,7 @@ interface BottomPanelProps {
   onModeChange?: (mode: string) => void;
   onReferenceRoute?: (route: SavedRoute) => void;
   onGpxImport?: (points: { lat: number; lng: number }[]) => void;
+  onDemoStart?: () => void;
 }
 
 export default function BottomPanel({
@@ -337,6 +338,7 @@ export default function BottomPanel({
   onModeChange,
   onReferenceRoute,
   onGpxImport,
+  onDemoStart,
 }: BottomPanelProps) {
   const [showHistory, setShowHistory] = useState(false);
   const [selectedLogId, setSelectedLogId] = useState<string | null>(null);
@@ -350,6 +352,7 @@ export default function BottomPanel({
   const [urlLoading, setUrlLoading] = useState(false);
   const [urlError, setUrlError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const demoPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showSaveSheet, setShowSaveSheet] = useState(false);
   const [routeName, setRouteName] = useState('');
 
@@ -602,18 +605,33 @@ export default function BottomPanel({
               label: 'マイルート',
               onClick: () => setShowHistory(true),
               disabled: false,
+              demo: false,
             },
             {
-              icon: <Share2 size={24} />,
-              label: 'シェア',
-              onClick: () => setShowShareSheet(true),
+              icon: <Clapperboard size={24} />,
+              label: 'デモ',
+              onClick: () => {},
               disabled: waypoints.length < 2,
+              demo: true,
             },
-          ].map(({ icon, label, onClick, disabled }) => (
+          ].map(({ icon, label, onClick, disabled, demo }) => (
             <button
               key={label}
               onClick={onClick}
               disabled={disabled}
+              onTouchStart={demo ? () => {
+                demoPressTimerRef.current = setTimeout(() => {
+                  demoPressTimerRef.current = null;
+                  onDemoStart?.();
+                }, 1500);
+              } : undefined}
+              onTouchEnd={demo ? () => {
+                if (demoPressTimerRef.current) {
+                  clearTimeout(demoPressTimerRef.current);
+                  demoPressTimerRef.current = null;
+                }
+              } : undefined}
+              onContextMenu={demo ? (e) => e.preventDefault() : undefined}
               className="flex-1 py-2 flex flex-col items-center gap-0.5 text-[var(--text-muted)] disabled:opacity-35 active:text-[#D4AF37] transition-colors"
             >
               {icon}
