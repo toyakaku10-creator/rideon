@@ -109,23 +109,26 @@ function makePositionIcon(heading: number | null, isPolkaDot = false): google.ma
   }
 
   if (hasHeading) {
-    // 三角（上）＋ ×スポーク車輪、車輪中心 (9,18) で全体を回転
-    const W = 18, H = 27;
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
-      <g transform="rotate(${heading}, 9, 18)">
-        <polygon points="9,0 4,8 14,8" fill="#4285F4"/>
-        <circle cx="9" cy="18" r="8" fill="rgba(66,133,244,0.35)" stroke="#4285F4" stroke-width="2"/>
-        <circle cx="9" cy="18" r="2" fill="rgba(66,133,244,0.35)" stroke="#4285F4" stroke-width="1.5"/>
-        <line x1="3" y1="12" x2="8" y2="17" stroke="#4285F4" stroke-width="1.5"/>
-        <line x1="10" y1="19" x2="15" y2="24" stroke="#4285F4" stroke-width="1.5"/>
-        <line x1="15" y1="12" x2="10" y2="17" stroke="#4285F4" stroke-width="1.5"/>
-        <line x1="8" y1="19" x2="3" y2="24" stroke="#4285F4" stroke-width="1.5"/>
+    // 三角＋×スポーク車輪を一体でheading方向に回転
+    // 正方形SVG(34×34)の中央(17,17)を車輪中心にし、そこを回転軸＆アンカーにする
+    // 三角は車輪中心から上方8px離れた位置 (tip at y=1, base at y=9)
+    const S = 34;
+    const cx = 17, cy = 17;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${S}" height="${S}">
+      <g transform="rotate(${heading}, ${cx}, ${cy})">
+        <polygon points="${cx},1 ${cx - 5},9 ${cx + 5},9" fill="#4285F4"/>
+        <circle cx="${cx}" cy="${cy}" r="8" fill="rgba(66,133,244,0.35)" stroke="#4285F4" stroke-width="2"/>
+        <circle cx="${cx}" cy="${cy}" r="2" fill="rgba(66,133,244,0.35)" stroke="#4285F4" stroke-width="1.5"/>
+        <line x1="11" y1="11" x2="16" y2="16" stroke="#4285F4" stroke-width="1.5"/>
+        <line x1="18" y1="18" x2="23" y2="23" stroke="#4285F4" stroke-width="1.5"/>
+        <line x1="23" y1="11" x2="18" y2="16" stroke="#4285F4" stroke-width="1.5"/>
+        <line x1="16" y1="18" x2="11" y2="23" stroke="#4285F4" stroke-width="1.5"/>
       </g>
     </svg>`;
     return {
       url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
-      scaledSize: new google.maps.Size(W, H),
-      anchor: new google.maps.Point(9, 18),
+      scaledSize: new google.maps.Size(S, S),
+      anchor: new google.maps.Point(cx, cy),
     };
   } else {
     // ×スポーク車輪（静止）
