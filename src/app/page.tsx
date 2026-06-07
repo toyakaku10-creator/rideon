@@ -663,6 +663,18 @@ export default function Home() {
     tab === 'speed' ? (currentPosition ?? initialCenter) : initialCenter;
   const mapFollow = tab === 'speed' && currentPosition !== null;
 
+  const isPolkaDot = (() => {
+    if (navElevationIndex === null || elevations.length < 3) return false;
+    const i = navElevationIndex;
+    const n = elevations.length;
+    const i0 = Math.max(0, i - 1);
+    const i1 = Math.min(n - 1, i + 1);
+    const elevDelta = elevations[i1] - elevations[i0];
+    const distPerIndex = totalDistance / (n - 1);
+    const dist = distPerIndex * (i1 - i0);
+    return dist > 0 && Math.abs(elevDelta / dist) * 100 >= 8;
+  })();
+
   const elevationMarkerPos = (() => {
     if (elevationIndex === null || elevations.length < 2) return undefined;
     const allPoints = segments.flatMap((s) => s.geometry);
@@ -704,6 +716,7 @@ export default function Home() {
           })()}
           elevationMarkerPos={elevationMarkerPos}
           elevationMarkerDistance={elevationMarkerDistance}
+          isPolkaDot={isPolkaDot}
           spots={[...spots, ...sharedSpots]}
           onLongPress={(lat, lng) => { setSpotDialog({ lat, lng }); setSpotName(''); setSpotCategory('pin'); }}
           onSpotClick={(spot) => { if (spots.some((s) => s.id === spot.id)) setSpotDeleteConfirm(spot); }}

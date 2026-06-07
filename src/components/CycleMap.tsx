@@ -76,21 +76,50 @@ function makeLabelIcon(label: string, bg: string, size = 28): google.maps.Icon {
   };
 }
 
-function makePositionIcon(heading: number | null): google.maps.Icon {
+function makePositionIcon(heading: number | null, isPolkaDot = false): google.maps.Icon {
   const hasHeading = heading != null && !isNaN(heading);
+  const size = 18;
+
+  // 急坂（8%以上）: 水玉の丸
+  if (isPolkaDot) {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
+      <defs><clipPath id="pc"><circle cx="9" cy="9" r="7"/></clipPath></defs>
+      <circle cx="9" cy="9" r="8" fill="white" stroke="#CC0000" stroke-width="2"/>
+      <g clip-path="url(#pc)">
+        <circle cx="3" cy="3" r="1.5" fill="#CC0000"/>
+        <circle cx="9" cy="3" r="1.5" fill="#CC0000"/>
+        <circle cx="15" cy="3" r="1.5" fill="#CC0000"/>
+        <circle cx="3" cy="9" r="1.5" fill="#CC0000"/>
+        <circle cx="9" cy="9" r="1.5" fill="#CC0000"/>
+        <circle cx="15" cy="9" r="1.5" fill="#CC0000"/>
+        <circle cx="3" cy="15" r="1.5" fill="#CC0000"/>
+        <circle cx="9" cy="15" r="1.5" fill="#CC0000"/>
+        <circle cx="15" cy="15" r="1.5" fill="#CC0000"/>
+        <circle cx="6" cy="6" r="1.5" fill="#CC0000"/>
+        <circle cx="12" cy="6" r="1.5" fill="#CC0000"/>
+        <circle cx="6" cy="12" r="1.5" fill="#CC0000"/>
+        <circle cx="12" cy="12" r="1.5" fill="#CC0000"/>
+      </g>
+    </svg>`;
+    return {
+      url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
+      scaledSize: new google.maps.Size(size, size),
+      anchor: new google.maps.Point(size / 2, size / 2),
+    };
+  }
+
   if (hasHeading) {
-    // Triangle (top, 8px) + 1px gap + Wheel (18px) = total height 27px, width 18px
-    // Wheel center at (9, 18); rotate everything around wheel center
+    // 三角（上）＋ ×スポーク車輪、車輪中心 (9,18) で全体を回転
     const W = 18, H = 27;
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
       <g transform="rotate(${heading}, 9, 18)">
         <polygon points="9,0 4,8 14,8" fill="#4285F4"/>
         <circle cx="9" cy="18" r="8" fill="rgba(66,133,244,0.35)" stroke="#4285F4" stroke-width="2"/>
         <circle cx="9" cy="18" r="2" fill="rgba(66,133,244,0.35)" stroke="#4285F4" stroke-width="1.5"/>
-        <line x1="9" y1="11" x2="9" y2="16" stroke="#4285F4" stroke-width="1.5"/>
-        <line x1="9" y1="20" x2="9" y2="25" stroke="#4285F4" stroke-width="1.5"/>
-        <line x1="2" y1="18" x2="7" y2="18" stroke="#4285F4" stroke-width="1.5"/>
-        <line x1="11" y1="18" x2="16" y2="18" stroke="#4285F4" stroke-width="1.5"/>
+        <line x1="3" y1="12" x2="8" y2="17" stroke="#4285F4" stroke-width="1.5"/>
+        <line x1="10" y1="19" x2="15" y2="24" stroke="#4285F4" stroke-width="1.5"/>
+        <line x1="15" y1="12" x2="10" y2="17" stroke="#4285F4" stroke-width="1.5"/>
+        <line x1="8" y1="19" x2="3" y2="24" stroke="#4285F4" stroke-width="1.5"/>
       </g>
     </svg>`;
     return {
@@ -99,14 +128,14 @@ function makePositionIcon(heading: number | null): google.maps.Icon {
       anchor: new google.maps.Point(9, 18),
     };
   } else {
-    const size = 18;
+    // ×スポーク車輪（静止）
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="${size}" height="${size}" fill="rgba(66,133,244,0.35)" stroke="#4285F4" stroke-width="2" stroke-linecap="round">
       <circle cx="12" cy="12" r="10" stroke-width="3"/>
       <circle cx="12" cy="12" r="3"/>
-      <line x1="12" y1="2" x2="12" y2="9"/>
-      <line x1="12" y1="15" x2="12" y2="22"/>
-      <line x1="2" y1="12" x2="9" y2="12"/>
-      <line x1="15" y1="12" x2="22" y2="12"/>
+      <line x1="4" y1="4" x2="9" y2="9"/>
+      <line x1="15" y1="15" x2="20" y2="20"/>
+      <line x1="20" y1="4" x2="15" y2="9"/>
+      <line x1="9" y1="15" x2="4" y2="20"/>
     </svg>`;
     return {
       url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
@@ -183,6 +212,7 @@ interface CycleMapProps {
   onSpotClick?: (spot: Spot) => void;
   logTrack?: { lat: number; lng: number }[] | null;
   referenceSegments?: RouteSegment[];
+  isPolkaDot?: boolean;
 }
 
 export default function CycleMap({
@@ -205,6 +235,7 @@ export default function CycleMap({
   onSpotClick,
   logTrack,
   referenceSegments,
+  isPolkaDot = false,
 }: CycleMapProps) {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
@@ -479,7 +510,7 @@ export default function CycleMap({
       {tab === 'speed' && currentPosition && (
         <Marker
           position={{ lat: currentPosition.lat, lng: currentPosition.lng }}
-          icon={makePositionIcon(heading)}
+          icon={makePositionIcon(heading, isPolkaDot)}
           zIndex={10}
         />
       )}
