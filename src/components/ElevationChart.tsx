@@ -89,9 +89,17 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
             </defs>
             <XAxis
               dataKey="dist"
+              type="number"
+              domain={[0, totalDistance / 1000]}
+              ticks={[
+                0,
+                Math.round(totalDistance / 1000 / 4),
+                Math.round(totalDistance / 1000 / 2),
+                Math.round(totalDistance / 1000 * 3 / 4),
+                Math.round(totalDistance / 1000),
+              ]}
               tick={{ fontSize: 9, fill: 'var(--text-muted)' }}
               tickFormatter={(v) => `${v}km`}
-              interval="preserveStartEnd"
             />
             <YAxis
               domain={[yMin, yMax]}
