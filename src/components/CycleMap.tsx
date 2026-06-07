@@ -227,6 +227,7 @@ interface CycleMapProps {
   referenceSegments?: RouteSegment[];
   gradient?: number;
   onMapReady?: (map: google.maps.Map) => void;
+  onMarkerReady?: (marker: google.maps.Marker) => void;
 }
 
 export default function CycleMap({
@@ -251,6 +252,7 @@ export default function CycleMap({
   referenceSegments,
   gradient = 0,
   onMapReady,
+  onMarkerReady,
 }: CycleMapProps) {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
@@ -528,6 +530,7 @@ export default function CycleMap({
           position={{ lat: currentPosition.lat, lng: currentPosition.lng }}
           icon={makePositionIcon(heading, gradient)}
           zIndex={10}
+          onLoad={(m) => onMarkerReady?.(m)}
         />
       )}
     </GoogleMap>

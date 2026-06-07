@@ -92,6 +92,12 @@ function bearingDeg(a: LatLng, b: LatLng): number {
   return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
 }
 
+function calcHeading(from: [number, number], to: [number, number]): number {
+  const dLng = to[1] - from[1];
+  const dLat = to[0] - from[0];
+  return (Math.atan2(dLng, dLat) * 180 / Math.PI + 360) % 360;
+}
+
 function angleDiff(a: number, b: number): number {
   const d = ((b - a + 540) % 360) - 180;
   return d; // positive = right, negative = left
@@ -145,6 +151,7 @@ export default function Home() {
   const demoIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
+  const currentMarkerRef = useRef<google.maps.Marker | null>(null);
 
   // Spots
   const [spots, setSpots] = useState<Spot[]>([]);
@@ -701,6 +708,19 @@ export default function Home() {
     const totalSteps = demoPoints.length;
     let step = 0;
 
+    const animateBetweenPoints = (from: [number, number], to: [number, number], duration: number) => {
+      const start = performance.now();
+      const animate = (now: number) => {
+        if (!isDemoModeRef.current) return;
+        const t = Math.min((now - start) / duration, 1);
+        const lat = from[0] + (to[0] - from[0]) * t;
+        const lng = from[1] + (to[1] - from[1]) * t;
+        currentMarkerRef.current?.setPosition({ lat, lng });
+        if (t < 1) requestAnimationFrame(animate);
+      };
+      requestAnimationFrame(animate);
+    };
+
     demoIntervalRef.current = setInterval(() => {
       if (step >= totalSteps) {
         clearInterval(demoIntervalRef.current!);
@@ -722,6 +742,8 @@ export default function Home() {
       if (step > 0) {
         const prev = demoPoints[step - 1];
         const dist = haversineDistance(prev, pt);
+        // ポイント間を滑らかに補間
+        animateBetweenPoints([prev.lat, prev.lng], [pt.lat, pt.lng], intervalTime);
         // 勾配考慮の速度
         let demoSpeed = 16;
         if (demoElevations.length > step) {
@@ -738,7 +760,7 @@ export default function Home() {
         setSpeedSum((p) => p + demoSpeed);
         setSpeedCount((p) => p + 1);
         setRideDistance((p) => p + dist);
-        setHeading(bearingDeg(prev, pt));
+        setHeading(calcHeading([prev.lat, prev.lng], [pt.lat, pt.lng]));
       }
       step++;
     }, intervalTime);
@@ -843,6 +865,7 @@ export default function Home() {
           logTrack={logTrack}
           referenceSegments={referenceRoute?.segments}
           onMapReady={(m) => { mapInstanceRef.current = m; }}
+          onMarkerReady={(m) => { currentMarkerRef.current = m; }}
         />
 
 
