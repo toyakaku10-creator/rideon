@@ -694,30 +694,6 @@ export default function Home() {
     const demoElevations = elevations.length >= 2 ? elevations : [];
     let step = 0;
 
-    const animateToNext = (
-      from: LatLng,
-      to: LatLng,
-      duration: number,
-    ) => {
-      const startTime = performance.now();
-      const animate = (now: number) => {
-        if (!isDemoModeRef.current) return;
-        const t = Math.min((now - startTime) / duration, 1);
-        const pos = {
-          lat: from.lat + (to.lat - from.lat) * t,
-          lng: from.lng + (to.lng - from.lng) * t,
-        };
-        setCurrentPosition(pos);
-        // Reactのレンダリングを通さず直接地図を操作
-        const m = mapInstanceRef.current;
-        if (m) {
-          m.setCenter(pos);
-        }
-        if (t < 1) requestAnimationFrame(animate);
-      };
-      requestAnimationFrame(animate);
-    };
-
     demoIntervalRef.current = setInterval(() => {
       if (step >= totalSteps) {
         clearInterval(demoIntervalRef.current!);
@@ -729,6 +705,7 @@ export default function Home() {
         return;
       }
       const pt = points[step];
+      setCurrentPosition({ lat: pt.lat, lng: pt.lng });
       rideTrackRef.current.push({ lat: pt.lat, lng: pt.lng });
       if (step > 0) {
         const prev = points[step - 1];
@@ -750,10 +727,6 @@ export default function Home() {
         setSpeedCount((p) => p + 1);
         setRideDistance((p) => p + dist);
         setHeading(bearingDeg(prev, pt));
-        // 次のポイントへ滑らかに補間移動
-        animateToNext(prev, pt, intervalTime);
-      } else {
-        setCurrentPosition({ lat: pt.lat, lng: pt.lng });
       }
       step++;
     }, intervalTime);
