@@ -380,9 +380,10 @@ export default function Home() {
     return () => navigator.geolocation.clearWatch(watchId);
   }, [tab]);
 
-  // Follow current position in speed/demo mode
+  // Follow current position in GPS speed mode (demo handles its own camera)
   useEffect(() => {
-    if (!currentPosition || tab !== 'speed' || !mapInstanceRef.current) return;
+    if (!currentPosition || tab !== 'speed' || isDemoModeRef.current) return;
+    if (!mapInstanceRef.current) return;
     mapInstanceRef.current.setCenter({ lat: currentPosition.lat, lng: currentPosition.lng });
     mapInstanceRef.current.panBy(0, 30);
   }, [currentPosition, tab]);
@@ -703,10 +704,17 @@ export default function Home() {
       const animate = (now: number) => {
         if (!isDemoModeRef.current) return;
         const t = Math.min((now - startTime) / duration, 1);
-        setCurrentPosition({
+        const pos = {
           lat: from.lat + (to.lat - from.lat) * t,
           lng: from.lng + (to.lng - from.lng) * t,
-        });
+        };
+        setCurrentPosition(pos);
+        // Reactのレンダリングを通さず直接地図を操作
+        const m = mapInstanceRef.current;
+        if (m) {
+          m.setCenter(pos);
+          m.panBy(0, 30);
+        }
         if (t < 1) requestAnimationFrame(animate);
       };
       requestAnimationFrame(animate);
