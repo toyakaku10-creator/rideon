@@ -710,7 +710,7 @@ export default function Home() {
     handleDemoSpeedChange(nextSpeed);
   };
 
-  const startDemoRide = async (pts: [number, number][]) => {
+  const startDemoRide = (pts: [number, number][]) => {
     if (pts.length < 2) return;
     isDemoModeRef.current = true;
     setIsDemoMode(true);
@@ -719,18 +719,10 @@ export default function Home() {
       currentMarkerRef.current.setMap(null);
       currentMarkerRef.current = null;
     }
-    // mapが準備できていることを確認してからマーカーを同期的に作成
-    if (!mapInstanceRef.current) return;
-    const marker = new google.maps.Marker({
-      position: { lat: pts[0][0], lng: pts[0][1] },
-      map: mapInstanceRef.current,
-      icon: {
-        url: 'data:image/svg+xml,' + encodeURIComponent(getWheelSvg('#4CAF50')),
-        anchor: new google.maps.Point(9, 9),
-      },
-      zIndex: 999,
-    });
-    currentMarkerRef.current = marker;
+    // 地図センタリング
+    if (mapInstanceRef.current && pts.length > 0) {
+      mapInstanceRef.current.panTo({ lat: pts[0][0], lng: pts[0][1] });
+    }
     rideTrackRef.current = [];
     rideStartTimeRef.current = Date.now();
     setLogTrack(null);
@@ -760,7 +752,6 @@ export default function Home() {
     console.log('totalDist (km):', totalDist / 1000);
     console.log('baseDuration (sec):', baseDuration / 1000);
 
-    demoStartTimeRef.current = performance.now();
     let lastStateUpdate = 0;
 
     const animate = (now: number) => {
@@ -821,11 +812,22 @@ export default function Home() {
       demoRAFRef.current = requestAnimationFrame(animate);
     };
 
-    if (mapInstanceRef.current && pts.length > 0) {
-      mapInstanceRef.current.panTo({ lat: pts[0][0], lng: pts[0][1] });
-    }
-    await new Promise(resolve => setTimeout(resolve, 300));
-    demoRAFRef.current = requestAnimationFrame(animate);
+    setTimeout(() => {
+      if (mapInstanceRef.current) {
+        const marker = new google.maps.Marker({
+          position: { lat: pts[0][0], lng: pts[0][1] },
+          map: mapInstanceRef.current,
+          icon: {
+            url: 'data:image/svg+xml,' + encodeURIComponent(getWheelSvg('#4CAF50')),
+            anchor: new google.maps.Point(9, 9),
+          },
+          zIndex: 999,
+        });
+        currentMarkerRef.current = marker;
+      }
+      demoStartTimeRef.current = performance.now();
+      demoRAFRef.current = requestAnimationFrame(animate);
+    }, 300);
   };
 
   const stopDemo = () => {
