@@ -1024,7 +1024,7 @@ export default function Home() {
           return (
             <div style={{
               position: 'absolute',
-              bottom: '120px',
+              bottom: '80px',
               right: '12px',
               zIndex: 500,
               display: 'flex',
@@ -1033,7 +1033,7 @@ export default function Home() {
               <button onClick={isPaused ? resumeDemo : pauseDemo} style={demoCtrlStyle}>
                 {isPaused ? <Play size={14} /> : <Pause size={14} />}
               </button>
-              <button onClick={stopDemo} style={demoCtrlStyle}>
+              <button onClick={stopDemo} style={{ ...demoCtrlStyle, padding: '4px 14px' }}>
                 <Square size={14} />
               </button>
               <button onClick={handleSpeedToggle} style={demoCtrlStyle}>
