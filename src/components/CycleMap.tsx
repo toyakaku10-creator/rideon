@@ -477,8 +477,7 @@ export default function CycleMap({
       })}
 
       {/* Waypoint markers — S (start), G (goal), dot (intermediate) */}
-      {tab === 'distance' &&
-        waypoints.map((wp, i) => {
+      {waypoints.map((wp, i) => {
           const isStart = i === 0;
           const isGoal = i === waypoints.length - 1 && waypoints.length > 1;
           const startWp = waypoints[0];
