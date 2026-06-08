@@ -244,6 +244,7 @@ interface CycleMapProps {
   onMapClick: (latlng: LatLng) => void;
   fitBoundsPoints?: LatLng[] | null;
   onStartPointDragged?: (deltaLat: number, deltaLng: number) => void;
+  isAdjustingImport?: boolean;
   navSegments?: RouteSegment[];
   rideMode?: boolean;
   heading?: number | null;
@@ -269,6 +270,7 @@ export default function CycleMap({
   onMapClick,
   fitBoundsPoints,
   onStartPointDragged,
+  isAdjustingImport = false,
   navSegments,
   rideMode,
   heading = null,
@@ -495,7 +497,7 @@ export default function CycleMap({
               position={{ lat: wp.lat, lng: wp.lng }}
               icon={icon}
               zIndex={isStart ? 2 : isGoal ? 1 : 0}
-              draggable={isStart && !!onStartPointDragged}
+              draggable={isStart && !!onStartPointDragged && isAdjustingImport}
               onDragEnd={
                 isStart && onStartPointDragged
                   ? (e) => {
