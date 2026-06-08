@@ -451,11 +451,15 @@ export default function CycleMap({
         waypoints.map((wp, i) => {
           const isStart = i === 0;
           const isGoal = i === waypoints.length - 1 && waypoints.length > 1;
+          const startWp = waypoints[0];
+          const goalWp = waypoints[waypoints.length - 1];
+          const isSameAsGoal = isStart && waypoints.length > 1 && startWp.lat === goalWp.lat && startWp.lng === goalWp.lng;
           const icon = isStart
-            ? makeLabelIcon('S', '#4CAF50')
+            ? makeLabelIcon(isSameAsGoal ? 'S/G' : 'S', '#4CAF50')
             : isGoal
-              ? makeLabelIcon('G', '#E53935')
+              ? (isSameAsGoal ? null : makeLabelIcon('G', '#E53935'))
               : makeDotIcon();
+          if (icon === null) return null;
           return (
             <Marker
               key={`wp-${i}`}
