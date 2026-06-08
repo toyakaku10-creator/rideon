@@ -368,29 +368,30 @@ export default function BottomPanel({
     prevOpenSaveSheet.current = !!openSaveSheet;
   }, [openSaveSheet]);
 
-  const handleShare = async () => {
+  const generateShareUrl = async (): Promise<string> => {
     const segPoints = segments.flatMap((s) => s.geometry);
     const allPoints = segPoints.length >= 2 ? segPoints : waypoints;
-    if (allPoints.length < 2) {
-      alert('ルートを引いてからシェアしてください');
-      return;
-    }
+    if (allPoints.length < 2) throw new Error('ルートを引いてからシェアしてください');
+    const res = await fetch('/api/share', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ points: allPoints, distance: totalDistance, spots }),
+    });
+    const data = await res.json();
+    return `${window.location.origin}/?share=${data.id}`;
+  };
+
+  const handleShare = async () => {
     try {
-      const res = await fetch('/api/share', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ points: allPoints, distance: totalDistance, spots }),
-      });
-      const data = await res.json();
-      const shareUrl = `${window.location.origin}/?share=${data.id}`;
+      const shareUrl = await generateShareUrl();
       if (navigator.share) {
         navigator.share({ url: shareUrl, title: 'RideOnルート' });
       } else {
         navigator.clipboard.writeText(shareUrl);
         alert('URLをコピーしました');
       }
-    } catch {
-      alert('シェアに失敗しました');
+    } catch (e: unknown) {
+      alert(e instanceof Error ? e.message : 'シェアに失敗しました');
     }
   };
 
@@ -729,6 +730,17 @@ export default function BottomPanel({
                   <>
                     <button onClick={() => { onShare ? onShare() : handleShare(); setShowShareExpand(false); }} style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', marginTop: '8px', padding: '10px 14px', background: 'rgba(212,175,55,0.15)', color: '#D4AF37', border: '1px solid #D4AF37', borderRadius: '8px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', boxSizing: 'border-box' as const }}>
                       <Upload size={16} />シェアURLを送る
+                    </button>
+                    <button onClick={async () => {
+                      try {
+                        const url = await generateShareUrl();
+                        navigator.clipboard.writeText(url);
+                        alert('URLをコピーしました');
+                      } catch (e: unknown) {
+                        alert(e instanceof Error ? e.message : 'シェアに失敗しました');
+                      }
+                    }} style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', marginTop: '8px', padding: '10px 14px', background: 'rgba(212,175,55,0.15)', color: '#D4AF37', border: '1px solid #D4AF37', borderRadius: '8px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', boxSizing: 'border-box' as const }}>
+                      <Copy size={18} />URLをコピー
                     </button>
                     <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                       <input
