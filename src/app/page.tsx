@@ -934,10 +934,6 @@ export default function Home() {
         <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 500 }}>
           <button
             onClick={() => {
-              if (isDemoMode) {
-                stopDemo();
-                return;
-              }
               if (tab === 'speed') {
                 // ライドモード終了 → 走行記録を保存
                 const endTime = Date.now();
@@ -1000,43 +996,41 @@ export default function Home() {
           </button>
         </div>
 
-        {isDemoMode && (
-          <div style={{
-            position: 'absolute',
-            top: '60px',
-            right: '12px',
-            zIndex: 500,
+        {isDemoMode && (() => {
+          const demoCtrlStyle: React.CSSProperties = {
+            background: 'rgba(255,255,255,0.9)',
+            border: '1px solid #D4AF37',
+            borderRadius: '16px',
+            padding: '4px 10px',
+            fontSize: '12px',
+            fontWeight: '600',
+            color: '#D4AF37',
+            cursor: 'pointer',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
             display: 'flex',
-            gap: '6px',
-          }}>
-            <button onClick={handleSpeedToggle} style={{
-              background: 'rgba(255,255,255,0.9)',
-              border: '1px solid #D4AF37',
-              borderRadius: '16px',
-              padding: '4px 10px',
-              fontSize: '12px',
-              fontWeight: '600',
-              color: '#D4AF37',
-              cursor: 'pointer',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-            }}>
-              {demoSpeed}x
-            </button>
-            <button onClick={isPaused ? resumeDemo : pauseDemo} style={{
-              background: 'rgba(255,255,255,0.9)',
-              border: '1px solid #D4AF37',
-              borderRadius: '16px',
-              padding: '4px 10px',
-              color: '#D4AF37',
-              cursor: 'pointer',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+            alignItems: 'center',
+          };
+          return (
+            <div style={{
+              position: 'absolute',
+              top: '60px',
+              right: '12px',
+              zIndex: 500,
               display: 'flex',
-              alignItems: 'center',
+              gap: '6px',
             }}>
-              {isPaused ? <Play size={14} /> : <Pause size={14} />}
-            </button>
-          </div>
-        )}
+              <button onClick={isPaused ? resumeDemo : pauseDemo} style={demoCtrlStyle}>
+                {isPaused ? <Play size={14} /> : <Pause size={14} />}
+              </button>
+              <button onClick={stopDemo} style={demoCtrlStyle}>
+                <Square size={14} />
+              </button>
+              <button onClick={handleSpeedToggle} style={demoCtrlStyle}>
+                {demoSpeed}x
+              </button>
+            </div>
+          );
+        })()}
 
         {tab === 'speed' && navInstruction && (
           <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[900] bg-[#D4AF37] text-white text-sm font-bold px-5 py-2 rounded-full shadow-lg pointer-events-none">
