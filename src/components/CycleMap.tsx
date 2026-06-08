@@ -77,15 +77,15 @@ function makeLabelIcon(label: string, bg: string, size = 28): google.maps.Icon {
 }
 
 function makeStartGoalIcon(): google.maps.Icon {
-  const W = 36, H = 24, r = 4;
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
-    <rect x="0" y="0" width="${W}" height="${H}" rx="${r}" fill="#4CAF50"/>
-    <text x="${W / 2}" y="${H / 2 + 4}" text-anchor="middle" fill="white" font-size="12" font-weight="bold" font-family="sans-serif">S/G</text>
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="20">
+    <circle cx="10" cy="10" r="10" fill="#4CAF50"/>
+    <circle cx="22" cy="10" r="10" fill="#E53935"/>
+    <text x="10" y="14" text-anchor="middle" font-size="10" font-weight="bold" fill="white">S</text>
+    <text x="22" y="14" text-anchor="middle" font-size="10" font-weight="bold" fill="white">G</text>
   </svg>`;
   return {
-    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
-    scaledSize: new google.maps.Size(W, H),
-    anchor: new google.maps.Point(W / 2, H / 2),
+    url: 'data:image/svg+xml,' + encodeURIComponent(svg),
+    anchor: new google.maps.Point(16, 10),
   };
 }
 
