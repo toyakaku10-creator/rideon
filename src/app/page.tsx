@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Bike, Play, Square, Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin, type LucideProps } from 'lucide-react';
+import { Bike, Play, Pause, Square, Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin, type LucideProps } from 'lucide-react';
 import type { Tab, RouteType, LatLng, RouteSegment, SavedRoute, RideLog, Spot } from '@/types';
 import { SPOT_CATEGORIES, spotCustomSvg } from '@/lib/spotCategories';
 
@@ -156,11 +156,12 @@ export default function Home() {
   const [logTrack, setLogTrack] = useState<{ lat: number; lng: number }[] | null>(null);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const isDemoModeRef = useRef(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const animateRef = useRef<((now: number) => void) | null>(null);
   const [demoSpeed, setDemoSpeed] = useState(1);
   const demoSpeedRef = useRef(1);
   const demoStartTimeRef = useRef(0);
   const demoRAFRef = useRef<number | null>(null);
-  const pressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const currentMarkerRef = useRef<google.maps.Marker | null>(null);
   const skipElevationFetchRef = useRef(false);
@@ -754,6 +755,7 @@ export default function Home() {
     let lastStateUpdate = 0;
 
     const animate = (now: number) => {
+      animateRef.current = animate;
       const elapsed = (now - demoStartTimeRef.current) * demoSpeedRef.current;
       const progress = Math.min(elapsed / baseDuration, 1);
       const targetDist = totalDist * progress;
@@ -823,18 +825,20 @@ export default function Home() {
     setTab('distance');
   };
 
-  const handleRideButtonPressStart = () => {
-    const pts = segments.flatMap((s) => s.geometry).map((p): [number, number] => [p.lat, p.lng]);
-    pressTimerRef.current = setTimeout(() => {
-      pressTimerRef.current = null;
-      if (pts.length >= 2) startDemoRide(pts);
-    }, 1500);
+  const pauseDemo = () => {
+    if (demoRAFRef.current) {
+      cancelAnimationFrame(demoRAFRef.current);
+      demoRAFRef.current = null;
+    }
+    setIsPaused(true);
   };
 
-  const handleRideButtonPressEnd = () => {
-    if (pressTimerRef.current) {
-      clearTimeout(pressTimerRef.current);
-      pressTimerRef.current = null;
+  const resumeDemo = () => {
+    const baseDuration = (totalDistance / 16000) * 3600 * 1000 / 100;
+    demoStartTimeRef.current = performance.now() - demoProgressRef.current * baseDuration / demoSpeedRef.current;
+    setIsPaused(false);
+    if (animateRef.current) {
+      demoRAFRef.current = requestAnimationFrame(animateRef.current);
     }
   };
 
@@ -919,9 +923,6 @@ export default function Home() {
         {/* Floating RideOn button */}
         <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 500 }}>
           <button
-            onTouchStart={handleRideButtonPressStart}
-            onTouchEnd={handleRideButtonPressEnd}
-            onContextMenu={(e) => e.preventDefault()}
             onClick={() => {
               if (isDemoMode) {
                 stopDemo();
@@ -997,6 +998,7 @@ export default function Home() {
             zIndex: 500,
             display: 'flex',
             gap: '6px',
+            alignItems: 'center',
           }}>
             {[1, 2, 4, 10].map(speed => (
               <button
@@ -1017,6 +1019,42 @@ export default function Home() {
                 {speed}x
               </button>
             ))}
+            <button
+              onClick={isPaused ? resumeDemo : pauseDemo}
+              style={{
+                background: 'rgba(255,255,255,0.9)',
+                color: '#D4AF37',
+                border: '1px solid #D4AF37',
+                borderRadius: '50%',
+                width: '30px',
+                height: '30px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+              }}
+            >
+              {isPaused ? <Play size={14} /> : <Pause size={14} />}
+            </button>
+            <button
+              onClick={stopDemo}
+              style={{
+                background: 'rgba(255,255,255,0.9)',
+                color: '#D4AF37',
+                border: '1px solid #D4AF37',
+                borderRadius: '50%',
+                width: '30px',
+                height: '30px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+              }}
+            >
+              <Square size={14} />
+            </button>
           </div>
         )}
 
