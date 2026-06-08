@@ -453,11 +453,14 @@ export default function CycleMap({
           const isGoal = i === waypoints.length - 1 && waypoints.length > 1;
           const startWp = waypoints[0];
           const goalWp = waypoints[waypoints.length - 1];
-          const isSameAsGoal = isStart && waypoints.length > 1 && startWp.lat === goalWp.lat && startWp.lng === goalWp.lng;
+          const dLat = (goalWp.lat - startWp.lat) * Math.PI / 180;
+          const dLng = (goalWp.lng - startWp.lng) * Math.PI / 180;
+          const dist = Math.sqrt(dLat * dLat + dLng * dLng) * 6371000;
+          const isNearGoal = waypoints.length > 1 && dist < 200;
           const icon = isStart
-            ? makeLabelIcon(isSameAsGoal ? 'S/G' : 'S', '#4CAF50')
+            ? makeLabelIcon(isNearGoal ? 'S/G' : 'S', '#4CAF50')
             : isGoal
-              ? (isSameAsGoal ? null : makeLabelIcon('G', '#E53935'))
+              ? (isNearGoal ? null : makeLabelIcon('G', '#E53935'))
               : makeDotIcon();
           if (icon === null) return null;
           return (
