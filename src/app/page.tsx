@@ -714,26 +714,23 @@ export default function Home() {
     if (pts.length < 2) return;
     isDemoModeRef.current = true;
     setIsDemoMode(true);
-    // 既存マーカーを確実に削除
+    // 既存マーカーを完全削除
     if (currentMarkerRef.current) {
       currentMarkerRef.current.setMap(null);
       currentMarkerRef.current = null;
     }
-    // 少し待ってからマーカーを作成
-    setTimeout(() => {
-      if (mapInstanceRef.current) {
-        const marker = new google.maps.Marker({
-          position: { lat: pts[0][0], lng: pts[0][1] },
-          map: mapInstanceRef.current,
-          icon: {
-            url: 'data:image/svg+xml,' + encodeURIComponent(getWheelSvg('#4CAF50')),
-            anchor: new google.maps.Point(9, 9),
-          },
-          zIndex: 999,
-        });
-        currentMarkerRef.current = marker;
-      }
-    }, 50);
+    // mapが準備できていることを確認してからマーカーを同期的に作成
+    if (!mapInstanceRef.current) return;
+    const marker = new google.maps.Marker({
+      position: { lat: pts[0][0], lng: pts[0][1] },
+      map: mapInstanceRef.current,
+      icon: {
+        url: 'data:image/svg+xml,' + encodeURIComponent(getWheelSvg('#4CAF50')),
+        anchor: new google.maps.Point(9, 9),
+      },
+      zIndex: 999,
+    });
+    currentMarkerRef.current = marker;
     rideTrackRef.current = [];
     rideStartTimeRef.current = Date.now();
     setLogTrack(null);
