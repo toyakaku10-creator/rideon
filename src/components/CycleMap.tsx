@@ -77,6 +77,19 @@ function makeLabelIcon(label: string, bg: string, size = 28): google.maps.Icon {
 }
 
 
+function makeStartGoalIcon(size = 28): google.maps.Icon {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
+    <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2 - 1}" fill="#333" stroke="white" stroke-width="2"/>
+    <text x="${size / 2 - 4}" y="${size / 2 + 4}" text-anchor="middle" font-size="9" font-weight="bold" font-family="sans-serif" fill="#4CAF50">S</text>
+    <text x="${size / 2 + 4}" y="${size / 2 + 4}" text-anchor="middle" font-size="9" font-weight="bold" font-family="sans-serif" fill="#E53935">/G</text>
+  </svg>`;
+  return {
+    url: 'data:image/svg+xml,' + encodeURIComponent(svg),
+    scaledSize: new google.maps.Size(size, size),
+    anchor: new google.maps.Point(size / 2, size / 2),
+  };
+}
+
 function makePositionIcon(heading: number | null, gradient = 0): google.maps.Icon {
   const hasHeading = heading != null && !isNaN(heading);
   const abs = Math.abs(gradient);
@@ -461,7 +474,7 @@ export default function CycleMap({
           const dist = Math.sqrt(dLat * dLat + dLng * dLng) * 6371000;
           const isNearGoal = waypoints.length > 1 && dist < 200;
           const icon = isStart
-            ? (isNearGoal ? makeLabelIcon('S/G', '#4CAF50') : makeLabelIcon('S', '#4CAF50'))
+            ? (isNearGoal ? makeStartGoalIcon() : makeLabelIcon('S', '#4CAF50'))
             : isGoal
               ? (isNearGoal ? null : makeLabelIcon('G', '#E53935'))
               : makeDotIcon();
