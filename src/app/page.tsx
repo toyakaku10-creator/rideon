@@ -819,9 +819,10 @@ export default function Home() {
       demoRAFRef.current = requestAnimationFrame(animate);
     };
 
-    setTimeout(() => {
-      demoRAFRef.current = requestAnimationFrame(animate);
-    }, 100);
+    if (mapInstanceRef.current && pts.length > 0) {
+      mapInstanceRef.current.setCenter({ lat: pts[0][0], lng: pts[0][1] });
+    }
+    demoRAFRef.current = requestAnimationFrame(animate);
   };
 
   const stopDemo = () => {
