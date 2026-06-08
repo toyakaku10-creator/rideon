@@ -703,6 +703,13 @@ export default function Home() {
     demoStartTimeRef.current = performance.now() - demoProgressRef.current * baseDuration / speed;
   };
 
+  const speedOptions = [1, 2, 4, 10];
+  const handleSpeedToggle = () => {
+    const currentIndex = speedOptions.indexOf(demoSpeed);
+    const nextSpeed = speedOptions[(currentIndex + 1) % speedOptions.length];
+    handleDemoSpeedChange(nextSpeed);
+  };
+
   const startDemoRide = (pts: [number, number][]) => {
     if (pts.length < 2) return;
     isDemoModeRef.current = true;
@@ -1024,25 +1031,22 @@ export default function Home() {
             </div>
             {/* 下段：速度 */}
             <div style={{ display: 'flex', gap: '6px' }}>
-              {[1, 2, 4, 10].map(speed => (
-                <button
-                  key={speed}
-                  onClick={() => handleDemoSpeedChange(speed)}
-                  style={{
-                    background: demoSpeed === speed ? '#D4AF37' : 'rgba(255,255,255,0.9)',
-                    color: demoSpeed === speed ? '#000' : '#D4AF37',
-                    border: '1px solid #D4AF37',
-                    borderRadius: '16px',
-                    padding: '4px 10px',
-                    fontSize: '12px',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-                  }}
-                >
-                  {speed}x
-                </button>
-              ))}
+              <button
+                onClick={handleSpeedToggle}
+                style={{
+                  background: '#D4AF37',
+                  color: '#000',
+                  border: '1px solid #D4AF37',
+                  borderRadius: '16px',
+                  padding: '4px 10px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                }}
+              >
+                {demoSpeed}x
+              </button>
             </div>
           </div>
         )}
