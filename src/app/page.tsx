@@ -1024,8 +1024,8 @@ export default function Home() {
           return (
             <div style={{
               position: 'absolute',
-              top: '12px',
-              left: '12px',
+              bottom: '120px',
+              right: '12px',
               zIndex: 500,
               display: 'flex',
               gap: '6px',
