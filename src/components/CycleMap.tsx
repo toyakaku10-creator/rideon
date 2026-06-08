@@ -77,17 +77,10 @@ function makeLabelIcon(label: string, bg: string, size = 28): google.maps.Icon {
 }
 
 function makeStartGoalIcon(): google.maps.Icon {
-  const W = 46, H = 24, r = 4;
-  const sW = 16, slashW = 8, gW = 16;
+  const W = 36, H = 24, r = 4;
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
     <rect x="0" y="0" width="${W}" height="${H}" rx="${r}" fill="#4CAF50"/>
-    <rect x="${sW}" y="0" width="${slashW}" height="${H}" fill="#666"/>
-    <rect x="${sW + slashW}" y="0" width="${gW}" height="${H}" rx="0" fill="#E53935"/>
-    <rect x="${sW + slashW}" y="0" width="${gW}" height="${H}" rx="${r}" fill="#E53935"/>
-    <path d="M${sW + slashW},0 h${gW - r} a${r},${r} 0 0 1 ${r},${r} v${H - r * 2} a${r},${r} 0 0 1 -${r},${r} h-${gW - r} Z" fill="#E53935"/>
-    <text x="${sW / 2}" y="${H / 2 + 4}" text-anchor="middle" fill="white" font-size="12" font-weight="bold" font-family="sans-serif">S</text>
-    <text x="${sW + slashW / 2}" y="${H / 2 + 4}" text-anchor="middle" fill="white" font-size="12" font-weight="bold" font-family="sans-serif">/</text>
-    <text x="${sW + slashW + gW / 2}" y="${H / 2 + 4}" text-anchor="middle" fill="white" font-size="12" font-weight="bold" font-family="sans-serif">G</text>
+    <text x="${W / 2}" y="${H / 2 + 4}" text-anchor="middle" fill="white" font-size="12" font-weight="bold" font-family="sans-serif">S/G</text>
   </svg>`;
   return {
     url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
