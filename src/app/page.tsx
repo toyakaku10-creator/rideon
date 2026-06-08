@@ -228,6 +228,10 @@ export default function Home() {
         setWaypoints([latlngs[0], latlngs[latlngs.length - 1]]);
         setFitBoundsPoints(latlngs);
         setSharedSpots(Array.isArray(data.spots) ? data.spots : []);
+        if (data.elevations && data.elevations.length > 0) {
+          setElevations(data.elevations);
+          skipElevationFetchRef.current = true;
+        }
 
         // action=save の時は自動で保存ダイアログを開く
         if (action === 'save') {
@@ -612,6 +616,10 @@ export default function Home() {
       setWaypoints([latlngs[0], latlngs[latlngs.length - 1]]);
       setFitBoundsPoints(latlngs);
       setSharedSpots(Array.isArray(data.spots) ? data.spots : []);
+      if (data.elevations && data.elevations.length > 0) {
+        setElevations(data.elevations);
+        skipElevationFetchRef.current = true;
+      }
       setTimeout(() => setOpenSaveSheet(true), 500);
     } catch {
       alert('ルートの取得に失敗しました');
