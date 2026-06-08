@@ -938,10 +938,7 @@ export default function Home() {
         <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 500 }}>
           <button
             onClick={() => {
-              if (isDemoMode) {
-                stopDemo();
-                return;
-              }
+              if (isDemoMode) return;
               if (tab === 'speed') {
                 // ライドモード終了 → 走行記録を保存
                 const endTime = Date.now();
@@ -999,11 +996,7 @@ export default function Home() {
             } as React.CSSProperties}
           >
             {isDemoMode ? (
-              <>
-                <Square size={12} fill="currentColor" />
-                Demo
-                <Bike size={18} />
-              </>
+              <>Demo<Bike size={18} /></>
             ) : (
               <>
                 {tab === 'speed' ? <Square size={12} fill="currentColor" /> : <Play size={12} fill="currentColor" />}
