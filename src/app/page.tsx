@@ -125,6 +125,8 @@ export default function Home() {
   const [isImported, setIsImported] = useState(false);
   const [referenceRoute, setReferenceRoute] = useState<SavedRoute | null>(null);
   const [isAdjustingImport, setIsAdjustingImport] = useState(false);
+  const [isGpxImport, setIsGpxImport] = useState(false);
+  const [isShareImport, setIsShareImport] = useState(false);
   const [openSaveSheet, setOpenSaveSheet] = useState(false);
 
   // Elevation
@@ -618,6 +620,7 @@ export default function Home() {
         setElevations(data.elevations);
         skipElevationFetchRef.current = true;
       }
+      setIsShareImport(true);
       setTimeout(() => setOpenSaveSheet(true), 500);
     } catch {
       alert('ルートの取得に失敗しました');
@@ -652,6 +655,7 @@ export default function Home() {
 
   const handleGpxImport = useCallback((points: { lat: number; lng: number }[]) => {
     handleKyorisokuImport(points, 0);
+    setIsGpxImport(true);
   }, [handleKyorisokuImport]);
 
   const handleStartPointDragged = useCallback((deltaLat: number, deltaLng: number) => {
@@ -683,6 +687,8 @@ export default function Home() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
       setIsImported(false);
       setIsAdjustingImport(false);
+      setIsGpxImport(false);
+      setIsShareImport(false);
       setOpenSaveSheet(false);
     },
     [waypoints, routeType, segments, totalDistance, savedRoutes, elevations]
@@ -918,6 +924,9 @@ export default function Home() {
           onMapClick={handleMapClick}
           fitBoundsPoints={fitBoundsPoints}
           onStartPointDragged={handleStartPointDragged}
+          isAdjustingImport={isAdjustingImport}
+          isGpxImport={isGpxImport}
+          isShareImport={isShareImport}
           navSegments={navRoute?.segments}
           rideMode={tab === 'speed'}
           isDemoMode={isDemoMode}
