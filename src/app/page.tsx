@@ -993,7 +993,7 @@ export default function Home() {
         {isDemoMode && (
           <div style={{
             position: 'absolute',
-            bottom: '120px',
+            top: '60px',
             right: '12px',
             zIndex: 500,
             display: 'flex',
