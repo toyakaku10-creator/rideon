@@ -377,32 +377,30 @@ export default function Home() {
     setNavElevationIndex(elevIdx);
   }, [currentPosition, segments, elevations]);
 
-  // GPS speed tracking — only active in speed tab (skip in demo mode)
+  // GPS tracking — always active (ride-mode stats only in speed tab)
   useEffect(() => {
-    if (tab !== 'speed') return;
     if (isDemoModeRef.current) return;
-    prevGpsPos.current = null;
-    rideTrackRef.current = [];
-    setRideDistance(0);
     const watchId = navigator.geolocation.watchPosition(
       (pos) => {
         const { latitude, longitude, speed, accuracy, heading: h } = pos.coords;
         const kmh = speed != null ? speed * 3.6 : 0;
         const cur = { lat: latitude, lng: longitude };
-        rideTrackRef.current.push(cur);
-        if (prevGpsPos.current) {
-          const d = haversineDistance(prevGpsPos.current, cur);
-          setRideDistance((prev) => prev + d);
-        }
-        prevGpsPos.current = cur;
         setCurrentPosition(cur);
-        setCurrentSpeed(kmh);
         setGpsAccuracy(accuracy);
         setHeading(h != null && !isNaN(h) ? h : null);
-        if (kmh > 3) {
-          setMaxSpeed((prev) => Math.max(prev, kmh));
-          setSpeedSum((prev) => prev + kmh);
-          setSpeedCount((prev) => prev + 1);
+        if (tab === 'speed' && !isDemoModeRef.current) {
+          rideTrackRef.current.push(cur);
+          if (prevGpsPos.current) {
+            const d = haversineDistance(prevGpsPos.current, cur);
+            setRideDistance((prev) => prev + d);
+          }
+          prevGpsPos.current = cur;
+          setCurrentSpeed(kmh);
+          if (kmh > 3) {
+            setMaxSpeed((prev) => Math.max(prev, kmh));
+            setSpeedSum((prev) => prev + kmh);
+            setSpeedCount((prev) => prev + 1);
+          }
         }
       },
       (err) => console.warn('watchPosition:', err),

@@ -225,6 +225,18 @@ function makeDotIcon(): google.maps.Icon {
   };
 }
 
+function makeCurrentLocationIcon(): google.maps.Icon {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">
+    <circle cx="9" cy="9" r="6" fill="#4A90E2" fill-opacity="0.5" stroke="#4A90E2" stroke-width="2"/>
+    <circle cx="9" cy="9" r="3" fill="#4A90E2"/>
+  </svg>`;
+  return {
+    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
+    scaledSize: new google.maps.Size(18, 18),
+    anchor: new google.maps.Point(9, 9),
+  };
+}
+
 const DEFAULT_CENTER: google.maps.LatLngLiteral = { lat: 35.6762, lng: 139.6503 };
 
 const MAP_OPTIONS: google.maps.MapOptions = {
@@ -564,6 +576,15 @@ export default function CycleMap({
         />
         );
       })}
+
+      {/* Current position marker (normal mode) */}
+      {tab !== 'speed' && currentPosition && (
+        <Marker
+          position={{ lat: currentPosition.lat, lng: currentPosition.lng }}
+          icon={makeCurrentLocationIcon()}
+          zIndex={5}
+        />
+      )}
 
       {/* Current position marker (speed mode) */}
       {tab === 'speed' && currentPosition && (
