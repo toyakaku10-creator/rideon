@@ -990,8 +990,14 @@ export default function Home() {
               transition: 'all 0.2s',
             } as React.CSSProperties}
           >
-            {tab === 'speed' ? <Square size={12} fill="currentColor" /> : <Play size={12} fill="currentColor" />}
-            RideOn
+            {isDemoMode ? (
+              'Demo'
+            ) : (
+              <>
+                {tab === 'speed' ? <Square size={12} fill="currentColor" /> : <Play size={12} fill="currentColor" />}
+                RideOn
+              </>
+            )}
             <Bike size={18} />
           </button>
         </div>
