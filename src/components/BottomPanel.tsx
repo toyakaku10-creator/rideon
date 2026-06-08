@@ -151,7 +151,7 @@ function SwipeableRouteItem({
             <p className="text-[var(--text)] font-medium truncate" style={{ fontSize: '16px' }}>
               {route.name}
               {isSelected && (
-                <span style={{ fontSize: '10px', color: '#D4AF37', border: '1px solid #D4AF37', borderRadius: '8px', padding: '1px 6px', marginLeft: '6px' }}>表示中</span>
+                <span style={{ fontSize: '10px', color: '#fff', background: '#D4AF37', borderRadius: '8px', padding: '2px 8px', marginLeft: '6px', fontWeight: '600' }}>表示中</span>
               )}
             </p>
           )}
