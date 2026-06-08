@@ -78,6 +78,28 @@ function makeLabelIcon(label: string, bg: string, size = 28): google.maps.Icon {
 
 
 
+function makeStartGoalIcon(size = 28): google.maps.Icon {
+  const cx = size / 2;
+  const cy = size / 2;
+  const r = size / 2 - 1;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
+    <defs>
+      <clipPath id="red-clip">
+        <polygon points="${cx + 4},0 ${size},0 ${size},${size} ${cx - 4},${size}"/>
+      </clipPath>
+    </defs>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="#4CAF50" stroke="white" stroke-width="2"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="#E53935" clip-path="url(#red-clip)"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="white" stroke-width="2"/>
+    <text x="${cx}" y="${cy + 5}" text-anchor="middle" font-size="${size * 0.4}" font-weight="bold" font-family="sans-serif" fill="white">S/G</text>
+  </svg>`;
+  return {
+    url: 'data:image/svg+xml,' + encodeURIComponent(svg),
+    scaledSize: new google.maps.Size(size, size),
+    anchor: new google.maps.Point(cx, cy),
+  };
+}
+
 function makePositionIcon(heading: number | null, gradient = 0): google.maps.Icon {
   const hasHeading = heading != null && !isNaN(heading);
   const abs = Math.abs(gradient);
@@ -462,7 +484,7 @@ export default function CycleMap({
           const dist = Math.sqrt(dLat * dLat + dLng * dLng) * 6371000;
           const isNearGoal = waypoints.length > 1 && dist < 200;
           const icon = isStart
-            ? (isNearGoal ? makeLabelIcon('S/G', '#4CAF50') : makeLabelIcon('S', '#4CAF50'))
+            ? (isNearGoal ? makeStartGoalIcon() : makeLabelIcon('S', '#4CAF50'))
             : isGoal
               ? (isNearGoal ? null : makeLabelIcon('G', '#E53935'))
               : makeDotIcon();
