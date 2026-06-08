@@ -76,18 +76,6 @@ function makeLabelIcon(label: string, bg: string, size = 28): google.maps.Icon {
   };
 }
 
-function makeStartGoalIcon(): google.maps.Icon {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="20">
-    <circle cx="10" cy="10" r="10" fill="#4CAF50"/>
-    <circle cx="22" cy="10" r="10" fill="#E53935"/>
-    <text x="10" y="14" text-anchor="middle" font-size="10" font-weight="bold" fill="white">S</text>
-    <text x="22" y="14" text-anchor="middle" font-size="10" font-weight="bold" fill="white">G</text>
-  </svg>`;
-  return {
-    url: 'data:image/svg+xml,' + encodeURIComponent(svg),
-    anchor: new google.maps.Point(16, 10),
-  };
-}
 
 function makePositionIcon(heading: number | null, gradient = 0): google.maps.Icon {
   const hasHeading = heading != null && !isNaN(heading);
@@ -473,7 +461,7 @@ export default function CycleMap({
           const dist = Math.sqrt(dLat * dLat + dLng * dLng) * 6371000;
           const isNearGoal = waypoints.length > 1 && dist < 200;
           const icon = isStart
-            ? (isNearGoal ? makeStartGoalIcon() : makeLabelIcon('S', '#4CAF50'))
+            ? (isNearGoal ? makeLabelIcon('S/G', '#4CAF50') : makeLabelIcon('S', '#4CAF50'))
             : isGoal
               ? (isNearGoal ? null : makeLabelIcon('G', '#E53935'))
               : makeDotIcon();
