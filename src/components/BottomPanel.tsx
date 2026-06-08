@@ -59,6 +59,7 @@ function SwipeableRouteItem({
   onRename,
   onReference,
   isSelected,
+  showMyRoute,
 }: {
   route: SavedRoute;
   onLoad: () => void;
@@ -66,6 +67,7 @@ function SwipeableRouteItem({
   onRename: (newName: string) => void;
   onReference?: () => void;
   isSelected?: boolean;
+  showMyRoute?: boolean;
 }) {
   const [offset, setOffset] = useState(0);
   const [editing, setEditing] = useState(false);
@@ -98,6 +100,10 @@ function SwipeableRouteItem({
   useEffect(() => {
     if (isSelected) setOffset(0);
   }, [isSelected]);
+
+  useEffect(() => {
+    setOffset(0);
+  }, [showMyRoute]);
 
   const startEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -837,6 +843,7 @@ export default function BottomPanel({
                     key={route.id + resetKey}
                     route={route}
                     isSelected={route.id === selectedRouteId}
+                    showMyRoute={showHistory}
                     onLoad={() => { onLoadRoute(route); setShowHistory(false); }}
                     onDelete={() => onDeleteRoute(route.id)}
                     onRename={(newName) => onRenameRoute(route.id, newName)}
