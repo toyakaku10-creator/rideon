@@ -302,7 +302,7 @@ export default function CycleMap({
   // Zoom in when switching to ride mode
   useEffect(() => {
     if (!map || !rideMode) return;
-    map.setZoom(15.5);
+    map.setZoom(15);
   }, [map, rideMode]);
 
   // Center / follow logic (mirrors Leaflet MapController behaviour)
