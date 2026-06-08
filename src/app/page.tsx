@@ -1001,32 +1001,26 @@ export default function Home() {
             gap: '6px',
             alignItems: 'flex-end',
           }}>
-            {/* 上段：一時停止・停止 */}
+            {/* 一時停止・再開 */}
             <div style={{ display: 'flex', gap: '6px' }}>
-              {[
-                { onClick: isPaused ? resumeDemo : pauseDemo, icon: isPaused ? <Play size={14} /> : <Pause size={14} /> },
-                { onClick: stopDemo, icon: <Square size={14} /> },
-              ].map((btn, i) => (
-                <button
-                  key={i}
-                  onClick={btn.onClick}
-                  style={{
-                    background: 'rgba(255,255,255,0.9)',
-                    color: '#D4AF37',
-                    border: '1px solid #D4AF37',
-                    borderRadius: '50%',
-                    width: '30px',
-                    height: '30px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-                  }}
-                >
-                  {btn.icon}
-                </button>
-              ))}
+              <button
+                onClick={isPaused ? resumeDemo : pauseDemo}
+                style={{
+                  background: 'rgba(255,255,255,0.9)',
+                  color: '#D4AF37',
+                  border: '1px solid #D4AF37',
+                  borderRadius: '50%',
+                  width: '30px',
+                  height: '30px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                }}
+              >
+                {isPaused ? <Play size={14} /> : <Pause size={14} />}
+              </button>
             </div>
             {/* 下段：速度 */}
             <div style={{ display: 'flex', gap: '6px' }}>
