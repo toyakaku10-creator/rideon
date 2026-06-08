@@ -387,7 +387,7 @@ export default function BottomPanel({
     const res = await fetch('/api/share', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ points: allPoints, distance: totalDistance, spots }),
+      body: JSON.stringify({ points: allPoints, distance: totalDistance, spots, elevations }),
     });
     const data = await res.json();
     return `${window.location.origin}/?share=${data.id}`;
