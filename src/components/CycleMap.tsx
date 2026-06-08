@@ -105,16 +105,16 @@ function makePositionIcon(heading: number | null, gradient = 0): google.maps.Ico
   const abs = Math.abs(gradient);
   const size = 18;
 
-  // 色を勾配で決定: 緑(default) / 黄(2〜8%) / 水玉赤(8%以上)
+  // 色を勾配で決定: 緑(default) / 黄(3〜6%) / 水玉赤(6%以上)
   let wheelColor = '#4CAF50';
-  if (abs >= 8) {
+  if (abs >= 6) {
     wheelColor = '#CC0000';
-  } else if (abs >= 2) {
+  } else if (abs >= 3) {
     wheelColor = '#FFD700';
   }
 
-  // 急坂（8%以上）: 水玉の丸
-  if (abs >= 8) {
+  // 急坂（6%以上）: 水玉の丸
+  if (abs >= 6) {
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
       <defs><clipPath id="pc"><circle cx="9" cy="9" r="7"/></clipPath></defs>
       <circle cx="9" cy="9" r="8" fill="white" stroke="${wheelColor}" stroke-width="2"/>
