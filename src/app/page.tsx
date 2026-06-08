@@ -710,7 +710,7 @@ export default function Home() {
     handleDemoSpeedChange(nextSpeed);
   };
 
-  const startDemoRide = (pts: [number, number][]) => {
+  const startDemoRide = async (pts: [number, number][]) => {
     if (pts.length < 2) return;
     isDemoModeRef.current = true;
     setIsDemoMode(true);
@@ -820,8 +820,9 @@ export default function Home() {
     };
 
     if (mapInstanceRef.current && pts.length > 0) {
-      mapInstanceRef.current.setCenter({ lat: pts[0][0], lng: pts[0][1] });
+      mapInstanceRef.current.panTo({ lat: pts[0][0], lng: pts[0][1] });
     }
+    await new Promise(resolve => setTimeout(resolve, 300));
     demoRAFRef.current = requestAnimationFrame(animate);
   };
 
