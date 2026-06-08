@@ -247,6 +247,7 @@ interface CycleMapProps {
   isAdjustingImport?: boolean;
   navSegments?: RouteSegment[];
   rideMode?: boolean;
+  isDemoMode?: boolean;
   heading?: number | null;
   elevationMarkerPos?: LatLng;
   elevationMarkerDistance?: string;
@@ -273,6 +274,7 @@ export default function CycleMap({
   isAdjustingImport = false,
   navSegments,
   rideMode,
+  isDemoMode = false,
   heading = null,
   elevationMarkerPos,
   elevationMarkerDistance,
@@ -325,11 +327,11 @@ export default function CycleMap({
     initializedRef.current = true; // prevent subsequent center effect from overriding
   }, [map, fitBoundsPoints]);
 
-  // Zoom in when switching to ride mode
+  // Zoom in when switching to ride mode (skip in demo mode)
   useEffect(() => {
-    if (!map || !rideMode) return;
+    if (!map || !rideMode || isDemoMode) return;
     map.setZoom(15);
-  }, [map, rideMode]);
+  }, [map, rideMode, isDemoMode]);
 
   // Center / follow logic (mirrors Leaflet MapController behaviour)
   useEffect(() => {

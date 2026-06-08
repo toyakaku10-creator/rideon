@@ -908,6 +908,7 @@ export default function Home() {
           onStartPointDragged={handleStartPointDragged}
           navSegments={navRoute?.segments}
           rideMode={tab === 'speed'}
+          isDemoMode={isDemoMode}
           heading={(() => {
             if (heading !== null) return heading;
             if (tab === 'speed' && currentPosition && navRoute) {
