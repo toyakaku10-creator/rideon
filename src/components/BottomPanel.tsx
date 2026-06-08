@@ -58,7 +58,6 @@ function SwipeableRouteItem({
   onDelete,
   onRename,
   onReference,
-  isSelected,
   showMyRoute,
 }: {
   route: SavedRoute;
@@ -66,7 +65,6 @@ function SwipeableRouteItem({
   onDelete: () => void;
   onRename: (newName: string) => void;
   onReference?: () => void;
-  isSelected?: boolean;
   showMyRoute?: boolean;
 }) {
   const [offset, setOffset] = useState(0);
@@ -96,10 +94,6 @@ function SwipeableRouteItem({
     startXRef.current = null;
     setOffset(offset <= -40 ? -80 : 0);
   }, [offset]);
-
-  useEffect(() => {
-    if (isSelected) setOffset(0);
-  }, [isSelected]);
 
   useEffect(() => {
     setOffset(0);
@@ -134,8 +128,6 @@ function SwipeableRouteItem({
         style={{
           transform: `translateX(${offset}px)`,
           transition: startXRef.current === null ? 'transform 0.2s' : 'none',
-          background: isSelected ? 'rgba(212,175,55,0.15)' : undefined,
-          borderLeft: isSelected ? '3px solid #D4AF37' : '3px solid transparent',
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -292,7 +284,6 @@ interface BottomPanelProps {
   openSaveSheet?: boolean;
   onSaveSheetClose?: () => void;
   savedRoutes: SavedRoute[];
-  selectedRouteId?: string | null;
   onLoadRoute: (route: SavedRoute) => void;
   onDeleteRoute: (id: string) => void;
   onRenameRoute: (id: string, newName: string) => void;
@@ -333,7 +324,6 @@ export default function BottomPanel({
   openSaveSheet,
   onSaveSheetClose,
   savedRoutes,
-  selectedRouteId,
   onLoadRoute,
   onDeleteRoute,
   onRenameRoute,
@@ -842,7 +832,6 @@ export default function BottomPanel({
                   <SwipeableRouteItem
                     key={route.id + resetKey}
                     route={route}
-                    isSelected={route.id === selectedRouteId}
                     showMyRoute={showHistory}
                     onLoad={() => { onLoadRoute(route); setShowHistory(false); }}
                     onDelete={() => onDeleteRoute(route.id)}

@@ -135,7 +135,6 @@ export default function Home() {
 
   // Navigation
   const [navRoute, setNavRoute] = useState<SavedRoute | null>(null);
-  const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
   const [navInstruction, setNavInstruction] = useState<string>('');
 
   // Positioning
@@ -562,7 +561,6 @@ export default function Home() {
     skipElevationFetchRef.current = true;
     setElevations(route.elevations && route.elevations.length > 0 ? route.elevations : []);
     setSegments(route.segments);
-    setSelectedRouteId(route.id);
     const loadedPoints = route.segments.flatMap((s) => s.geometry);
     if (loadedPoints.length > 0) {
       setFitBoundsPoints(loadedPoints);
@@ -1098,7 +1096,6 @@ export default function Home() {
           openSaveSheet={openSaveSheet}
           onSaveSheetClose={() => setOpenSaveSheet(false)}
           savedRoutes={savedRoutes}
-          selectedRouteId={selectedRouteId}
           onLoadRoute={handleLoadRoute}
           onDeleteRoute={handleDeleteRoute}
           onRenameRoute={handleRenameRoute}
