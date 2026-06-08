@@ -118,6 +118,7 @@ export default function Home() {
   // Distance measurement
   const [waypoints, setWaypoints] = useState<LatLng[]>([]);
   const [segments, setSegments] = useState<RouteSegment[]>([]);
+  const undoStackRef = useRef<{ waypoints: LatLng[]; segments: RouteSegment[] }[]>([]);
   const [routeType, setRouteType] = useState<RouteType>('cycling');
   const [isLoading, setIsLoading] = useState(false);
   const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([]);
@@ -494,13 +495,24 @@ export default function Home() {
   }, []);
 
   const handleUndo = useCallback(() => {
-    setWaypoints((prev) => prev.slice(0, -1));
-    setSegments((prev) => prev.slice(0, -1));
+    const prev = undoStackRef.current.pop();
+    if (prev) {
+      setWaypoints(prev.waypoints);
+      setSegments(prev.segments);
+    } else {
+      setWaypoints((w) => w.slice(0, -1));
+      setSegments((s) => s.slice(0, -1));
+    }
   }, []);
 
   const handleClear = useCallback(() => {
-    setWaypoints([]);
-    setSegments([]);
+    setWaypoints((w) => {
+      setSegments((s) => {
+        undoStackRef.current.push({ waypoints: w, segments: s });
+        return [];
+      });
+      return [];
+    });
     setReferenceRoute(null);
   }, []);
 
