@@ -591,21 +591,15 @@ export default function BottomPanel({
               disabled: waypoints.length === 0,
             },
             {
-              icon: <Save size={24} />,
-              label: '保存',
-              onClick: () => { setRouteName(''); setShowSaveSheet(true); },
-              disabled: waypoints.length < 2,
-            },
-            {
               icon: <Trash2 size={24} />,
               label: 'クリア',
               onClick: onClear,
               disabled: waypoints.length === 0,
             },
             {
-              icon: <Share2 size={24} />,
-              label: 'シェア',
-              onClick: () => handleShare(),
+              icon: <Save size={24} />,
+              label: '保存',
+              onClick: () => { setRouteName(''); setShowSaveSheet(true); },
               disabled: waypoints.length < 2,
             },
             {
@@ -613,6 +607,12 @@ export default function BottomPanel({
               label: 'マイルート',
               onClick: () => setShowHistory(true),
               disabled: false,
+            },
+            {
+              icon: <Share2 size={24} />,
+              label: 'シェア',
+              onClick: () => handleShare(),
+              disabled: waypoints.length < 2,
             },
             {
               icon: <Clapperboard size={24} />,
