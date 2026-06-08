@@ -113,7 +113,6 @@ function angleDiff(a: number, b: number): number {
 
 export default function Home() {
   const router = useRouter();
-  const isLineBrowser = typeof navigator !== 'undefined' && navigator.userAgent.includes('Line');
   const [tab, setTab] = useState<Tab>('distance');
 
   // Distance measurement
@@ -1164,7 +1163,7 @@ export default function Home() {
             if (pts.length >= 2) startDemoRide(pts);
           }}
         />
-      ) : !isLineBrowser ? (
+      ) : (
         <SpeedPanel
           currentSpeed={currentSpeed}
           maxSpeed={maxSpeed}
@@ -1179,7 +1178,7 @@ export default function Home() {
           demoElevIndexRef={demoElevIndexRef}
           demoProgressRef={demoProgressRef}
         />
-      ) : null}
+      )}
 
       {/* Spot add dialog */}
       {spotDeleteConfirm && (
