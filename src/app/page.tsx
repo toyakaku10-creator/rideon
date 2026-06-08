@@ -1004,50 +1004,34 @@ export default function Home() {
             right: '12px',
             zIndex: 500,
             display: 'flex',
-            flexDirection: 'column',
             gap: '6px',
-            alignItems: 'flex-end',
           }}>
-            {/* 一時停止・再開 */}
-            <div style={{ display: 'flex', gap: '6px' }}>
-              <button
-                onClick={isPaused ? resumeDemo : pauseDemo}
-                style={{
-                  background: 'rgba(255,255,255,0.9)',
-                  color: '#D4AF37',
-                  border: '1px solid #D4AF37',
-                  borderRadius: '50%',
-                  width: '30px',
-                  height: '30px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-                }}
-              >
-                {isPaused ? <Play size={14} /> : <Pause size={14} />}
-              </button>
-            </div>
-            {/* 下段：速度 */}
-            <div style={{ display: 'flex', gap: '6px' }}>
-              <button
-                onClick={handleSpeedToggle}
-                style={{
-                  background: '#D4AF37',
-                  color: '#000',
-                  border: '1px solid #D4AF37',
-                  borderRadius: '16px',
-                  padding: '4px 10px',
-                  fontSize: '12px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-                }}
-              >
-                {demoSpeed}x
-              </button>
-            </div>
+            <button onClick={handleSpeedToggle} style={{
+              background: 'rgba(255,255,255,0.9)',
+              border: '1px solid #D4AF37',
+              borderRadius: '16px',
+              padding: '4px 10px',
+              fontSize: '12px',
+              fontWeight: '600',
+              color: '#D4AF37',
+              cursor: 'pointer',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+            }}>
+              {demoSpeed}x
+            </button>
+            <button onClick={isPaused ? resumeDemo : pauseDemo} style={{
+              background: 'rgba(255,255,255,0.9)',
+              border: '1px solid #D4AF37',
+              borderRadius: '16px',
+              padding: '4px 10px',
+              color: '#D4AF37',
+              cursor: 'pointer',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+              display: 'flex',
+              alignItems: 'center',
+            }}>
+              {isPaused ? <Play size={14} /> : <Pause size={14} />}
+            </button>
           </div>
         )}
 
