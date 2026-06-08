@@ -95,6 +95,10 @@ function SwipeableRouteItem({
     setOffset(offset <= -40 ? -80 : 0);
   }, [offset]);
 
+  useEffect(() => {
+    if (isSelected) setOffset(0);
+  }, [isSelected]);
+
   const startEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     setEditName(route.name);
