@@ -603,18 +603,22 @@ export default function BottomPanel({
               disabled: waypoints.length === 0,
             },
             {
+              icon: <Share2 size={24} />,
+              label: 'シェア',
+              onClick: () => handleShare(),
+              disabled: waypoints.length < 2,
+            },
+            {
               icon: <Flag size={24} />,
               label: 'マイルート',
               onClick: () => setShowHistory(true),
               disabled: false,
-              demo: false,
             },
             {
               icon: <Clapperboard size={24} />,
               label: 'デモ',
               onClick: () => onDemoStart?.(),
               disabled: waypoints.length < 2,
-              demo: false,
             },
           ].map(({ icon, label, onClick, disabled }) => (
             <button
