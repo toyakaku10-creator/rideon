@@ -739,6 +739,8 @@ export default function Home() {
     setSpeedCount(0);
     setRideDistance(0);
     prevGpsPos.current = null;
+    setDemoSpeed(1);
+    demoSpeedRef.current = 1;
     setTab('speed');
 
     // 各ポイントの累積距離を計算
