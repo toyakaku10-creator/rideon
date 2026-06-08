@@ -997,64 +997,59 @@ export default function Home() {
             right: '12px',
             zIndex: 500,
             display: 'flex',
+            flexDirection: 'column',
             gap: '6px',
-            alignItems: 'center',
+            alignItems: 'flex-end',
           }}>
-            {[1, 2, 4, 10].map(speed => (
-              <button
-                key={speed}
-                onClick={() => handleDemoSpeedChange(speed)}
-                style={{
-                  background: demoSpeed === speed ? '#D4AF37' : 'rgba(255,255,255,0.9)',
-                  color: demoSpeed === speed ? '#000' : '#D4AF37',
-                  border: '1px solid #D4AF37',
-                  borderRadius: '16px',
-                  padding: '4px 10px',
-                  fontSize: '12px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-                }}
-              >
-                {speed}x
-              </button>
-            ))}
-            <button
-              onClick={isPaused ? resumeDemo : pauseDemo}
-              style={{
-                background: 'rgba(255,255,255,0.9)',
-                color: '#D4AF37',
-                border: '1px solid #D4AF37',
-                borderRadius: '50%',
-                width: '30px',
-                height: '30px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-              }}
-            >
-              {isPaused ? <Play size={14} /> : <Pause size={14} />}
-            </button>
-            <button
-              onClick={stopDemo}
-              style={{
-                background: 'rgba(255,255,255,0.9)',
-                color: '#D4AF37',
-                border: '1px solid #D4AF37',
-                borderRadius: '50%',
-                width: '30px',
-                height: '30px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-              }}
-            >
-              <Square size={14} />
-            </button>
+            {/* 上段：一時停止・停止 */}
+            <div style={{ display: 'flex', gap: '6px' }}>
+              {[
+                { onClick: isPaused ? resumeDemo : pauseDemo, icon: isPaused ? <Play size={14} /> : <Pause size={14} /> },
+                { onClick: stopDemo, icon: <Square size={14} /> },
+              ].map((btn, i) => (
+                <button
+                  key={i}
+                  onClick={btn.onClick}
+                  style={{
+                    background: 'rgba(255,255,255,0.9)',
+                    color: '#D4AF37',
+                    border: '1px solid #D4AF37',
+                    borderRadius: '50%',
+                    width: '30px',
+                    height: '30px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                  }}
+                >
+                  {btn.icon}
+                </button>
+              ))}
+            </div>
+            {/* 下段：速度 */}
+            <div style={{ display: 'flex', gap: '6px' }}>
+              {[1, 2, 4, 10].map(speed => (
+                <button
+                  key={speed}
+                  onClick={() => handleDemoSpeedChange(speed)}
+                  style={{
+                    background: demoSpeed === speed ? '#D4AF37' : 'rgba(255,255,255,0.9)',
+                    color: demoSpeed === speed ? '#000' : '#D4AF37',
+                    border: '1px solid #D4AF37',
+                    borderRadius: '16px',
+                    padding: '4px 10px',
+                    fontSize: '12px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                  }}
+                >
+                  {speed}x
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
