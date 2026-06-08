@@ -1135,6 +1135,16 @@ export default function Home() {
             if (pts.length > 0) setFitBoundsPoints(pts);
           }}
           onGpxImport={handleGpxImport}
+          onFetchElevation={(pts) => {
+            fetch('/api/elevation', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ points: pts }),
+            })
+              .then(r => r.json())
+              .then(data => { if (data.elevations) setElevations(data.elevations); })
+              .catch(() => {});
+          }}
           onDemoStart={() => {
             const pts = segments.flatMap((s) => s.geometry).map((p): [number, number] => [p.lat, p.lng]);
             if (pts.length >= 2) startDemoRide(pts);

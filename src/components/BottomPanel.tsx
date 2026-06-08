@@ -309,6 +309,7 @@ interface BottomPanelProps {
   onModeChange?: (mode: string) => void;
   onReferenceRoute?: (route: SavedRoute) => void;
   onGpxImport?: (points: { lat: number; lng: number }[]) => void;
+  onFetchElevation?: (points: { lat: number; lng: number }[]) => void;
   onDemoStart?: () => void;
   onShare?: () => void;
 }
@@ -349,6 +350,7 @@ export default function BottomPanel({
   onModeChange,
   onReferenceRoute,
   onGpxImport,
+  onFetchElevation,
   onDemoStart,
   onShare,
 }: BottomPanelProps) {
@@ -500,6 +502,7 @@ export default function BottomPanel({
       });
       if (points.length < 2) { alert('GPXファイルにルートデータが見つかりません'); return; }
       onGpxImport?.(points);
+      onFetchElevation?.(points);
       setShowDataMenu(false);
       setShowHistory(false);
     };
