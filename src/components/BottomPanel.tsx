@@ -401,6 +401,16 @@ export default function BottomPanel({
     }
   };
 
+  const handleCopyUrl = async () => {
+    try {
+      const url = await generateShareUrl();
+      navigator.clipboard.writeText(url);
+      alert('URLをコピーしました');
+    } catch (e: unknown) {
+      alert(e instanceof Error ? e.message : 'シェアに失敗しました');
+    }
+  };
+
   const handleExport = () => {
     const json = JSON.stringify(savedRoutes, null, 2);
     const blob = new Blob([json], { type: 'application/json' });
@@ -693,6 +703,16 @@ export default function BottomPanel({
             }}>
               <Upload size={18} />
               シェアURLを送る
+            </button>
+            <button onClick={() => { setShowShareSheet(false); handleCopyUrl(); }} style={{
+              display: 'flex', alignItems: 'center', gap: '10px',
+              width: '100%', padding: '12px 16px', marginTop: '10px',
+              background: 'rgba(212, 175, 55, 0.15)', color: '#D4AF37',
+              border: '1px solid #D4AF37', borderRadius: '10px',
+              fontSize: '15px', fontWeight: '600', cursor: 'pointer',
+            }}>
+              <Copy size={18} />
+              URLをコピー
             </button>
           </div>
         </>
