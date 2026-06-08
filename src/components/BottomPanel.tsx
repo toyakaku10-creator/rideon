@@ -58,6 +58,7 @@ function SwipeableRouteItem({
   onDelete,
   onRename,
   onReference,
+  isSelected,
   showMyRoute,
 }: {
   route: SavedRoute;
@@ -65,6 +66,7 @@ function SwipeableRouteItem({
   onDelete: () => void;
   onRename: (newName: string) => void;
   onReference?: () => void;
+  isSelected?: boolean;
   showMyRoute?: boolean;
 }) {
   const [offset, setOffset] = useState(0);
@@ -146,7 +148,12 @@ function SwipeableRouteItem({
               style={{ width: '100%', boxSizing: 'border-box', padding: '4px 8px', fontSize: '14px', border: '1px solid #D4AF37', borderRadius: '6px', outline: 'none', fontWeight: '500' }}
             />
           ) : (
-            <p className="text-[var(--text)] font-medium truncate" style={{ fontSize: '16px' }}>{route.name}</p>
+            <p className="text-[var(--text)] font-medium truncate" style={{ fontSize: '16px' }}>
+              {route.name}
+              {isSelected && (
+                <span style={{ fontSize: '10px', color: '#D4AF37', border: '1px solid #D4AF37', borderRadius: '8px', padding: '1px 6px', marginLeft: '6px' }}>表示中</span>
+              )}
+            </p>
           )}
           <p className="text-[var(--text-muted)] mt-0.5" style={{ fontSize: '13px' }}>
             {formatDistance(route.totalDistance)} ·{' '}
@@ -284,6 +291,7 @@ interface BottomPanelProps {
   openSaveSheet?: boolean;
   onSaveSheetClose?: () => void;
   savedRoutes: SavedRoute[];
+  selectedRouteId?: string | null;
   onLoadRoute: (route: SavedRoute) => void;
   onDeleteRoute: (id: string) => void;
   onRenameRoute: (id: string, newName: string) => void;
@@ -324,6 +332,7 @@ export default function BottomPanel({
   openSaveSheet,
   onSaveSheetClose,
   savedRoutes,
+  selectedRouteId,
   onLoadRoute,
   onDeleteRoute,
   onRenameRoute,
@@ -832,6 +841,7 @@ export default function BottomPanel({
                   <SwipeableRouteItem
                     key={route.id + resetKey}
                     route={route}
+                    isSelected={route.id === selectedRouteId}
                     showMyRoute={showHistory}
                     onLoad={() => { onLoadRoute(route); setShowHistory(false); }}
                     onDelete={() => onDeleteRoute(route.id)}
