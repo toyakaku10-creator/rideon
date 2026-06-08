@@ -582,7 +582,7 @@ export default function BottomPanel({
         )}
 
         {/* 4-button tab bar */}
-        <div className="flex" style={{ maxWidth: '480px', margin: '0 auto' }}>
+        <div className="flex" style={{ maxWidth: '480px', margin: '0 auto', paddingLeft: 'calc(16px + env(safe-area-inset-left))', paddingRight: 'calc(16px + env(safe-area-inset-right))' }}>
           {[
             {
               icon: <Undo2 size={24} />,
