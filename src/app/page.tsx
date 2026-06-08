@@ -979,6 +979,11 @@ export default function Home() {
                 rideTrackRef.current = [];
                 setLogTrack(null);
                 rideStartTimeRef.current = Date.now();
+                setMaxSpeed(0);
+                setSpeedSum(0);
+                setSpeedCount(0);
+                setCurrentSpeed(0);
+                setRideDistance(0);
                 setTab('speed');
               }
             }}
