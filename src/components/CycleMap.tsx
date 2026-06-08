@@ -76,20 +76,23 @@ function makeLabelIcon(label: string, bg: string, size = 28): google.maps.Icon {
   };
 }
 
-function makeStartGoalIcon(size = 32): google.maps.Icon {
-  const cx = size / 2, cy = size / 2, r = size / 2 - 1;
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
-    <defs>
-      <clipPath id="cl"><circle cx="${cx}" cy="${cy}" r="${r}"/></clipPath>
-    </defs>
-    <circle cx="${cx}" cy="${cy}" r="${r}" fill="#4CAF50" stroke="white" stroke-width="2"/>
-    <rect x="${cx}" y="${cy - r}" width="${r}" height="${r * 2}" fill="#E53935" clip-path="url(#cl)"/>
-    <text x="${size / 2}" y="${size / 2 + 5}" text-anchor="middle" fill="white" font-size="11" font-weight="bold" font-family="sans-serif">S/G</text>
+function makeStartGoalIcon(): google.maps.Icon {
+  const W = 46, H = 24, r = 4;
+  const sW = 16, slashW = 8, gW = 16;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
+    <rect x="0" y="0" width="${W}" height="${H}" rx="${r}" fill="#4CAF50"/>
+    <rect x="${sW}" y="0" width="${slashW}" height="${H}" fill="#666"/>
+    <rect x="${sW + slashW}" y="0" width="${gW}" height="${H}" rx="0" fill="#E53935"/>
+    <rect x="${sW + slashW}" y="0" width="${gW}" height="${H}" rx="${r}" fill="#E53935"/>
+    <path d="M${sW + slashW},0 h${gW - r} a${r},${r} 0 0 1 ${r},${r} v${H - r * 2} a${r},${r} 0 0 1 -${r},${r} h-${gW - r} Z" fill="#E53935"/>
+    <text x="${sW / 2}" y="${H / 2 + 4}" text-anchor="middle" fill="white" font-size="12" font-weight="bold" font-family="sans-serif">S</text>
+    <text x="${sW + slashW / 2}" y="${H / 2 + 4}" text-anchor="middle" fill="white" font-size="12" font-weight="bold" font-family="sans-serif">/</text>
+    <text x="${sW + slashW + gW / 2}" y="${H / 2 + 4}" text-anchor="middle" fill="white" font-size="12" font-weight="bold" font-family="sans-serif">G</text>
   </svg>`;
   return {
     url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
-    scaledSize: new google.maps.Size(size, size),
-    anchor: new google.maps.Point(cx, cy),
+    scaledSize: new google.maps.Size(W, H),
+    anchor: new google.maps.Point(W / 2, H / 2),
   };
 }
 
