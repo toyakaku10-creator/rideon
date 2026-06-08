@@ -552,7 +552,7 @@ export default function BottomPanel({
     <>
       <div
         className="bg-[var(--surface)] border-t border-[var(--border)] shrink-0"
-        style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}
+        style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))', userSelect: 'none', WebkitUserSelect: 'none' } as React.CSSProperties}
       >
         <div style={{ maxWidth: '480px', margin: '0 auto' }}>
         {/* Route type selector */}
