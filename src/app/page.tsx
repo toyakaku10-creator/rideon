@@ -1001,15 +1001,16 @@ export default function Home() {
             {isDemoMode ? (
               <>
                 <Square size={12} fill="currentColor" />
-                RideOn
+                Demo
+                <Bike size={18} />
               </>
             ) : (
               <>
                 {tab === 'speed' ? <Square size={12} fill="currentColor" /> : <Play size={12} fill="currentColor" />}
                 RideOn
+                <Bike size={18} />
               </>
             )}
-            <Bike size={18} />
           </button>
         </div>
 
