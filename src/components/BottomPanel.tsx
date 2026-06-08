@@ -355,6 +355,7 @@ export default function BottomPanel({
   onShare,
 }: BottomPanelProps) {
   const [showHistory, setShowHistory] = useState(false);
+  const [resetKey, setResetKey] = useState(0);
   const [selectedLogId, setSelectedLogId] = useState<string | null>(null);
   const [showShareSheet, setShowShareSheet] = useState(false);
   const [historyTab, setHistoryTab] = useState<'routes' | 'spots' | 'logs'>('routes');
@@ -629,7 +630,7 @@ export default function BottomPanel({
             {
               icon: <Flag size={24} />,
               label: 'マイルート',
-              onClick: () => setShowHistory(true),
+              onClick: () => { setShowHistory(true); setResetKey((k) => k + 1); },
               disabled: false,
             },
             {
@@ -833,7 +834,7 @@ export default function BottomPanel({
               ) : (
                 [...savedRoutes].reverse().map((route) => (
                   <SwipeableRouteItem
-                    key={route.id}
+                    key={route.id + resetKey}
                     route={route}
                     isSelected={route.id === selectedRouteId}
                     onLoad={() => { onLoadRoute(route); setShowHistory(false); }}
