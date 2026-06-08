@@ -628,7 +628,7 @@ export default function BottomPanel({
             {
               icon: <Share2 size={24} />,
               label: 'シェア',
-              onClick: () => handleShare(),
+              onClick: () => setShowShareSheet(true),
               disabled: waypoints.length < 2,
             },
             {
