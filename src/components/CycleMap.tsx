@@ -431,6 +431,7 @@ export default function CycleMap({
                 strokeWeight: 7,
                 strokeOpacity: 0.9,
                 zIndex: i * 2,
+                clickable: false,
               }}
             />
             <Polyline
@@ -440,6 +441,7 @@ export default function CycleMap({
                 strokeWeight: 4,
                 strokeOpacity: 1,
                 zIndex: i * 2 + 1,
+                clickable: false,
               }}
             />
           </React.Fragment>
