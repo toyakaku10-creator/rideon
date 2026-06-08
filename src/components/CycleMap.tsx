@@ -349,7 +349,7 @@ export default function CycleMap({
           longPressActiveRef.current = true;
           onLongPress(longPressLatLngRef.current.lat, longPressLatLngRef.current.lng);
         }
-      }, 800);
+      }, 1500);
     });
     const cancelLongPress = () => {
       if (longPressTimerRef.current) {
@@ -370,7 +370,7 @@ export default function CycleMap({
       longPressTimerRef.current = setTimeout(() => {
         longPressActiveRef.current = true;
         onLongPress(lat, lng);
-      }, 800);
+      }, 1500);
     });
     const touchEndListener = map.addListener('touchend', cancelLongPress);
     const touchMoveListener = map.addListener('touchmove', cancelLongPress);
