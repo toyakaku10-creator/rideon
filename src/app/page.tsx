@@ -532,10 +532,11 @@ export default function Home() {
   }, []);
 
   const handleSaveSpot = useCallback(() => {
-    if (!spotDialog || !spotName.trim()) return;
+    if (!spotDialog) return;
+    const resolvedName = spotName.trim() || SPOT_CATEGORIES.find(c => c.id === spotCategory)?.label || 'スポット';
     const spot: Spot = {
       id: Date.now().toString(),
-      name: spotName.trim(),
+      name: resolvedName,
       category: spotCategory,
       lat: spotDialog.lat,
       lng: spotDialog.lng,
@@ -1267,7 +1268,7 @@ export default function Home() {
               placeholder="スポット名"
               value={spotName}
               onChange={(e) => setSpotName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && spotName.trim() && handleSaveSpot()}
+              onKeyDown={(e) => e.key === 'Enter' && handleSaveSpot()}
               autoFocus
               style={{ display: 'block', width: '100%', boxSizing: 'border-box', padding: '12px', fontSize: '16px', border: '1px solid #ddd', borderRadius: '10px', marginBottom: '12px', WebkitAppearance: 'none' } as React.CSSProperties}
             />
@@ -1284,8 +1285,7 @@ export default function Home() {
             </div>
             <button
               onClick={handleSaveSpot}
-              disabled={!spotName.trim()}
-              style={{ display: 'block', width: '100%', padding: '14px', background: '#D4AF37', color: '#000', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', opacity: !spotName.trim() ? 0.4 : 1 }}
+              style={{ display: 'block', width: '100%', padding: '14px', background: '#D4AF37', color: '#000', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: 'pointer' }}
             >保存する</button>
           </div>
         </>
