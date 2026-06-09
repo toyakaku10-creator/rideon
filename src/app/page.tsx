@@ -167,6 +167,7 @@ export default function Home() {
   const demoRAFRef = useRef<number | null>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const currentMarkerRef = useRef<google.maps.Marker | null>(null);
+  const demoMarkerRef = useRef<google.maps.Marker | null>(null);
   const skipElevationFetchRef = useRef(false);
   const demoElevIndexRef = useRef<number>(0);
   const demoProgressRef = useRef<number>(0);
@@ -739,10 +740,10 @@ export default function Home() {
     setIsPaused(false);
     isDemoModeRef.current = true;
     setIsDemoMode(true);
-    // 既存マーカーを完全削除
-    if (currentMarkerRef.current) {
-      currentMarkerRef.current.setMap(null);
-      currentMarkerRef.current = null;
+    // demoMarkerRef（緑の車輪）をリセット（currentMarkerRef青い丸は残す）
+    if (demoMarkerRef.current) {
+      demoMarkerRef.current.setMap(null);
+      demoMarkerRef.current = null;
     }
     // 地図センタリング
     if (mapInstanceRef.current && pts.length > 0) {
@@ -813,11 +814,11 @@ export default function Home() {
       const lng = pts[idx][1] + (pts[nextIdx][1] - pts[idx][1]) * t;
       const pos = { lat, lng };
 
-      // 進行方向を計算してマーカーを更新
+      // 進行方向を計算してデモマーカーを更新
       const heading = calcHeading([pts[idx][0], pts[idx][1]], [pts[nextIdx][0], pts[nextIdx][1]]);
-      if (currentMarkerRef.current) {
-        currentMarkerRef.current.setPosition(pos);
-        currentMarkerRef.current.setIcon({
+      if (demoMarkerRef.current) {
+        demoMarkerRef.current.setPosition(pos);
+        demoMarkerRef.current.setIcon({
           url: 'data:image/svg+xml,' + encodeURIComponent(getHeadingWheelSvg(heading, '#4CAF50')),
           anchor: new google.maps.Point(17, 17),
         });
@@ -848,7 +849,7 @@ export default function Home() {
           },
           zIndex: 999,
         });
-        currentMarkerRef.current = marker;
+        demoMarkerRef.current = marker;
       }
       demoStartTimeRef.current = performance.now();
       demoRAFRef.current = requestAnimationFrame(animate);
@@ -861,6 +862,10 @@ export default function Home() {
     setIsDemoMode(false);
     setCurrentSpeed(0);
     setTab('distance');
+    if (demoMarkerRef.current) {
+      demoMarkerRef.current.setMap(null);
+      demoMarkerRef.current = null;
+    }
   };
 
   const pauseDemo = () => {
