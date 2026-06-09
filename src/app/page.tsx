@@ -180,6 +180,7 @@ export default function Home() {
   const [spotDeleteConfirm, setSpotDeleteConfirm] = useState<Spot | null>(null);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [sharedSpots, setSharedSpots] = useState<Spot[]>([]);
+  const [isSpotMode, setIsSpotMode] = useState(false);
 
   // Center map on device location at startup
   useEffect(() => {
@@ -958,7 +959,7 @@ export default function Home() {
           elevationMarkerDistance={elevationMarkerDistance}
           gradient={currentGradient}
           spots={[...spots, ...sharedSpots]}
-          onLongPress={(lat, lng) => { setSpotDialog({ lat, lng }); setSpotName(''); setSpotCategory('pin'); }}
+          onLongPress={(lat, lng) => { if (!isSpotMode) return; setSpotDialog({ lat, lng }); setSpotName(''); setSpotCategory('pin'); }}
           onSpotClick={(spot) => { if (spots.some((s) => s.id === spot.id)) setSpotDeleteConfirm(spot); }}
           logTrack={logTrack}
           referenceSegments={referenceRoute?.segments}
@@ -1193,6 +1194,8 @@ export default function Home() {
             const pts = segments.flatMap((s) => s.geometry).map((p): [number, number] => [p.lat, p.lng]);
             if (pts.length >= 2) startDemoRide(pts);
           }}
+          isSpotMode={isSpotMode}
+          onToggleSpotMode={() => setIsSpotMode((v) => !v)}
         />
       ) : (
         <SpeedPanel

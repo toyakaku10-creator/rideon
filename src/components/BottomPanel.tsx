@@ -317,6 +317,8 @@ interface BottomPanelProps {
   onFetchElevation?: (points: { lat: number; lng: number }[]) => void;
   onDemoStart?: () => void;
   onShare?: () => void;
+  isSpotMode?: boolean;
+  onToggleSpotMode?: () => void;
 }
 
 export default function BottomPanel({
@@ -358,6 +360,8 @@ export default function BottomPanel({
   onFetchElevation,
   onDemoStart,
   onShare,
+  isSpotMode,
+  onToggleSpotMode,
 }: BottomPanelProps) {
   const [showHistory, setShowHistory] = useState(false);
   const [resetKey, setResetKey] = useState(0);
@@ -583,6 +587,20 @@ export default function BottomPanel({
               {REVERSE_BUTTON.icon}
               {REVERSE_BUTTON.label}
             </span>
+          </button>
+          <button
+            onClick={() => onToggleSpotMode?.()}
+            style={{
+              background: isSpotMode ? '#D4AF37' : '#f5f5f5',
+              color: isSpotMode ? '#000' : '#666',
+              border: '1px solid #ddd',
+              borderRadius: '8px',
+              padding: '6px 10px',
+              fontSize: '12px',
+              cursor: 'pointer',
+            }}
+          >
+            <MapPin size={14} />
           </button>
         </div>
 
