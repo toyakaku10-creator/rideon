@@ -707,26 +707,28 @@ export default function BottomPanel({
           />
           <div style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '480px', background: '#fff', borderRadius: '16px 16px 0 0', padding: '20px 16px', paddingBottom: 'calc(24px + env(safe-area-inset-bottom))', zIndex: 1001, boxSizing: 'border-box', overflowY: 'auto' }}>
             <h3 style={{ margin: '0 0 16px', fontSize: '16px', fontWeight: '600' }}>シェア</h3>
-            <button onClick={() => { setShowShareSheet(false); handleShare(); }} style={{
-              display: 'flex', alignItems: 'center', gap: '10px',
-              width: '100%', padding: '12px 16px',
-              background: 'rgba(212, 175, 55, 0.15)', color: '#D4AF37',
-              border: '1px solid #D4AF37', borderRadius: '10px',
-              fontSize: '15px', fontWeight: '600', cursor: 'pointer',
-            }}>
-              <Upload size={18} />
-              シェアURLを送る
-            </button>
-            <button onClick={() => { setShowShareSheet(false); handleCopyUrl(); }} style={{
-              display: 'flex', alignItems: 'center', gap: '10px',
-              width: '100%', padding: '12px 16px', marginTop: '10px',
-              background: 'rgba(212, 175, 55, 0.15)', color: '#D4AF37',
-              border: '1px solid #D4AF37', borderRadius: '10px',
-              fontSize: '15px', fontWeight: '600', cursor: 'pointer',
-            }}>
-              <Copy size={18} />
-              URLをコピー
-            </button>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button onClick={() => { setShowShareSheet(false); handleShare(); }} style={{
+                flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                padding: '12px 8px',
+                background: 'rgba(212, 175, 55, 0.15)', color: '#D4AF37',
+                border: '1px solid #D4AF37', borderRadius: '10px',
+                fontSize: '14px', fontWeight: '600', cursor: 'pointer',
+              }}>
+                <Upload size={16} />
+                シェアURLを送る
+              </button>
+              <button onClick={() => { setShowShareSheet(false); handleCopyUrl(); }} style={{
+                flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                padding: '12px 8px',
+                background: 'rgba(212, 175, 55, 0.15)', color: '#D4AF37',
+                border: '1px solid #D4AF37', borderRadius: '10px',
+                fontSize: '14px', fontWeight: '600', cursor: 'pointer',
+              }}>
+                <Copy size={16} />
+                URLをコピー
+              </button>
+            </div>
           </div>
         </>
       )}
