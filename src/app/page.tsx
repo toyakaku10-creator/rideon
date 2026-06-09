@@ -98,8 +98,8 @@ function calcHeading(from: [number, number], to: [number, number]): number {
   return (Math.atan2(dLng, dLat) * 180 / Math.PI + 360) % 360;
 }
 
-function getWheelSvg(stroke: string): string {
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10" stroke-width="3"/><circle cx="12" cy="12" r="3"/><line x1="4" y1="4" x2="9" y2="9"/><line x1="15" y1="15" x2="20" y2="20"/><line x1="20" y1="4" x2="15" y2="9"/><line x1="9" y1="15" x2="4" y2="20"/><line x1="12" y1="2" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="22"/><line x1="2" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="22" y2="12"/></svg>`;
+function getWheelSvg(stroke: string, fill = 'none'): string {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="${fill}" stroke="${stroke}" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10" stroke-width="3"/><circle cx="12" cy="12" r="3"/><line x1="4" y1="4" x2="9" y2="9"/><line x1="15" y1="15" x2="20" y2="20"/><line x1="20" y1="4" x2="15" y2="9"/><line x1="9" y1="15" x2="4" y2="20"/><line x1="12" y1="2" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="22"/><line x1="2" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="22" y2="12"/></svg>`;
 }
 
 function getHeadingWheelSvg(heading: number, stroke: string): string {
@@ -814,15 +814,7 @@ export default function Home() {
       const lng = pts[idx][1] + (pts[nextIdx][1] - pts[idx][1]) * t;
       const pos = { lat, lng };
 
-      // 進行方向を計算してデモマーカーを更新
-      const heading = calcHeading([pts[idx][0], pts[idx][1]], [pts[nextIdx][0], pts[nextIdx][1]]);
-      if (demoMarkerRef.current) {
-        demoMarkerRef.current.setPosition(pos);
-        demoMarkerRef.current.setIcon({
-          url: 'data:image/svg+xml,' + encodeURIComponent(getHeadingWheelSvg(heading, '#4CAF50')),
-          anchor: new google.maps.Point(17, 17),
-        });
-      }
+      demoMarkerRef.current?.setPosition(pos);
       mapInstanceRef.current?.setCenter(pos);
       // pointsのidxをelevationsのインデックスに変換
       const elevIdx = Math.round(idx / (pts.length - 1) * (elevations.length - 1));
@@ -844,7 +836,7 @@ export default function Home() {
           position: { lat: pts[0][0], lng: pts[0][1] },
           map: mapInstanceRef.current,
           icon: {
-            url: 'data:image/svg+xml,' + encodeURIComponent(getWheelSvg('#4CAF50')),
+            url: 'data:image/svg+xml,' + encodeURIComponent(getWheelSvg('#4CAF50', 'none')),
             anchor: new google.maps.Point(9, 9),
           },
           zIndex: 999,
