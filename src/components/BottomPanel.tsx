@@ -164,7 +164,7 @@ function SwipeableRouteItem({
           )}
           <p className="text-[var(--text-muted)] mt-0.5" style={{ fontSize: '13px' }}>
             {formatDistance(route.totalDistance)} ·{' '}
-            {route.waypoints.length}ポイント ·{' '}
+            {(() => { const m = route.totalDistance / 1000 / 15 * 60; return m >= 60 ? `${Math.floor(m / 60)}時間${Math.round(m % 60)}分` : `${Math.round(m)}分`; })()} ·{' '}
             {new Date(route.createdAt).toLocaleDateString('ja-JP')}
           </p>
         </div>
