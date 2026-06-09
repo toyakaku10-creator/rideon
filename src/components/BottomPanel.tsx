@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database, Link, Copy, FileInput, FileOutput, Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin, Map, Clapperboard, GripVertical, type LucideProps } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute, RideLog, Spot } from '@/types';
-import { DndContext, closestCenter, PointerSensor, TouchSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { SPOT_CATEGORIES, spotCustomSvg } from '@/lib/spotCategories';
@@ -392,8 +392,7 @@ export default function BottomPanel({
   onReorderRoutes,
 }: BottomPanelProps) {
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } }),
+    useSensor(PointerSensor, { activationConstraint: { delay: 250, tolerance: 5 } }),
   );
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
