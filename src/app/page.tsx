@@ -740,10 +740,14 @@ export default function Home() {
     setIsPaused(false);
     isDemoModeRef.current = true;
     setIsDemoMode(true);
-    // demoMarkerRef（緑の車輪）をリセット（currentMarkerRef青い丸は残す）
+    // demoMarkerRef（緑の車輪）をリセット
     if (demoMarkerRef.current) {
       demoMarkerRef.current.setMap(null);
       demoMarkerRef.current = null;
+    }
+    // 現在位置マーカーを非表示
+    if (currentMarkerRef.current) {
+      currentMarkerRef.current.setMap(null);
     }
     // 地図センタリング
     if (mapInstanceRef.current && pts.length > 0) {
@@ -857,6 +861,10 @@ export default function Home() {
     if (demoMarkerRef.current) {
       demoMarkerRef.current.setMap(null);
       demoMarkerRef.current = null;
+    }
+    // 現在位置マーカーを再表示
+    if (currentMarkerRef.current && mapInstanceRef.current) {
+      currentMarkerRef.current.setMap(mapInstanceRef.current);
     }
   };
 
