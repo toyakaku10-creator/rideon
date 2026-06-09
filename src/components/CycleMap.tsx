@@ -216,7 +216,7 @@ function makeElevationMarkerIcon(distanceLabel?: string): google.maps.Icon {
 
 function makeDotIcon(): google.maps.Icon {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14">
-    <circle cx="7" cy="7" r="5" fill="#E53935" stroke="white" stroke-width="2"/>
+    <circle cx="7" cy="7" r="5" fill="#FF6B00" stroke="white" stroke-width="2"/>
   </svg>`;
   return {
     url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
