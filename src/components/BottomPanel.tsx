@@ -705,7 +705,7 @@ export default function BottomPanel({
             onClick={() => setShowShareSheet(false)}
             style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000 }}
           />
-          <div style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '480px', background: '#fff', borderRadius: '16px 16px 0 0', padding: '20px 16px', paddingBottom: 'calc(24px + env(safe-area-inset-bottom))', zIndex: 1001, boxSizing: 'border-box', overflowY: 'auto' }}>
+          <div style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '480px', background: '#fff', borderRadius: '16px 16px 0 0', padding: '20px 16px', paddingBottom: 'calc(40px + env(safe-area-inset-bottom))', zIndex: 1001, boxSizing: 'border-box', overflowY: 'auto' }}>
             <h3 style={{ margin: '0 0 16px', fontSize: '16px', fontWeight: '600' }}>シェア</h3>
             <div style={{ display: 'flex', gap: '8px' }}>
               <button onClick={() => { setShowShareSheet(false); handleShare(); }} style={{
@@ -769,7 +769,8 @@ export default function BottomPanel({
                 </div>
                 {showShareExpand && (
                   <>
-                    <button onClick={() => { onShare ? onShare() : handleShare(); setShowShareExpand(false); }} style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', marginTop: '8px', padding: '10px 14px', background: 'rgba(212,175,55,0.15)', color: '#D4AF37', border: '1px solid #D4AF37', borderRadius: '8px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', boxSizing: 'border-box' as const }}>
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', marginTop: '8px' }}>
+                    <button onClick={() => { onShare ? onShare() : handleShare(); setShowShareExpand(false); }} style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, padding: '10px 14px', background: 'rgba(212,175,55,0.15)', color: '#D4AF37', border: '1px solid #D4AF37', borderRadius: '8px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', boxSizing: 'border-box' as const }}>
                       <Upload size={16} />シェアURLを送る
                     </button>
                     <button onClick={async () => {
@@ -780,9 +781,10 @@ export default function BottomPanel({
                       } catch (e: unknown) {
                         alert(e instanceof Error ? e.message : 'シェアに失敗しました');
                       }
-                    }} style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', marginTop: '8px', padding: '10px 14px', background: 'rgba(212,175,55,0.15)', color: '#D4AF37', border: '1px solid #D4AF37', borderRadius: '8px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', boxSizing: 'border-box' as const }}>
+                    }} style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, padding: '10px 14px', background: 'rgba(212,175,55,0.15)', color: '#D4AF37', border: '1px solid #D4AF37', borderRadius: '8px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', boxSizing: 'border-box' as const }}>
                       <Copy size={18} />URLをコピー
                     </button>
+                    </div>
                     <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                       <input
                         type="url"
