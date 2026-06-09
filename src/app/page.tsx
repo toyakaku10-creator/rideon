@@ -1064,7 +1064,7 @@ export default function Home() {
               <button onClick={stopDemo} style={{ ...demoCtrlStyle, padding: '4px 14px' }}>
                 <Square size={14} />
               </button>
-              <button onClick={handleSpeedToggle} style={demoCtrlStyle}>
+              <button onClick={handleSpeedToggle} style={{ ...demoCtrlStyle, minWidth: '36px' }}>
                 {demoSpeed}x
               </button>
             </div>
