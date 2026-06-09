@@ -732,6 +732,11 @@ export default function Home() {
 
   const startDemoRide = (pts: [number, number][]) => {
     if (pts.length < 2) return;
+    if (demoRAFRef.current) {
+      cancelAnimationFrame(demoRAFRef.current);
+      demoRAFRef.current = null;
+    }
+    setIsPaused(false);
     isDemoModeRef.current = true;
     setIsDemoMode(true);
     // 既存マーカーを完全削除
