@@ -77,7 +77,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
           </svg>
         )}
         <ResponsiveContainer width="100%" height={72}>
-          <AreaChart data={data} margin={{ top: 4, right: 20, left: -20, bottom: 0 }}>
+          <AreaChart data={data} margin={{ top: 4, right: 20, left: -10, bottom: 0 }}>
             <defs>
               <linearGradient id="elevGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#D4AF37" stopOpacity={0.3} />
@@ -103,7 +103,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
               domain={[yMin, yMax]}
               tick={{ fontSize: 9, fill: 'var(--text-muted)' }}
               tickFormatter={(v) => `${v}`}
-              width={36}
+              width={45}
             />
             <Tooltip
               contentStyle={{
