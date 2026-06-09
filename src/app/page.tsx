@@ -1058,13 +1058,13 @@ export default function Home() {
               display: 'flex',
               gap: '6px',
             }}>
-              <button onClick={isPaused ? resumeDemo : pauseDemo} style={demoCtrlStyle}>
+              <button onClick={isPaused ? resumeDemo : pauseDemo} style={{ ...demoCtrlStyle, width: '44px', justifyContent: 'center' }}>
                 {isPaused ? <Play size={14} /> : <Pause size={14} />}
               </button>
-              <button onClick={stopDemo} style={{ ...demoCtrlStyle, padding: '4px 14px' }}>
+              <button onClick={stopDemo} style={{ ...demoCtrlStyle, width: '64px', justifyContent: 'center' }}>
                 <Square size={14} />
               </button>
-              <button onClick={handleSpeedToggle} style={{ ...demoCtrlStyle, minWidth: '36px' }}>
+              <button onClick={handleSpeedToggle} style={{ ...demoCtrlStyle, width: '44px', justifyContent: 'center' }}>
                 {demoSpeed}x
               </button>
             </div>
