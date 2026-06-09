@@ -1269,7 +1269,6 @@ export default function Home() {
               value={spotName}
               onChange={(e) => setSpotName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSaveSpot()}
-              autoFocus
               style={{ display: 'block', width: '100%', boxSizing: 'border-box', padding: '12px', fontSize: '16px', border: '1px solid #ddd', borderRadius: '10px', marginBottom: '12px', WebkitAppearance: 'none' } as React.CSSProperties}
             />
             <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
