@@ -462,6 +462,14 @@ export default function Home() {
   // Map tap handler — adds waypoint and fetches route segment
   const handleMapClick = useCallback(
     (latlng: LatLng) => {
+      if (isSpotMode) {
+        setSpotDialog({ lat: latlng.lat, lng: latlng.lng });
+        setSpotName('');
+        setSpotCategory('pin');
+        setIsSpotMode(false);
+        return;
+      }
+
       if (isLoading) return;
 
       setWaypoints((prevWps) => {
@@ -489,7 +497,7 @@ export default function Home() {
         return newWps;
       });
     },
-    [isLoading, routeType]
+    [isLoading, routeType, isSpotMode]
   );
 
   const handleRouteTypeChange = useCallback((type: RouteType) => {
