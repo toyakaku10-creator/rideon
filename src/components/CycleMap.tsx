@@ -312,9 +312,7 @@ export default function CycleMap({
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [zoom, setZoom] = useState(14);
   const initializedRef = useRef(false);
-  const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const longPressLatLngRef = useRef<{ lat: number; lng: number } | null>(null);
-  const longPressActiveRef = useRef(false);
+  const lastTapRef = useRef(0);
 
   const handleLoad = useCallback((m: google.maps.Map) => {
     setMap(m);
@@ -362,60 +360,26 @@ export default function CycleMap({
     }
   }, [map, center, follow]);
 
-  // Long press detection
+  // Double tap detection for spot add
   useEffect(() => {
     if (!map || !onLongPress) return;
-    const downListener = map.addListener('mousedown', (e: google.maps.MapMouseEvent) => {
+    const clickListener = map.addListener('click', (e: google.maps.MapMouseEvent) => {
       if (!e.latLng) return;
-      longPressLatLngRef.current = { lat: e.latLng.lat(), lng: e.latLng.lng() };
-      longPressTimerRef.current = setTimeout(() => {
-        if (longPressLatLngRef.current) {
-          longPressActiveRef.current = true;
-          onLongPress(longPressLatLngRef.current.lat, longPressLatLngRef.current.lng);
-        }
-      }, 1500);
-    });
-    const cancelLongPress = () => {
-      if (longPressTimerRef.current) {
-        clearTimeout(longPressTimerRef.current);
-        longPressTimerRef.current = null;
+      const now = Date.now();
+      if (now - lastTapRef.current < 300) {
+        onLongPress(e.latLng.lat(), e.latLng.lng());
+        lastTapRef.current = 0;
+      } else {
+        lastTapRef.current = now;
       }
-      longPressLatLngRef.current = null;
-    };
-    const upListener = map.addListener('mouseup', cancelLongPress);
-    const dragListener = map.addListener('drag', cancelLongPress);
-
-    // Touch events for mobile
-    const touchStartListener = map.addListener('touchstart', (e: { latLng?: google.maps.LatLng }) => {
-      const lat = e.latLng?.lat();
-      const lng = e.latLng?.lng();
-      if (!lat || !lng) return;
-      longPressLatLngRef.current = { lat, lng };
-      longPressTimerRef.current = setTimeout(() => {
-        longPressActiveRef.current = true;
-        onLongPress(lat, lng);
-      }, 1500);
     });
-    const touchEndListener = map.addListener('touchend', cancelLongPress);
-    const touchMoveListener = map.addListener('touchmove', cancelLongPress);
-
     return () => {
-      google.maps.event.removeListener(downListener);
-      google.maps.event.removeListener(upListener);
-      google.maps.event.removeListener(dragListener);
-      google.maps.event.removeListener(touchStartListener);
-      google.maps.event.removeListener(touchEndListener);
-      google.maps.event.removeListener(touchMoveListener);
-      if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+      google.maps.event.removeListener(clickListener);
     };
   }, [map, onLongPress]);
 
   const handleMapClick = useCallback(
     (e: google.maps.MapMouseEvent) => {
-      if (longPressActiveRef.current) {
-        longPressActiveRef.current = false;
-        return;
-      }
       if (tab !== 'distance' || !e.latLng) return;
       onMapClick({ lat: e.latLng.lat(), lng: e.latLng.lng() });
     },
