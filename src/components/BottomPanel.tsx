@@ -590,17 +590,11 @@ export default function BottomPanel({
           </button>
           <button
             onClick={() => onToggleSpotMode?.()}
-            style={{
-              background: isSpotMode ? '#D4AF37' : '#f5f5f5',
-              color: isSpotMode ? '#000' : '#666',
-              border: '1px solid #ddd',
-              borderRadius: '8px',
-              padding: '6px 10px',
-              fontSize: '12px',
-              cursor: 'pointer',
-            }}
+            className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors ${isSpotMode ? 'bg-[#D4AF37] text-white' : 'bg-[var(--surface2)] text-[var(--text-muted)] hover:text-[var(--text)] active:bg-[var(--border)]'}`}
           >
-            <MapPin size={14} color={isSpotMode ? '#fff' : '#666'} />
+            <span className="flex items-center justify-center">
+              <MapPin size={14} color={isSpotMode ? '#fff' : '#666'} />
+            </span>
           </button>
         </div>
 
