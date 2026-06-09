@@ -1144,8 +1144,7 @@ export default function Home() {
               distance: log.distance * 1000,
               routeType: 'straight',
             }]);
-            setLogTrack(null);
-            setTimeout(() => setOpenSaveSheet(true), 100);
+            setOpenSaveSheet(true);
           }}
           onClearRideLogRoute={() => {
             setLogTrack(null);
