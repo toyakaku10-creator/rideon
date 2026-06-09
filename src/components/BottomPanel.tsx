@@ -600,7 +600,7 @@ export default function BottomPanel({
               cursor: 'pointer',
             }}
           >
-            <MapPin size={14} />
+            <MapPin size={14} color={isSpotMode ? '#fff' : '#666'} />
           </button>
         </div>
 
