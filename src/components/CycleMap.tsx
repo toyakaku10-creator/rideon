@@ -339,7 +339,7 @@ export default function CycleMap({
     if (!map || !fitBoundsPoints || fitBoundsPoints.length < 2) return;
     const bounds = new google.maps.LatLngBounds();
     fitBoundsPoints.forEach((p) => bounds.extend({ lat: p.lat, lng: p.lng }));
-    map.fitBounds(bounds, { top: 60, bottom: 100, left: 20, right: 20 });
+    map.fitBounds(bounds, { top: 40, bottom: 80, left: 10, right: 10 });
     initializedRef.current = true; // prevent subsequent center effect from overriding
   }, [map, fitBoundsPoints]);
 
