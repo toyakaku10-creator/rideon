@@ -1210,6 +1210,10 @@ export default function Home() {
           }}
           isSpotMode={isSpotMode}
           onToggleSpotMode={() => setIsSpotMode((v) => !v)}
+          onReorderRoutes={(routes) => {
+            setSavedRoutes(routes);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(routes));
+          }}
         />
       ) : (
         <SpeedPanel

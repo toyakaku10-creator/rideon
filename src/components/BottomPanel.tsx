@@ -1,8 +1,11 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database, Link, Copy, FileInput, FileOutput, Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin, Map, Clapperboard, type LucideProps } from 'lucide-react';
+import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database, Link, Copy, FileInput, FileOutput, Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin, Map, Clapperboard, GripVertical, type LucideProps } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute, RideLog, Spot } from '@/types';
+import { DndContext, closestCenter, PointerSensor, TouchSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { SPOT_CATEGORIES, spotCustomSvg } from '@/lib/spotCategories';
 
 const SPOT_ICONS: Record<string, React.ComponentType<LucideProps>> = {
@@ -60,6 +63,7 @@ function SwipeableRouteItem({
   onReference,
   isSelected,
   showMyRoute,
+  dragHandleProps,
 }: {
   route: SavedRoute;
   onLoad: () => void;
@@ -68,6 +72,7 @@ function SwipeableRouteItem({
   onReference?: () => void;
   isSelected?: boolean;
   showMyRoute?: boolean;
+  dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
 }) {
   const [offset, setOffset] = useState(0);
   const [editing, setEditing] = useState(false);
@@ -169,7 +174,7 @@ function SwipeableRouteItem({
             <Check size={18} />
           </button>
         ) : (
-          <div style={{ display: 'flex', gap: '2px', flexShrink: 0 }}>
+          <div style={{ display: 'flex', gap: '2px', flexShrink: 0, alignItems: 'center' }}>
             <button
               onClick={(e) => { e.stopPropagation(); onReference?.(); }}
               title="参考にして引き直す"
@@ -183,9 +188,28 @@ function SwipeableRouteItem({
             >
               <Pencil size={15} />
             </button>
+            <div
+              {...dragHandleProps}
+              onClick={(e) => e.stopPropagation()}
+              style={{ color: '#ccc', padding: '4px', cursor: 'grab', touchAction: 'none' }}
+            >
+              <GripVertical size={15} />
+            </div>
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function SortableRouteItem(props: React.ComponentProps<typeof SwipeableRouteItem>) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: props.route.id });
+  return (
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1, zIndex: isDragging ? 999 : undefined }}
+    >
+      <SwipeableRouteItem {...props} dragHandleProps={{ ...attributes, ...listeners }} />
     </div>
   );
 }
@@ -319,6 +343,7 @@ interface BottomPanelProps {
   onShare?: () => void;
   isSpotMode?: boolean;
   onToggleSpotMode?: () => void;
+  onReorderRoutes?: (routes: SavedRoute[]) => void;
 }
 
 export default function BottomPanel({
@@ -362,7 +387,22 @@ export default function BottomPanel({
   onShare,
   isSpotMode,
   onToggleSpotMode,
+  onReorderRoutes,
 }: BottomPanelProps) {
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } }),
+  );
+
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = savedRoutes.findIndex((r) => r.id === active.id);
+    const newIndex = savedRoutes.findIndex((r) => r.id === over.id);
+    const reordered = arrayMove([...savedRoutes], oldIndex, newIndex);
+    onReorderRoutes?.(reordered);
+  }, [savedRoutes, onReorderRoutes]);
+
   const [showHistory, setShowHistory] = useState(false);
   const [resetKey, setResetKey] = useState(0);
   const [selectedLogId, setSelectedLogId] = useState<string | null>(null);
@@ -853,18 +893,22 @@ export default function BottomPanel({
                   保存済みルートはありません
                 </p>
               ) : (
-                [...savedRoutes].reverse().map((route) => (
-                  <SwipeableRouteItem
-                    key={route.id + resetKey}
-                    route={route}
-                    isSelected={route.id === selectedRouteId}
-                    showMyRoute={showHistory}
-                    onLoad={() => { onLoadRoute(route); setShowHistory(false); }}
-                    onDelete={() => onDeleteRoute(route.id)}
-                    onRename={(newName) => onRenameRoute(route.id, newName)}
-                    onReference={() => { onReferenceRoute?.(route); setShowHistory(false); }}
-                  />
-                ))
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                  <SortableContext items={savedRoutes.map((r) => r.id)} strategy={verticalListSortingStrategy}>
+                    {[...savedRoutes].reverse().map((route) => (
+                      <SortableRouteItem
+                        key={route.id + resetKey}
+                        route={route}
+                        isSelected={route.id === selectedRouteId}
+                        showMyRoute={showHistory}
+                        onLoad={() => { onLoadRoute(route); setShowHistory(false); }}
+                        onDelete={() => onDeleteRoute(route.id)}
+                        onRename={(newName) => onRenameRoute(route.id, newName)}
+                        onReference={() => { onReferenceRoute?.(route); setShowHistory(false); }}
+                      />
+                    ))}
+                  </SortableContext>
+                </DndContext>
               )}
               <div style={{ height: 'calc(20px + env(safe-area-inset-bottom))' }} />
             </div>
