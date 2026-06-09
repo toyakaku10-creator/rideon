@@ -1129,9 +1129,18 @@ export default function Home() {
           sharedSpots={sharedSpots}
           onSaveSharedSpots={handleSaveSharedSpots}
           onLoadRideLog={(log) => {
-            setLogTrack(log.track ?? null);
-            setElevations([]);
-            if (log.track && log.track.length >= 2) setFitBoundsPoints(log.track);
+            const track = log.track!;
+            const latlngs: LatLng[] = track.map((p) => ({ lat: p.lat, lng: p.lng }));
+            setLogTrack(track);
+            setWaypoints([latlngs[0], latlngs[latlngs.length - 1]]);
+            setSegments([{
+              from: latlngs[0],
+              to: latlngs[latlngs.length - 1],
+              geometry: latlngs,
+              distance: log.distance * 1000,
+              routeType: 'straight',
+            }]);
+            setFitBoundsPoints(latlngs);
           }}
           onSaveRideLogAsRoute={(log) => {
             const track = log.track!;
