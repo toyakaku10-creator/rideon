@@ -470,7 +470,7 @@ export default function CycleMap({
             ? (isNearGoal ? makeStartGoalIcon() : makeLabelIcon('S', '#4CAF50'))
             : isGoal
               ? (isNearGoal ? null : makeLabelIcon('G', '#E53935'))
-              : makeDotIcon();
+              : null;
           if (icon === null) return null;
           return (
             <Marker
