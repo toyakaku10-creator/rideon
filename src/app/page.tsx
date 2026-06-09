@@ -177,6 +177,7 @@ export default function Home() {
   const [spotName, setSpotName] = useState('');
   const [spotCategory, setSpotCategory] = useState('pin');
   const [spotDeleteConfirm, setSpotDeleteConfirm] = useState<Spot | null>(null);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [sharedSpots, setSharedSpots] = useState<Spot[]>([]);
 
   // Center map on device location at startup
@@ -499,9 +500,14 @@ export default function Home() {
   }, []);
 
   const handleClear = useCallback(() => {
+    setShowClearConfirm(true);
+  }, []);
+
+  const executeClear = useCallback(() => {
     setWaypoints([]);
     setSegments([]);
     setReferenceRoute(null);
+    setShowClearConfirm(false);
   }, []);
 
   const handleReverseRoute = useCallback(() => {
@@ -1188,6 +1194,20 @@ export default function Home() {
       )}
 
       {/* Spot add dialog */}
+      {showClearConfirm && (
+        <>
+          <div onClick={() => setShowClearConfirm(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 2000 }} />
+          <div style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '480px', background: '#fff', borderRadius: '16px 16px 0 0', padding: '20px 16px', paddingBottom: 'calc(20px + env(safe-area-inset-bottom))', zIndex: 2001, boxSizing: 'border-box' }}>
+            <h3 style={{ margin: '0 0 8px', fontSize: '16px', fontWeight: '600' }}>ルートをクリア</h3>
+            <p style={{ margin: '0 0 20px', fontSize: '14px', color: '#555' }}>現在のルートを削除しますか？</p>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button onClick={() => setShowClearConfirm(false)} style={{ flex: 1, padding: '14px', background: '#f0f0f0', color: '#333', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: 'pointer' }}>キャンセル</button>
+              <button onClick={executeClear} style={{ flex: 1, padding: '14px', background: '#e53935', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: 'pointer' }}>クリアする</button>
+            </div>
+          </div>
+        </>
+      )}
+
       {spotDeleteConfirm && (
         <>
           <div onClick={() => setSpotDeleteConfirm(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 2000 }} />
