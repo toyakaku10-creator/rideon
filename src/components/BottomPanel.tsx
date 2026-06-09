@@ -135,7 +135,9 @@ function SwipeableRouteItem({
         style={{
           transform: `translateX(${offset}px)`,
           transition: startXRef.current === null ? 'transform 0.2s' : 'none',
-        }}
+          userSelect: 'none',
+          WebkitUserSelect: 'none',
+        } as React.CSSProperties}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
