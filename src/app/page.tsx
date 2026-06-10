@@ -1013,7 +1013,7 @@ export default function Home() {
         {tab === 'distance' && !isDemoMode && (
           <div style={{
             position: 'absolute',
-            bottom: '8px',
+            bottom: '14px',
             left: '50%',
             transform: 'translateX(-50%)',
             zIndex: 500,
