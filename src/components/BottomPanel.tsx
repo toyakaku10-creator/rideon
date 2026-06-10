@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Undo2, Save, Trash2, Share2, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database, Link, Copy, FileInput, FileOutput, Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin, Map, Clapperboard, GripVertical, type LucideProps } from 'lucide-react';
+import { Undo2, Save, Trash2, Share2, Share, Upload, Download, Flag, Ruler, Route, Repeat, Pencil, Check, Database, Link, Copy, FileInput, FileOutput, Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin, Map, Clapperboard, GripVertical, type LucideProps } from 'lucide-react';
 import type { RouteType, LatLng, RouteSegment, SavedRoute, RideLog, Spot } from '@/types';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
@@ -692,7 +692,7 @@ export default function BottomPanel({
               disabled: false,
             },
             {
-              icon: <Share2 size={24} />,
+              icon: <Share size={24} />,
               label: 'シェア',
               onClick: () => setShowShareSheet(true),
               disabled: waypoints.length < 2,
