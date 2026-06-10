@@ -465,26 +465,14 @@ export default function Home() {
   const avgSpeed = speedCount > 0 ? speedSum / speedCount : 0;
 
   // Map tap handler — adds waypoint and fetches route segment
-  const handleMapClick = useCallback(
+  const addWaypoint = useCallback(
     (latlng: LatLng) => {
-      if (isSpotMode) {
-        setSpotDialog({ lat: latlng.lat, lng: latlng.lng });
-        setSpotName('');
-        setSpotCategory('pin');
-        setIsSpotMode(false);
-        return;
-      }
-
       if (isLoading) return;
-
       setWaypoints((prevWps) => {
         const newWps = [...prevWps, latlng];
-
-        if (prevWps.length === 0) return newWps; // first point, no segment yet
-
+        if (prevWps.length === 0) return newWps;
         const from = prevWps[prevWps.length - 1];
         const to = latlng;
-
         if (routeType === 'straight') {
           setSegments((prev) => [...prev, { ...makeStraightSegment(from, to), routeType: 'straight' }]);
         } else {
@@ -498,12 +486,30 @@ export default function Home() {
             })
             .finally(() => setIsLoading(false));
         }
-
         return newWps;
       });
     },
-    [isLoading, routeType, isSpotMode]
+    [isLoading, routeType]
   );
+
+  const handleMapClick = useCallback(
+    (latlng: LatLng) => {
+      if (isSpotMode) {
+        setSpotDialog({ lat: latlng.lat, lng: latlng.lng });
+        setSpotName('');
+        setSpotCategory('pin');
+        setIsSpotMode(false);
+      }
+    },
+    [isSpotMode]
+  );
+
+  const handleAddPoint = useCallback(() => {
+    if (!mapInstanceRef.current) return;
+    const center = mapInstanceRef.current.getCenter();
+    if (!center) return;
+    addWaypoint({ lat: center.lat(), lng: center.lng() });
+  }, [addWaypoint]);
 
   const handleRouteTypeChange = useCallback((type: RouteType) => {
     setRouteType(type);
@@ -987,6 +993,22 @@ export default function Home() {
         />
 
 
+        {/* Crosshair */}
+        {tab === 'distance' && (
+          <div style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            pointerEvents: 'none',
+            zIndex: 500,
+            color: '#FF6B00',
+            fontSize: '24px',
+            fontWeight: 'bold',
+            lineHeight: 1,
+          }}>＋</div>
+        )}
+
         {/* Floating RideOn button */}
         <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 500 }}>
           <button
@@ -1215,6 +1237,7 @@ export default function Home() {
           }}
           isSpotMode={isSpotMode}
           onToggleSpotMode={() => setIsSpotMode((v) => !v)}
+          onAddPoint={handleAddPoint}
           onReorderRoutes={(routes) => {
             setSavedRoutes(routes);
             localStorage.setItem(STORAGE_KEY, JSON.stringify(routes));
