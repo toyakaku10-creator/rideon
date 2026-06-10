@@ -1121,7 +1121,7 @@ export default function Home() {
         {isDemoMode && (() => {
           const demoCtrlStyle: React.CSSProperties = {
             background: '#D4AF37',
-            color: '#000',
+            color: '#fff',
             border: 'none',
             borderRadius: '16px',
             padding: '4px 10px',
