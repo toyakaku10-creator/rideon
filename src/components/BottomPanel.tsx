@@ -921,7 +921,7 @@ export default function BottomPanel({
               {spots.length === 0 ? (
                 <p style={{ color: 'var(--text-muted)', fontSize: '14px', textAlign: 'center', padding: '40px 16px' }}>
                   スポットはありません<br />
-                  <span style={{ fontSize: '12px' }}>地図を長押しして追加</span>
+                  <p style={{ fontSize: '12px', color: '#888' }}>フッターの「スポット」ボタンを押してから地図をタップして追加</p>
                 </p>
               ) : (
                 [...spots].reverse().map((spot) => {
