@@ -1120,17 +1120,19 @@ export default function Home() {
 
         {isDemoMode && (() => {
           const demoCtrlStyle: React.CSSProperties = {
-            background: 'rgba(255,255,255,0.9)',
-            border: '1px solid #D4AF37',
+            background: '#D4AF37',
+            color: '#000',
+            border: 'none',
             borderRadius: '16px',
             padding: '4px 10px',
             fontSize: '12px',
             fontWeight: '600',
-            color: '#D4AF37',
             cursor: 'pointer',
             boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
             display: 'flex',
             alignItems: 'center',
+            userSelect: 'none',
+            WebkitUserSelect: 'none',
           };
           return (
             <div style={{
@@ -1147,7 +1149,7 @@ export default function Home() {
               <button onClick={stopDemo} style={{ ...demoCtrlStyle, width: '64px', justifyContent: 'center' }}>
                 <Square size={14} />
               </button>
-              <button onClick={handleSpeedToggle} style={{ ...demoCtrlStyle, width: '44px', justifyContent: 'center' }}>
+              <button onClick={handleSpeedToggle} style={{ ...demoCtrlStyle, width: '44px', justifyContent: 'center', background: demoSpeed > 1 ? '#B8960A' : '#D4AF37' }}>
                 {demoSpeed}x
               </button>
             </div>
