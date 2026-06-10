@@ -465,7 +465,7 @@ export default function CycleMap({
           const dLat = (goalWp.lat - startWp.lat) * Math.PI / 180;
           const dLng = (goalWp.lng - startWp.lng) * Math.PI / 180;
           const dist = Math.sqrt(dLat * dLat + dLng * dLng) * 6371000;
-          const isNearGoal = waypoints.length > 1 && dist < 200;
+          const isNearGoal = waypoints.length > 1 && dist < 100;
           const icon = isStart
             ? (isNearGoal ? makeStartGoalIcon() : makeLabelIcon('S', '#4CAF50'))
             : isGoal
