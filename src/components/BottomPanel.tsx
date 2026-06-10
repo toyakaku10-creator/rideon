@@ -346,7 +346,6 @@ interface BottomPanelProps {
   isSpotMode?: boolean;
   onToggleSpotMode?: () => void;
   onReorderRoutes?: (routes: SavedRoute[]) => void;
-  onAddPoint?: () => void;
 }
 
 export default function BottomPanel({
@@ -391,7 +390,6 @@ export default function BottomPanel({
   isSpotMode,
   onToggleSpotMode,
   onReorderRoutes,
-  onAddPoint,
 }: BottomPanelProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { delay: 250, tolerance: 5 } }),
@@ -637,14 +635,6 @@ export default function BottomPanel({
           >
             <span className="flex items-center justify-center gap-1">
               <MapPin size={14} color={isSpotMode ? '#fff' : '#666'} />スポット
-            </span>
-          </button>
-          <button
-            onClick={() => onAddPoint?.()}
-            className="flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors bg-[#FF6B00] text-white active:opacity-80"
-          >
-            <span className="flex items-center justify-center gap-1">
-              ＋追加
             </span>
           </button>
         </div>

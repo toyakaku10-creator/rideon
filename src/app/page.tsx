@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Bike, Play, Pause, Square, Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin, type LucideProps } from 'lucide-react';
+import { Bike, Play, Pause, Square, Plus, Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin, type LucideProps } from 'lucide-react';
 import type { Tab, RouteType, LatLng, RouteSegment, SavedRoute, RideLog, Spot } from '@/types';
 import { SPOT_CATEGORIES, spotCustomSvg } from '@/lib/spotCategories';
 
@@ -1009,6 +1009,35 @@ export default function Home() {
           }}>＋</div>
         )}
 
+        {/* Round add button */}
+        {tab === 'distance' && !isDemoMode && (
+          <div style={{
+            position: 'absolute',
+            bottom: '80px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 500,
+          }}>
+            <button
+              onClick={handleAddPoint}
+              style={{
+                width: '52px',
+                height: '52px',
+                borderRadius: '50%',
+                background: '#D4AF37',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+              }}
+            >
+              <Plus size={28} color="white" />
+            </button>
+          </div>
+        )}
+
         {/* Floating RideOn button */}
         <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 500 }}>
           <button
@@ -1237,7 +1266,6 @@ export default function Home() {
           }}
           isSpotMode={isSpotMode}
           onToggleSpotMode={() => setIsSpotMode((v) => !v)}
-          onAddPoint={handleAddPoint}
           onReorderRoutes={(routes) => {
             setSavedRoutes(routes);
             localStorage.setItem(STORAGE_KEY, JSON.stringify(routes));
