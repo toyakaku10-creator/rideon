@@ -505,6 +505,7 @@ export default function CycleMap({
             strokeWeight: 3,
             strokeOpacity: 0.7,
             zIndex: 3,
+            clickable: false,
           }}
         />
       ))}
@@ -518,6 +519,7 @@ export default function CycleMap({
             strokeWeight: 4,
             strokeOpacity: 0.85,
             zIndex: 4,
+            clickable: false,
           }}
         />
       )}
