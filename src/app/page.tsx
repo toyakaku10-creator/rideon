@@ -1031,7 +1031,9 @@ export default function Home() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-              }}
+                userSelect: 'none',
+                WebkitUserSelect: 'none',
+              } as React.CSSProperties}
             >
               <Plus size={28} color="white" />
             </button>
