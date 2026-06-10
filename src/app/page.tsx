@@ -46,21 +46,26 @@ function haversineDistance(a: LatLng, b: LatLng): number {
   return R * 2 * Math.atan2(Math.sqrt(c), Math.sqrt(1 - c));
 }
 
-async function fetchOSRMRoute(
+function fetchCyclingRoute(
   from: LatLng,
   to: LatLng,
-  mode: 'cycling' | 'walking'
 ): Promise<{ geometry: LatLng[]; distance: number }> {
-  const url = `https://router.project-osrm.org/route/v1/${mode}/${from.lng},${from.lat};${to.lng},${to.lat}?overview=full&geometries=geojson`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`OSRM ${res.status}`);
-  const data = await res.json();
-  const route = data.routes[0];
-  const coords: [number, number][] = route.geometry.coordinates;
-  return {
-    geometry: coords.map(([lng, lat]) => ({ lat, lng })),
-    distance: route.distance,
-  };
+  return new Promise((resolve, reject) => {
+    const directionsService = new google.maps.DirectionsService();
+    directionsService.route({
+      origin: { lat: from.lat, lng: from.lng },
+      destination: { lat: to.lat, lng: to.lng },
+      travelMode: google.maps.TravelMode.BICYCLING,
+    }, (result, status) => {
+      if (status === 'OK' && result) {
+        const points = result.routes[0].overview_path.map(p => ({ lat: p.lat(), lng: p.lng() }));
+        const distance = result.routes[0].legs[0].distance?.value ?? haversineDistance(from, to);
+        resolve({ geometry: points, distance });
+      } else {
+        reject(new Error(`Directions ${status}`));
+      }
+    });
+  });
 }
 
 function makeStraightSegment(from: LatLng, to: LatLng): RouteSegment {
@@ -484,7 +489,7 @@ export default function Home() {
           setSegments((prev) => [...prev, { ...makeStraightSegment(from, to), routeType: 'straight' }]);
         } else {
           setIsLoading(true);
-          fetchOSRMRoute(from, to, 'cycling')
+          fetchCyclingRoute(from, to)
             .then(({ geometry, distance }) => {
               setSegments((prev) => [...prev, { from, to, geometry, distance, routeType: 'cycling' }]);
             })
