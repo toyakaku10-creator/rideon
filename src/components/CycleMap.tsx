@@ -477,7 +477,7 @@ export default function CycleMap({
               key={`wp-${i}`}
               position={{ lat: wp.lat, lng: wp.lng }}
               icon={icon}
-              zIndex={isStart ? 2 : isGoal ? 1 : 0}
+              zIndex={isStart ? 1000 : isGoal ? 1000 : 0}
               draggable={isStart && !!onStartPointDragged && (isAdjustingImport || isGpxImport || isShareImport)}
               onDragEnd={
                 isStart && onStartPointDragged
@@ -552,7 +552,7 @@ export default function CycleMap({
         <Marker
           position={{ lat: currentPosition.lat, lng: currentPosition.lng }}
           icon={makeCurrentLocationIcon()}
-          zIndex={5}
+          zIndex={999}
         />
       )}
 
@@ -561,7 +561,7 @@ export default function CycleMap({
         <Marker
           position={{ lat: currentPosition.lat, lng: currentPosition.lng }}
           icon={makePositionIcon(heading, gradient)}
-          zIndex={10}
+          zIndex={999}
           onLoad={(m) => onMarkerReady?.(m)}
         />
       )}
