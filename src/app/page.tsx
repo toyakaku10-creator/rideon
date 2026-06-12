@@ -1026,8 +1026,11 @@ export default function Home() {
                   const a = document.createElement('a');
                   a.href = url;
                   a.download = `rideon-${Date.now()}.jpg`;
+                  document.body.appendChild(a);
                   a.click();
+                  document.body.removeChild(a);
                   URL.revokeObjectURL(url);
+                  e.target.value = '';
                 }}
               />
             </label>
