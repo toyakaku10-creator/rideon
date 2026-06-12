@@ -1001,23 +1001,36 @@ export default function Home() {
             right: '12px',
             zIndex: 500,
           }}>
-            <button
-              onClick={() => { window.location.href = 'camera://'; }}
-              style={{
-                width: '48px',
-                height: '48px',
-                borderRadius: '50%',
-                background: 'rgba(255,255,255,0.9)',
-                border: '1px solid #D4AF37',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-              }}
-            >
+            <label style={{
+              width: '48px',
+              height: '48px',
+              borderRadius: '50%',
+              background: 'rgba(255,255,255,0.9)',
+              border: '1px solid #D4AF37',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+            }}>
               <Camera size={22} color="#D4AF37" />
-            </button>
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                style={{ display: 'none' }}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  const url = URL.createObjectURL(file);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `rideon-${Date.now()}.jpg`;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                }}
+              />
+            </label>
           </div>
         )}
 
