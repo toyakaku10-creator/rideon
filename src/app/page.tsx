@@ -993,62 +993,6 @@ export default function Home() {
         />
 
 
-        {/* Camera button (ride mode) */}
-        {tab === 'speed' && !isDemoMode && (
-          <div style={{
-            position: 'absolute',
-            bottom: '52px',
-            right: '12px',
-            zIndex: 500,
-          }}>
-            <label style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: '50%',
-              background: 'rgba(255,255,255,0.9)',
-              border: '1px solid #D4AF37',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-            }}>
-              <Camera size={22} color="#D4AF37" />
-              <input
-                type="file"
-                accept="image/*"
-                capture="environment"
-                style={{ display: 'none' }}
-                onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  const img = new Image();
-                  const url = URL.createObjectURL(file);
-                  img.src = url;
-                  img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    const ctx = canvas.getContext('2d');
-                    ctx?.drawImage(img, 0, 0);
-                    canvas.toBlob((blob) => {
-                      if (!blob) return;
-                      const blobUrl = URL.createObjectURL(blob);
-                      const a = document.createElement('a');
-                      a.href = blobUrl;
-                      a.download = `rideon-${Date.now()}.jpg`;
-                      a.click();
-                      URL.revokeObjectURL(blobUrl);
-                      URL.revokeObjectURL(url);
-                    }, 'image/jpeg');
-                  };
-                  e.target.value = '';
-                }}
-              />
-            </label>
-          </div>
-        )}
-
         {/* Crosshair */}
         {tab === 'distance' && (
           <div style={{
