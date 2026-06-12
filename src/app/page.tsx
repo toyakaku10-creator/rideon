@@ -997,7 +997,7 @@ export default function Home() {
         {tab === 'speed' && !isDemoMode && (
           <div style={{
             position: 'absolute',
-            bottom: '100px',
+            bottom: '52px',
             right: '12px',
             zIndex: 500,
           }}>
