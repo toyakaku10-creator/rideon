@@ -1019,7 +1019,16 @@ export default function Home() {
                 accept="image/*"
                 capture="environment"
                 style={{ display: 'none' }}
-                onChange={() => {}}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  const url = URL.createObjectURL(file);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `rideon-${Date.now()}.jpg`;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                }}
               />
             </label>
           </div>
