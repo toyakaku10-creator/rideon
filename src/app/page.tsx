@@ -993,6 +993,38 @@ export default function Home() {
         />
 
 
+        {/* Camera button (ride mode) */}
+        {tab === 'speed' && !isDemoMode && (
+          <div style={{
+            position: 'absolute',
+            bottom: '100px',
+            right: '12px',
+            zIndex: 500,
+          }}>
+            <label style={{
+              width: '48px',
+              height: '48px',
+              borderRadius: '50%',
+              background: 'rgba(255,255,255,0.9)',
+              border: '1px solid #D4AF37',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+            }}>
+              <Camera size={22} color="#D4AF37" />
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                style={{ display: 'none' }}
+                onChange={() => {}}
+              />
+            </label>
+          </div>
+        )}
+
         {/* Crosshair */}
         {tab === 'distance' && (
           <div style={{
