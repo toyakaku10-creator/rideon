@@ -1135,7 +1135,7 @@ export default function Home() {
             justifyContent: 'center',
             boxSizing: 'border-box',
           }}>
-            <span style={{fontSize: '28px', fontWeight: '500', color: 'white', display: 'inline-block', width: '60px', textAlign: 'right'}}>
+            <span style={{fontSize: '28px', fontWeight: '500', color: 'white', fontFamily: 'monospace', fontVariantNumeric: 'tabular-nums'}}>
               {currentSpeed.toFixed(1)}
             </span>
             <span style={{fontSize: '12px', color: 'rgba(255,255,255,0.7)'}}>km/h</span>
