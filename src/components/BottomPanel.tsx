@@ -657,13 +657,6 @@ export default function BottomPanel({
           </div>
         )}
 
-        {/* Import hint */}
-        {isImported && (
-          <p className="text-[var(--text-muted)] text-xs text-center mb-1 px-4">
-            📍 スタート地点をドラッグするとルート全体が移動します
-          </p>
-        )}
-
         {/* 4-button tab bar */}
         <div className="flex" style={{ maxWidth: '480px', margin: '0 auto', paddingLeft: 'calc(16px + env(safe-area-inset-left))', paddingRight: 'calc(16px + env(safe-area-inset-right))' }}>
           {[
