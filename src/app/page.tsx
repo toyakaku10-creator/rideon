@@ -163,6 +163,7 @@ export default function Home() {
   const [heading, setHeading] = useState<number | null>(null);
   const [rideDistance, setRideDistance] = useState(0);
   const prevGpsPos = useRef<{ lat: number; lng: number } | null>(null);
+  const posHistoryRef = useRef<{ lat: number; lng: number }[]>([]);
   const rideStartTimeRef = useRef<number | null>(null);
   const rideTrackRef = useRef<{ lat: number; lng: number }[]>([]);
   const rideRouteNameRef = useRef<string | undefined>(undefined);
@@ -417,7 +418,11 @@ export default function Home() {
       (pos) => {
         const { latitude, longitude, speed, accuracy, heading: h } = pos.coords;
         const kmh = speed != null ? speed * 3.6 : 0;
-        const cur = { lat: latitude, lng: longitude };
+        posHistoryRef.current.push({ lat: latitude, lng: longitude });
+        if (posHistoryRef.current.length > 3) posHistoryRef.current.shift();
+        const avgLat = posHistoryRef.current.reduce((s, p) => s + p.lat, 0) / posHistoryRef.current.length;
+        const avgLng = posHistoryRef.current.reduce((s, p) => s + p.lng, 0) / posHistoryRef.current.length;
+        const cur = { lat: avgLat, lng: avgLng };
         setCurrentPosition(cur);
         setGpsAccuracy(accuracy);
         let finalHeading = (h != null && !isNaN(h)) ? h : null;
