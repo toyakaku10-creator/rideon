@@ -1126,6 +1126,8 @@ export default function Home() {
             background: 'rgba(0,0,0,0.6)',
             borderRadius: '20px',
             padding: '5px 14px 10px',
+            width: '110px',
+            boxSizing: 'border-box',
             lineHeight: '1',
             display: 'flex',
             alignItems: 'baseline',
