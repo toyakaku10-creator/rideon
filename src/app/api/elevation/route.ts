@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     sampled.push(points[idx])
   }
 
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+  const apiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
   const locations = sampled
     .map((p: { lat: number; lng: number }) => `${p.lat},${p.lng}`)
     .join('|')
