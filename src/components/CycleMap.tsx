@@ -100,14 +100,19 @@ function makeStartGoalIcon(size = 28): google.maps.Icon {
   };
 }
 
-function makePositionIcon(): google.maps.Icon {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
-    <circle cx="10" cy="10" r="8" fill="#4A90D9" stroke="white" stroke-width="2"/>
+function makePositionIcon(heading?: number | null): google.maps.Icon {
+  const rotate = heading != null ? `transform="rotate(${heading},12,16)"` : '';
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="30" viewBox="0 0 24 30">
+    <g ${rotate}>
+      <polygon points="12,2 18,12 6,12" fill="#4A90D9" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+      <circle cx="12" cy="22" r="8" fill="#4A90D9" stroke="white" stroke-width="2.5"/>
+      <circle cx="12" cy="22" r="3" fill="white"/>
+    </g>
   </svg>`;
   return {
     url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
-    scaledSize: new google.maps.Size(20, 20),
-    anchor: new google.maps.Point(10, 10),
+    scaledSize: new google.maps.Size(24, 30),
+    anchor: new google.maps.Point(12, 16),
   };
 }
 
@@ -482,7 +487,7 @@ export default function CycleMap({
       {tab === 'speed' && currentPosition && !isDemoMode && (
         <Marker
           position={{ lat: currentPosition.lat, lng: currentPosition.lng }}
-          icon={makePositionIcon()}
+          icon={makePositionIcon(heading)}
           zIndex={999}
           onLoad={(m) => onMarkerReady?.(m)}
         />

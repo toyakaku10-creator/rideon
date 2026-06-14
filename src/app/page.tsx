@@ -98,7 +98,16 @@ function bearingDeg(a: LatLng, b: LatLng): number {
 }
 
 
-const BLUE_CIRCLE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><circle cx="10" cy="10" r="8" fill="#4A90D9" stroke="white" stroke-width="2"/></svg>`;
+function makeNavMarkerSvg(heading?: number | null): string {
+  const rotate = heading != null ? `transform="rotate(${heading},12,16)"` : '';
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="30" viewBox="0 0 24 30"><g ${rotate}><polygon points="12,2 18,12 6,12" fill="#4A90D9" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><circle cx="12" cy="22" r="8" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="12" cy="22" r="3" fill="white"/></g></svg>`;
+}
+
+function calcHeading(from: [number, number], to: [number, number]): number {
+  const dLng = to[1] - from[1];
+  const dLat = to[0] - from[0];
+  return (Math.atan2(dLng, dLat) * 180 / Math.PI + 360) % 360;
+}
 
 function angleDiff(a: number, b: number): number {
   const d = ((b - a + 540) % 360) - 180;
@@ -868,7 +877,13 @@ export default function Home() {
       const lng = pts[idx][1] + (pts[nextIdx][1] - pts[idx][1]) * t;
       const pos = { lat, lng };
 
+      const hdg = calcHeading([pts[idx][0], pts[idx][1]], [pts[nextIdx][0], pts[nextIdx][1]]);
       demoMarkerRef.current?.setPosition(pos);
+      demoMarkerRef.current?.setIcon({
+        url: 'data:image/svg+xml,' + encodeURIComponent(makeNavMarkerSvg(hdg)),
+        scaledSize: new google.maps.Size(24, 30),
+        anchor: new google.maps.Point(12, 16),
+      });
       mapInstanceRef.current?.setCenter(pos);
       // pointsのidxをelevationsのインデックスに変換
       const elevIdx = Math.round(idx / (pts.length - 1) * (elevations.length - 1));
@@ -890,9 +905,9 @@ export default function Home() {
           position: { lat: pts[0][0], lng: pts[0][1] },
           map: mapInstanceRef.current,
           icon: {
-            url: 'data:image/svg+xml,' + encodeURIComponent(BLUE_CIRCLE_SVG),
-            scaledSize: new google.maps.Size(20, 20),
-            anchor: new google.maps.Point(10, 10),
+            url: 'data:image/svg+xml,' + encodeURIComponent(makeNavMarkerSvg()),
+            scaledSize: new google.maps.Size(24, 30),
+            anchor: new google.maps.Point(12, 16),
           },
           zIndex: 999,
         });
