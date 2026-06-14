@@ -169,7 +169,7 @@ export default function Home() {
   const demoStartTimeRef = useRef(0);
   const demoRAFRef = useRef<number | null>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
-  const currentMarkerRef = useRef<google.maps.Marker | null>(null);
+  const currentMarkerRef = useRef<google.maps.OverlayView | null>(null);
   const demoMarkerRef = useRef<google.maps.Marker | null>(null);
   const skipElevationFetchRef = useRef(false);
   const pendingElevationsRef = useRef<number[] | undefined>(undefined);
@@ -1017,7 +1017,7 @@ export default function Home() {
           logTrack={logTrack}
           referenceSegments={referenceRoute?.segments}
           onMapReady={(m) => { mapInstanceRef.current = m; }}
-          onMarkerReady={(m) => { currentMarkerRef.current = m; }}
+          onMarkerReady={(m: google.maps.OverlayView) => { currentMarkerRef.current = m; }}
         />
 
 

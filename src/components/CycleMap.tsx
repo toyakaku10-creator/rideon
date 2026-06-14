@@ -100,22 +100,63 @@ function makeStartGoalIcon(size = 28): google.maps.Icon {
   };
 }
 
-function makePositionIcon(heading?: number | null): google.maps.Icon {
-  const rot = heading != null ? heading : 0;
-  const hasHeading = heading != null;
+// Lazy-initialized LocationMarker class (requires Maps API to be loaded)
+let _LocationMarkerCtor: (new (pos: google.maps.LatLng, heading: number | null) => google.maps.OverlayView & { update(pos: google.maps.LatLng, heading: number | null): void }) | null = null;
 
-  const html = `<div style="display:flex;flex-direction:column;align-items:center;gap:2px;transform:rotate(${rot}deg);">
-    ${hasHeading ? `<div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #4A90D9;"></div>` : ''}
-    <div style="width:20px;height:20px;border-radius:50%;background:#4A90D9;border:2.5px solid white;display:flex;align-items:center;justify-content:center;">
-      <div style="width:6px;height:6px;border-radius:50%;background:white;"></div>
-    </div>
-  </div>`;
+function getLocationMarkerClass() {
+  if (_LocationMarkerCtor) return _LocationMarkerCtor;
+  class LocationMarker extends google.maps.OverlayView {
+    private _pos: google.maps.LatLng;
+    private _heading: number | null;
+    private _div: HTMLDivElement | null = null;
 
-  return {
-    url: `data:text/html;charset=UTF-8,${encodeURIComponent(html)}`,
-    scaledSize: new google.maps.Size(24, 34),
-    anchor: new google.maps.Point(12, 24),
-  };
+    constructor(pos: google.maps.LatLng, heading: number | null) {
+      super();
+      this._pos = pos;
+      this._heading = heading;
+    }
+
+    onAdd() {
+      this._div = document.createElement('div');
+      this._div.style.position = 'absolute';
+      this._div.style.pointerEvents = 'none';
+      this._updateHtml();
+      this.getPanes()!.overlayMouseTarget.appendChild(this._div);
+    }
+
+    _updateHtml() {
+      if (!this._div) return;
+      const rot = this._heading ?? 0;
+      const hasHeading = this._heading != null;
+      this._div.innerHTML = `<div style="transform:rotate(${rot}deg);display:flex;flex-direction:column;align-items:center;gap:2px;">${hasHeading ? '<div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #4A90D9;"></div>' : ''}<div style="width:20px;height:20px;border-radius:50%;background:#4A90D9;border:2.5px solid white;display:flex;align-items:center;justify-content:center;"><div style="width:6px;height:6px;border-radius:50%;background:white;"></div></div></div>`;
+    }
+
+    draw() {
+      if (!this._div) return;
+      const proj = this.getProjection();
+      const point = proj.fromLatLngToDivPixel(this._pos);
+      if (point) {
+        this._div.style.left = `${point.x - 12}px`;
+        this._div.style.top = `${point.y - 24}px`;
+      }
+    }
+
+    update(pos: google.maps.LatLng, heading: number | null) {
+      this._pos = pos;
+      this._heading = heading;
+      this._updateHtml();
+      this.draw();
+    }
+
+    onRemove() {
+      if (this._div) {
+        this._div.parentNode?.removeChild(this._div);
+        this._div = null;
+      }
+    }
+  }
+  _LocationMarkerCtor = LocationMarker;
+  return _LocationMarkerCtor;
 }
 
 function makeElevationMarkerIcon(distanceLabel?: string): google.maps.Icon {
@@ -202,7 +243,7 @@ interface CycleMapProps {
   logTrack?: { lat: number; lng: number }[] | null;
   referenceSegments?: RouteSegment[];
   onMapReady?: (map: google.maps.Map) => void;
-  onMarkerReady?: (marker: google.maps.Marker) => void;
+  onMarkerReady?: (marker: google.maps.OverlayView) => void;
 }
 
 export default function CycleMap({
@@ -242,6 +283,8 @@ export default function CycleMap({
   const [zoom, setZoom] = useState(14);
   const initializedRef = useRef(false);
   const lastTapRef = useRef(0);
+  const locationOverlayRef = useRef<(google.maps.OverlayView & { update(pos: google.maps.LatLng, heading: number | null): void }) | null>(null);
+  const onMarkerReadyRef = useRef(onMarkerReady);
 
   const handleLoad = useCallback((m: google.maps.Map) => {
     setMap(m);
@@ -288,6 +331,37 @@ export default function CycleMap({
       map.panBy(0, 30);
     }
   }, [map, center, follow]);
+
+  // LocationMarker overlay lifecycle (speed mode current position)
+  useEffect(() => {
+    if (!map || !currentPosition || tab !== 'speed' || isDemoMode) {
+      if (locationOverlayRef.current) {
+        locationOverlayRef.current.setMap(null);
+        locationOverlayRef.current = null;
+      }
+      return;
+    }
+    const pos = new google.maps.LatLng(currentPosition.lat, currentPosition.lng);
+    if (!locationOverlayRef.current) {
+      const Cls = getLocationMarkerClass();
+      const overlay = new Cls(pos, heading ?? null);
+      overlay.setMap(map);
+      locationOverlayRef.current = overlay;
+      onMarkerReadyRef.current?.(overlay);
+    } else {
+      locationOverlayRef.current.update(pos, heading ?? null);
+    }
+  }, [map, currentPosition, heading, tab, isDemoMode]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (locationOverlayRef.current) {
+        locationOverlayRef.current.setMap(null);
+        locationOverlayRef.current = null;
+      }
+    };
+  }, []);
 
   // Double tap detection for spot add
   useEffect(() => {
@@ -485,15 +559,7 @@ export default function CycleMap({
         />
       )}
 
-      {/* Current position marker (speed mode) */}
-      {tab === 'speed' && currentPosition && !isDemoMode && (
-        <Marker
-          position={{ lat: currentPosition.lat, lng: currentPosition.lng }}
-          icon={makePositionIcon(heading)}
-          zIndex={9999}
-          onLoad={(m) => onMarkerReady?.(m)}
-        />
-      )}
+      {/* Current position marker (speed mode) — rendered via LocationMarker OverlayView */}
     </GoogleMap>
   );
 }
