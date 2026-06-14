@@ -346,6 +346,7 @@ interface BottomPanelProps {
   isSpotMode?: boolean;
   onToggleSpotMode?: () => void;
   onReorderRoutes?: (routes: SavedRoute[]) => void;
+  isElevationLoading?: boolean;
 }
 
 export default function BottomPanel({
@@ -390,6 +391,7 @@ export default function BottomPanel({
   isSpotMode,
   onToggleSpotMode,
   onReorderRoutes,
+  isElevationLoading = false,
 }: BottomPanelProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { delay: 250, tolerance: 5 } }),
@@ -432,6 +434,7 @@ export default function BottomPanel({
   }, [openSaveSheet]);
 
   const generateShareUrl = async (): Promise<string> => {
+    if (isElevationLoading) throw new Error('高低差データ取得中です。しばらくお待ちください。');
     const segPoints = segments.flatMap((s) => s.geometry);
     const allPoints = segPoints.length >= 2 ? segPoints : waypoints;
     if (allPoints.length < 2) throw new Error('ルートを引いてからシェアしてください');

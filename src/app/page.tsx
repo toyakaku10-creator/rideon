@@ -140,6 +140,7 @@ export default function Home() {
 
   // Elevation
   const [elevations, setElevations] = useState<number[]>([]);
+  const [isElevationLoading, setIsElevationLoading] = useState(false);
   const [navElevations, setNavElevations] = useState<number[]>([]);
   const [elevationIndex, setElevationIndex] = useState<number | null>(null);
   const [navElevationIndex, setNavElevationIndex] = useState<number | null>(null);
@@ -746,6 +747,7 @@ export default function Home() {
     setIsImported(true);
     setIsAdjustingImport(true);
     setElevations([]);
+    setIsElevationLoading(true);
     skipElevationFetchRef.current = true;
     fetch('/api/elevation', {
       method: 'POST',
@@ -758,8 +760,9 @@ export default function Home() {
           setElevations(data.elevations);
           skipElevationFetchRef.current = false;
         }
+        setIsElevationLoading(false);
       })
-      .catch(() => {});
+      .catch(() => { setIsElevationLoading(false); });
   }, []);
 
   const handleGpxImport = useCallback((points: { lat: number; lng: number }[]) => {
@@ -1366,6 +1369,7 @@ export default function Home() {
             const pts = segments.flatMap((s) => s.geometry).map((p): [number, number] => [p.lat, p.lng]);
             if (pts.length >= 2) startDemoRide(pts);
           }}
+          isElevationLoading={isElevationLoading}
           isSpotMode={isSpotMode}
           onToggleSpotMode={() => setIsSpotMode((v) => !v)}
           onReorderRoutes={(routes) => {
