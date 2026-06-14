@@ -488,7 +488,7 @@ export default function CycleMap({
         <Marker
           position={{ lat: currentPosition.lat, lng: currentPosition.lng }}
           icon={makePositionIcon(heading)}
-          zIndex={999}
+          zIndex={9999}
           onLoad={(m) => onMarkerReady?.(m)}
         />
       )}
