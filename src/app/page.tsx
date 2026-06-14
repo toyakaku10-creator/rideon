@@ -899,7 +899,7 @@ export default function Home() {
       demoMarkerRef.current?.setPosition(pos);
       demoMarkerRef.current?.setIcon({
         url: 'data:image/svg+xml,' + encodeURIComponent(makeNavMarkerSvg(hdg)),
-        anchor: new google.maps.Point(22, hdg != null ? 30 : 22),
+        anchor: new google.maps.Point(22, 30),
         scaledSize: new google.maps.Size(44, 44),
       });
       mapInstanceRef.current?.setCenter(pos);
@@ -924,7 +924,7 @@ export default function Home() {
           map: mapInstanceRef.current,
           icon: {
             url: 'data:image/svg+xml,' + encodeURIComponent(makeNavMarkerSvg()),
-            anchor: new google.maps.Point(22, 22),
+            anchor: new google.maps.Point(22, 30),
             scaledSize: new google.maps.Size(44, 44),
           },
           zIndex: 9999,
