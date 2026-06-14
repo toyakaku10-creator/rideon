@@ -34,6 +34,7 @@ export async function POST(request: NextRequest) {
     .join('|')
 
   const url = `https://maps.googleapis.com/maps/api/elevation/json?locations=${locations}&key=${apiKey}`
+  console.log('URL length:', url.length)
 
   const res = await fetch(url)
   const text = await res.text()
