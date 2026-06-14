@@ -884,7 +884,11 @@ export default function Home() {
       const lng = pts[idx][1] + (pts[nextIdx][1] - pts[idx][1]) * t;
       const pos = { lat, lng };
 
-      const hdg = calcHeading([pts[idx][0], pts[idx][1]], [pts[nextIdx][0], pts[nextIdx][1]]);
+      const fromPt = pts[idx];
+      const toPt = pts[nextIdx];
+      const hdg = (fromPt[0] !== toPt[0] || fromPt[1] !== toPt[1])
+        ? calcHeading(fromPt, toPt)
+        : null;
       demoMarkerRef.current?.setPosition(pos);
       demoMarkerRef.current?.setIcon({
         url: 'data:image/svg+xml,' + encodeURIComponent(makeNavMarkerSvg(hdg)),
