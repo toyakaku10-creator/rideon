@@ -694,6 +694,8 @@ export default function Home() {
     try {
       const res = await fetch(`/api/share?id=${shareId}`);
       const data = await res.json();
+      console.log('share data:', data);
+      console.log('elevations from share:', data.elevations?.length);
       if (!data.points || data.points.length < 2) { alert('ルートが見つかりません'); return; }
       const latlngs: LatLng[] = data.points;
       setSegments([{
