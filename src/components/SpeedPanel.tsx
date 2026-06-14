@@ -144,7 +144,6 @@ export default function SpeedPanel({
             <ElevationChart
               elevations={navElevations}
               totalDistance={navTotalDistance}
-              currentIndex={navElevationIndex}
               rideDistance={rideDistance}
             />
           </div>

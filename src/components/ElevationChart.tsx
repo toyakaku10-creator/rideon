@@ -7,7 +7,6 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  ReferenceLine,
   ResponsiveContainer,
 } from 'recharts';
 
@@ -15,11 +14,10 @@ interface ElevationChartProps {
   elevations: number[];
   totalDistance: number; // meters
   onPositionChange?: (index: number) => void;
-  currentIndex?: number;
   rideDistance?: number;
 }
 
-export default function ElevationChart({ elevations, totalDistance, onPositionChange, currentIndex, rideDistance }: ElevationChartProps) {
+export default function ElevationChart({ elevations, totalDistance, onPositionChange, rideDistance }: ElevationChartProps) {
   const gradientId = useRef(`elevation-progress-gradient-${Math.random().toString(36).slice(2)}`);
 
   useEffect(() => {
@@ -127,21 +125,6 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
               dot={false}
               isAnimationActive={false}
             />
-            {currentIndex != null && (
-              <ReferenceLine
-                x={Math.min(currentIndex, data.length - 1)}
-                stroke="#D4AF37"
-                strokeWidth={2}
-                strokeDasharray="4 2"
-                label={{
-                  value: `${Math.round(elevations[Math.min(currentIndex, elevations.length - 1)])}m`,
-                  fill: '#D4AF37',
-                  fontSize: 11,
-                  fontWeight: 'bold',
-                  position: 'top',
-                }}
-              />
-            )}
           </AreaChart>
         </ResponsiveContainer>
       </div>
