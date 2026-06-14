@@ -920,7 +920,7 @@ export default function Home() {
             scaledSize: new google.maps.Size(24, 30),
             anchor: new google.maps.Point(12, 16),
           },
-          zIndex: 999,
+          zIndex: 9999,
         });
         demoMarkerRef.current = marker;
       }
