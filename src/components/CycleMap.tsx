@@ -473,7 +473,7 @@ export default function CycleMap({
       })}
 
       {/* Current position marker (normal mode) */}
-      {tab !== 'speed' && currentPosition && !isDemoMode && (
+      {tab !== 'speed' && !isDemoMode && currentPosition && (
         <Marker
           position={{ lat: currentPosition.lat, lng: currentPosition.lng }}
           icon={makeCurrentLocationIcon()}
