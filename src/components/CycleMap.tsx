@@ -238,6 +238,19 @@ export default function CycleMap({
   const [zoom, setZoom] = useState(14);
   const initializedRef = useRef(false);
   const lastTapRef = useRef(0);
+  const currentMarkerInstanceRef = useRef<google.maps.Marker | null>(null);
+
+  useEffect(() => {
+    if (currentMarkerInstanceRef.current) {
+      currentMarkerInstanceRef.current.setIcon(makePositionIcon(heading));
+    }
+  }, [heading]);
+
+  useEffect(() => {
+    if (currentMarkerInstanceRef.current && currentPosition) {
+      currentMarkerInstanceRef.current.setPosition(currentPosition);
+    }
+  }, [currentPosition]);
 
   const handleLoad = useCallback((m: google.maps.Map) => {
     setMap(m);
@@ -487,7 +500,10 @@ export default function CycleMap({
           position={{ lat: currentPosition.lat, lng: currentPosition.lng }}
           icon={makePositionIcon(heading)}
           zIndex={9999}
-          onLoad={(m) => onMarkerReady?.(m)}
+          onLoad={(m) => {
+            currentMarkerInstanceRef.current = m;
+            onMarkerReady?.(m);
+          }}
         />
       )}
     </GoogleMap>
