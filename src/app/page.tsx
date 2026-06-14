@@ -710,6 +710,7 @@ export default function Home() {
     setFitBoundsPoints([...latlngs]);
     setIsImported(true);
     setIsAdjustingImport(true);
+    skipElevationFetchRef.current = true;
     fetch('/api/elevation', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
