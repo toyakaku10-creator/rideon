@@ -99,8 +99,8 @@ function bearingDeg(a: LatLng, b: LatLng): number {
 
 
 function makeNavMarkerSvg(heading?: number | null): string {
-  const rotate = heading != null ? `transform="rotate(${heading},12,16)"` : '';
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="30" viewBox="0 0 24 30"><g ${rotate}><polygon points="12,2 18,12 6,12" fill="#4A90D9" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><circle cx="12" cy="22" r="8" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="12" cy="22" r="3" fill="white"/></g></svg>`;
+  const rotate = heading != null ? `transform="rotate(${heading},12,24)"` : '';
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="38" viewBox="0 0 24 38"><g ${rotate}><polygon points="12,2 18,10 6,10" fill="#4A90D9" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><circle cx="12" cy="24" r="12" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="12" cy="24" r="4" fill="white"/></g></svg>`;
 }
 
 function calcHeading(from: [number, number], to: [number, number]): number {
@@ -881,8 +881,8 @@ export default function Home() {
       demoMarkerRef.current?.setPosition(pos);
       demoMarkerRef.current?.setIcon({
         url: 'data:image/svg+xml,' + encodeURIComponent(makeNavMarkerSvg(hdg)),
-        scaledSize: new google.maps.Size(24, 30),
-        anchor: new google.maps.Point(12, 16),
+        scaledSize: new google.maps.Size(24, 38),
+        anchor: new google.maps.Point(12, 24),
       });
       mapInstanceRef.current?.setCenter(pos);
       // pointsのidxをelevationsのインデックスに変換

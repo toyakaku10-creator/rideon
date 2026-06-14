@@ -101,18 +101,18 @@ function makeStartGoalIcon(size = 28): google.maps.Icon {
 }
 
 function makePositionIcon(heading?: number | null): google.maps.Icon {
-  const rotate = heading != null ? `transform="rotate(${heading},12,16)"` : '';
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="30" viewBox="0 0 24 30">
+  const rotate = heading != null ? `transform="rotate(${heading},12,24)"` : '';
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="38" viewBox="0 0 24 38">
     <g ${rotate}>
-      <polygon points="12,2 18,12 6,12" fill="#4A90D9" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
-      <circle cx="12" cy="22" r="8" fill="#4A90D9" stroke="white" stroke-width="2.5"/>
-      <circle cx="12" cy="22" r="3" fill="white"/>
+      <polygon points="12,2 18,10 6,10" fill="#4A90D9" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+      <circle cx="12" cy="24" r="12" fill="#4A90D9" stroke="white" stroke-width="2.5"/>
+      <circle cx="12" cy="24" r="4" fill="white"/>
     </g>
   </svg>`;
   return {
     url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
-    scaledSize: new google.maps.Size(24, 30),
-    anchor: new google.maps.Point(12, 16),
+    scaledSize: new google.maps.Size(24, 38),
+    anchor: new google.maps.Point(12, 24),
   };
 }
 
