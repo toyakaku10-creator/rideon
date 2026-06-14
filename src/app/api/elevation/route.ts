@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function POST(request: NextRequest) {
   const { points } = await request.json()
 
-  const MAX_POINTS = 256
+  const MAX_POINTS = 512
 
   // 累積距離を計算
   const cumDist: number[] = [0]
@@ -29,14 +29,22 @@ export async function POST(request: NextRequest) {
 
   const apiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
   console.log('API key exists:', !!apiKey, 'length:', apiKey?.length)
-  const locations = sampled
-    .map((p: { lat: number; lng: number }) => `${p.lat},${p.lng}`)
-    .join('|')
 
-  const url = `https://maps.googleapis.com/maps/api/elevation/json?locations=${locations}&key=${apiKey}`
-  console.log('URL length:', url.length)
+  const body = {
+    locations: sampled.map((p: { lat: number; lng: number }) => ({
+      latitude: p.lat,
+      longitude: p.lng,
+    })),
+  }
 
-  const res = await fetch(url)
+  const res = await fetch(
+    `https://maps.googleapis.com/maps/api/elevation/json?key=${apiKey}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }
+  )
   const text = await res.text()
   console.log('Elevation API response status:', res.status)
   console.log('Elevation API response text:', text.substring(0, 500))
