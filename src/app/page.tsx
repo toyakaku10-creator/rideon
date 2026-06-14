@@ -161,6 +161,7 @@ export default function Home() {
   const [speedCount, setSpeedCount] = useState(0);
   const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
   const [heading, setHeading] = useState<number | null>(null);
+  const [demoHeading, setDemoHeading] = useState<number | null>(null);
   const [rideDistance, setRideDistance] = useState(0);
   const prevGpsPos = useRef<{ lat: number; lng: number } | null>(null);
   const rideStartTimeRef = useRef<number | null>(null);
@@ -932,6 +933,7 @@ export default function Home() {
       const hdg = (fromPt[0] !== toPt[0] || fromPt[1] !== toPt[1])
         ? calcHeading(fromPt, toPt)
         : null;
+      setDemoHeading(hdg);
       mapInstanceRef.current?.setCenter(pos);
       // pointsのidxをelevationsのインデックスに変換
       const elevIdx = Math.round(idx / (pts.length - 1) * (elevations.length - 1));
@@ -1099,8 +1101,16 @@ export default function Home() {
             pointerEvents: 'none',
           }}>
             <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44">
-              <circle cx="22" cy="22" r="10" fill="#4A90D9" stroke="white" strokeWidth="2.5"/>
-              <circle cx="22" cy="22" r="4" fill="white"/>
+              <g transform={`rotate(${demoHeading ?? 0} 22 22)`}>
+                {demoHeading != null && (
+                  <>
+                    <polygon points="22,2 28,12 16,12" fill="#4A90D9" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
+                    <rect x="16" y="10" width="12" height="4" fill="white"/>
+                  </>
+                )}
+                <circle cx="22" cy="22" r="10" fill="#4A90D9" stroke="white" strokeWidth="2.5"/>
+                <circle cx="22" cy="22" r="4" fill="white"/>
+              </g>
             </svg>
           </div>
         )}
