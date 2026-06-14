@@ -1064,7 +1064,6 @@ export default function Home() {
           logTrack={logTrack}
           referenceSegments={referenceRoute?.segments}
           onMapReady={(m) => { mapInstanceRef.current = m; }}
-          onMarkerReady={(m) => { currentMarkerRef.current = m; }}
         />
 
 

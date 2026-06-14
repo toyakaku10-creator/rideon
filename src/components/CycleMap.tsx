@@ -101,14 +101,6 @@ function makeStartGoalIcon(size = 28): google.maps.Icon {
 }
 
 
-function makePositionIcon(): google.maps.Icon {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="10" cy="10" r="4" fill="white"/></svg>`;
-  return {
-    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
-    anchor: new google.maps.Point(10, 10),
-    scaledSize: new google.maps.Size(20, 20),
-  };
-}
 
 function makeElevationMarkerIcon(distanceLabel?: string): google.maps.Icon {
   if (distanceLabel) {
@@ -194,7 +186,6 @@ interface CycleMapProps {
   logTrack?: { lat: number; lng: number }[] | null;
   referenceSegments?: RouteSegment[];
   onMapReady?: (map: google.maps.Map) => void;
-  onMarkerReady?: (marker: google.maps.Marker) => void;
 }
 
 export default function CycleMap({
@@ -222,7 +213,6 @@ export default function CycleMap({
   logTrack,
   referenceSegments,
   onMapReady,
-  onMarkerReady,
 }: CycleMapProps) {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
@@ -234,34 +224,6 @@ export default function CycleMap({
   const [zoom, setZoom] = useState(14);
   const initializedRef = useRef(false);
   const lastTapRef = useRef(0);
-  const currentMarkerInstanceRef = useRef<google.maps.Marker | null>(null);
-
-  useEffect(() => {
-    if (!map || !currentPosition || tab !== 'speed' || isDemoMode) {
-      if (currentMarkerInstanceRef.current) {
-        currentMarkerInstanceRef.current.setMap(null);
-        currentMarkerInstanceRef.current = null;
-      }
-      return;
-    }
-    if (!currentMarkerInstanceRef.current) {
-      const marker = new google.maps.Marker({
-        position: currentPosition,
-        map,
-        icon: makePositionIcon(),
-        zIndex: 9999,
-      });
-      currentMarkerInstanceRef.current = marker;
-      onMarkerReady?.(marker);
-    }
-  }, [map, tab, isDemoMode]);
-
-
-  useEffect(() => {
-    if (currentMarkerInstanceRef.current && currentPosition) {
-      currentMarkerInstanceRef.current.setPosition(currentPosition);
-    }
-  }, [currentPosition]);
 
   const handleLoad = useCallback((m: google.maps.Map) => {
     setMap(m);
