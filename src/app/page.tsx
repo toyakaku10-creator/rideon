@@ -733,6 +733,7 @@ export default function Home() {
     setFitBoundsPoints([...latlngs]);
     setIsImported(true);
     setIsAdjustingImport(true);
+    setElevations([]);
     skipElevationFetchRef.current = true;
     fetch('/api/elevation', {
       method: 'POST',
@@ -740,7 +741,12 @@ export default function Home() {
       body: JSON.stringify({ points: latlngs }),
     })
       .then((r) => r.json())
-      .then((data) => { if (data.elevations) setElevations(data.elevations); })
+      .then((data) => {
+        if (data.elevations) {
+          setElevations(data.elevations);
+          skipElevationFetchRef.current = false;
+        }
+      })
       .catch(() => {});
   }, []);
 
