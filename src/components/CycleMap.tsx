@@ -10,7 +10,6 @@ import {
 } from '@react-google-maps/api';
 import type { Tab, LatLng, RouteSegment, Spot } from '@/types';
 import { spotLucidePath, spotCustomSvg } from '@/lib/spotCategories';
-import { getLocationMarkerClass } from '@/lib/locationMarker';
 
 function getSpotMarkerSizes(zoom: number): { circleSize: number; iconSize: number } {
   if (zoom >= 16) return { circleSize: 28, iconSize: 16 };
@@ -102,6 +101,18 @@ function makeStartGoalIcon(size = 28): google.maps.Icon {
 }
 
 
+function makePositionIcon(heading: number | null): google.maps.Icon {
+  const hasHeading = heading != null && !isNaN(heading);
+  const html = hasHeading
+    ? `<div style="display:flex;flex-direction:column;align-items:center;gap:2px;transform:rotate(${heading}deg);"><div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #4A90D9;"></div><div style="width:20px;height:20px;border-radius:50%;background:#4A90D9;border:2.5px solid white;display:flex;align-items:center;justify-content:center;"><div style="width:6px;height:6px;border-radius:50%;background:white;"></div></div></div>`
+    : `<div style="width:20px;height:20px;border-radius:50%;background:#4A90D9;border:2.5px solid white;display:flex;align-items:center;justify-content:center;"><div style="width:6px;height:6px;border-radius:50%;background:white;"></div></div>`;
+  return {
+    url: 'data:image/svg+xml,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="34"><foreignObject width="24" height="34">${html}</foreignObject></svg>`),
+    anchor: new google.maps.Point(12, hasHeading ? 24 : 10),
+    scaledSize: new google.maps.Size(24, 34),
+  };
+}
+
 function makeElevationMarkerIcon(distanceLabel?: string): google.maps.Icon {
   if (distanceLabel) {
     const W = 56, labelH = 18, gap = 2, dotR = 5;
@@ -186,7 +197,7 @@ interface CycleMapProps {
   logTrack?: { lat: number; lng: number }[] | null;
   referenceSegments?: RouteSegment[];
   onMapReady?: (map: google.maps.Map) => void;
-  onMarkerReady?: (marker: google.maps.OverlayView) => void;
+  onMarkerReady?: (marker: google.maps.Marker) => void;
 }
 
 export default function CycleMap({
@@ -226,8 +237,6 @@ export default function CycleMap({
   const [zoom, setZoom] = useState(14);
   const initializedRef = useRef(false);
   const lastTapRef = useRef(0);
-  const locationOverlayRef = useRef<(google.maps.OverlayView & { update(pos: google.maps.LatLng, heading: number | null): void }) | null>(null);
-  const onMarkerReadyRef = useRef(onMarkerReady);
 
   const handleLoad = useCallback((m: google.maps.Map) => {
     setMap(m);
@@ -274,37 +283,6 @@ export default function CycleMap({
       map.panBy(0, 30);
     }
   }, [map, center, follow]);
-
-  // LocationMarker overlay lifecycle (speed mode current position)
-  useEffect(() => {
-    if (!map || !currentPosition || tab !== 'speed' || isDemoMode) {
-      if (locationOverlayRef.current) {
-        locationOverlayRef.current.setMap(null);
-        locationOverlayRef.current = null;
-      }
-      return;
-    }
-    const pos = new google.maps.LatLng(currentPosition.lat, currentPosition.lng);
-    if (!locationOverlayRef.current) {
-      const Cls = getLocationMarkerClass();
-      const overlay = new Cls(pos, heading ?? null);
-      overlay.setMap(map);
-      locationOverlayRef.current = overlay;
-      onMarkerReadyRef.current?.(overlay);
-    } else {
-      locationOverlayRef.current.update(pos, heading ?? null);
-    }
-  }, [map, currentPosition, heading, tab, isDemoMode]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (locationOverlayRef.current) {
-        locationOverlayRef.current.setMap(null);
-        locationOverlayRef.current = null;
-      }
-    };
-  }, []);
 
   // Double tap detection for spot add
   useEffect(() => {
@@ -502,7 +480,15 @@ export default function CycleMap({
         />
       )}
 
-      {/* Current position marker (speed mode) — rendered via LocationMarker OverlayView */}
+      {/* Current position marker (speed mode) */}
+      {tab === 'speed' && currentPosition && !isDemoMode && (
+        <Marker
+          position={{ lat: currentPosition.lat, lng: currentPosition.lng }}
+          icon={makePositionIcon(heading)}
+          zIndex={9999}
+          onLoad={(m) => onMarkerReady?.(m)}
+        />
+      )}
     </GoogleMap>
   );
 }

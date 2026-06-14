@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { Bike, Play, Pause, Square, Plus, Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin, type LucideProps } from 'lucide-react';
 import type { Tab, RouteType, LatLng, RouteSegment, SavedRoute, RideLog, Spot } from '@/types';
 import { SPOT_CATEGORIES, spotCustomSvg } from '@/lib/spotCategories';
-import { getLocationMarkerClass } from '@/lib/locationMarker';
 
 const SPOT_ICON_MAP: Record<string, React.ComponentType<LucideProps>> = {
   Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin,
@@ -100,6 +99,14 @@ function bearingDeg(a: LatLng, b: LatLng): number {
 
 
 
+function makeNavMarkerSvg(heading?: number | null): string {
+  const hasHeading = heading != null && !isNaN(heading);
+  const html = hasHeading
+    ? `<div style="display:flex;flex-direction:column;align-items:center;gap:2px;transform:rotate(${heading}deg);"><div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #4A90D9;"></div><div style="width:20px;height:20px;border-radius:50%;background:#4A90D9;border:2.5px solid white;display:flex;align-items:center;justify-content:center;"><div style="width:6px;height:6px;border-radius:50%;background:white;"></div></div></div>`
+    : `<div style="width:20px;height:20px;border-radius:50%;background:#4A90D9;border:2.5px solid white;display:flex;align-items:center;justify-content:center;"><div style="width:6px;height:6px;border-radius:50%;background:white;"></div></div>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="34"><foreignObject width="24" height="34">${html}</foreignObject></svg>`;
+}
+
 function calcHeading(from: [number, number], to: [number, number]): number {
   const dLng = to[1] - from[1];
   const dLat = to[0] - from[0];
@@ -166,8 +173,8 @@ export default function Home() {
   const demoStartTimeRef = useRef(0);
   const demoRAFRef = useRef<number | null>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
-  const currentMarkerRef = useRef<google.maps.OverlayView | null>(null);
-  const demoMarkerRef = useRef<google.maps.OverlayView & { update(pos: google.maps.LatLng, heading: number | null): void } | null>(null);
+  const currentMarkerRef = useRef<google.maps.Marker | null>(null);
+  const demoMarkerRef = useRef<google.maps.Marker | null>(null);
   const skipElevationFetchRef = useRef(false);
   const pendingElevationsRef = useRef<number[] | undefined>(undefined);
   const demoElevIndexRef = useRef<number>(0);
@@ -887,7 +894,12 @@ export default function Home() {
       const hdg = (fromPt[0] !== toPt[0] || fromPt[1] !== toPt[1])
         ? calcHeading(fromPt, toPt)
         : null;
-      demoMarkerRef.current?.update(new google.maps.LatLng(pos.lat, pos.lng), hdg);
+      demoMarkerRef.current?.setPosition(pos);
+      demoMarkerRef.current?.setIcon({
+        url: 'data:image/svg+xml,' + encodeURIComponent(makeNavMarkerSvg(hdg)),
+        anchor: new google.maps.Point(12, hdg != null ? 24 : 10),
+        scaledSize: new google.maps.Size(24, 34),
+      });
       mapInstanceRef.current?.setCenter(pos);
       // pointsのidxをelevationsのインデックスに変換
       const elevIdx = Math.round(idx / (pts.length - 1) * (elevations.length - 1));
@@ -905,10 +917,17 @@ export default function Home() {
 
     setTimeout(() => {
       if (mapInstanceRef.current) {
-        const Cls = getLocationMarkerClass();
-        const overlay = new Cls(new google.maps.LatLng(pts[0][0], pts[0][1]), null);
-        overlay.setMap(mapInstanceRef.current);
-        demoMarkerRef.current = overlay;
+        const marker = new google.maps.Marker({
+          position: { lat: pts[0][0], lng: pts[0][1] },
+          map: mapInstanceRef.current,
+          icon: {
+            url: 'data:image/svg+xml,' + encodeURIComponent(makeNavMarkerSvg()),
+            anchor: new google.maps.Point(12, 10),
+            scaledSize: new google.maps.Size(24, 34),
+          },
+          zIndex: 9999,
+        });
+        demoMarkerRef.current = marker;
       }
       demoStartTimeRef.current = performance.now();
       demoRAFRef.current = requestAnimationFrame(animate);
@@ -1003,7 +1022,7 @@ export default function Home() {
           logTrack={logTrack}
           referenceSegments={referenceRoute?.segments}
           onMapReady={(m) => { mapInstanceRef.current = m; }}
-          onMarkerReady={(m: google.maps.OverlayView) => { currentMarkerRef.current = m; }}
+          onMarkerReady={(m) => { currentMarkerRef.current = m; }}
         />
 
 
