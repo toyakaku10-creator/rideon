@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
   }
 
   if (data.status !== 'OK') {
+    console.error('Elevation API error:', data.status, data.error_message)
     return NextResponse.json({ error: data.error_message || data.status }, { status: 500 })
   }
 
