@@ -36,6 +36,8 @@ export async function POST(request: NextRequest) {
 
   const res = await fetch(url)
   const text = await res.text()
+  console.log('Elevation API response status:', res.status)
+  console.log('Elevation API response text:', text.substring(0, 500))
 
   let data
   try {
@@ -44,6 +46,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid response' }, { status: 500 })
   }
 
+  console.log('Elevation data status:', data.status)
+  console.log('Elevation error:', data.error_message)
   if (data.status !== 'OK') {
     console.error('Elevation API error:', data.status, data.error_message)
     return NextResponse.json({ error: data.error_message || data.status }, { status: 500 })
