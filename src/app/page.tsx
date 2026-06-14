@@ -456,7 +456,7 @@ export default function Home() {
     const now = Date.now();
     if (now - lastMapCenterRef.current < 1000) return;
     lastMapCenterRef.current = now;
-    mapInstanceRef.current?.setCenter({ lat: currentPosition.lat, lng: currentPosition.lng });
+    mapInstanceRef.current?.panTo({ lat: currentPosition.lat, lng: currentPosition.lng });
   }, [currentPosition, tab]);
 
   // Restore interrupted ride on startup
