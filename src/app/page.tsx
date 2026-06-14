@@ -178,6 +178,7 @@ export default function Home() {
   const demoRAFRef = useRef<number | null>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const lastMapCenterRef = useRef(0);
+  const lastMapUpdatePosRef = useRef<{lat: number, lng: number} | null>(null);
   const currentMarkerRef = useRef<google.maps.Marker | null>(null);
   const skipElevationFetchRef = useRef(false);
   const pendingElevationsRef = useRef<number[] | undefined>(undefined);
@@ -452,12 +453,17 @@ export default function Home() {
 
   // Follow current position in GPS speed mode (demo handles its own camera)
   useEffect(() => {
-    if (!currentPosition || tab !== 'speed' || isDemoModeRef.current) return;
-    const now = Date.now();
-    if (now - lastMapCenterRef.current < 1000) return;
-    lastMapCenterRef.current = now;
+    if (!currentPosition || tab !== 'speed' || isDemoMode) return;
+
+    // 前回の地図更新位置から5m以上動いた時だけ更新
+    if (lastMapUpdatePosRef.current) {
+      const dist = haversineDistance(lastMapUpdatePosRef.current, currentPosition);
+      if (dist < 5) return;
+    }
+
+    lastMapUpdatePosRef.current = currentPosition;
     mapInstanceRef.current?.panTo({ lat: currentPosition.lat, lng: currentPosition.lng });
-  }, [currentPosition, tab]);
+  }, [currentPosition, tab, isDemoMode]);
 
   // Restore interrupted ride on startup
   useEffect(() => {
