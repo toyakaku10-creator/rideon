@@ -40,8 +40,11 @@ export function getLocationMarkerClass(): new (pos: google.maps.LatLng, heading:
       const proj = this.getProjection();
       const point = proj.fromLatLngToDivPixel(this._pos);
       if (point) {
+        const hasHeading = this._heading != null;
         this._div.style.left = `${point.x - 10}px`;
-        this._div.style.top = `${point.y - 20}px`;
+        this._div.style.top = hasHeading
+          ? `${point.y - 22}px`
+          : `${point.y - 10}px`;
       }
     }
 
