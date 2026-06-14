@@ -28,6 +28,7 @@ export async function POST(request: NextRequest) {
   }
 
   const apiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+  console.log('API key exists:', !!apiKey, 'length:', apiKey?.length)
   const locations = sampled
     .map((p: { lat: number; lng: number }) => `${p.lat},${p.lng}`)
     .join('|')
