@@ -178,7 +178,6 @@ export default function Home() {
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const lastMapCenterRef = useRef(0);
   const currentMarkerRef = useRef<google.maps.Marker | null>(null);
-  const demoMarkerRef = useRef<google.maps.Marker | null>(null);
   const skipElevationFetchRef = useRef(false);
   const pendingElevationsRef = useRef<number[] | undefined>(undefined);
   const demoElevIndexRef = useRef<number>(0);
@@ -855,11 +854,6 @@ export default function Home() {
     setIsPaused(false);
     isDemoModeRef.current = true;
     setIsDemoMode(true);
-    // demoMarkerRef（緑の車輪）をリセット
-    if (demoMarkerRef.current) {
-      demoMarkerRef.current.setMap(null);
-      demoMarkerRef.current = null;
-    }
     // 現在位置マーカーを非表示
     if (currentMarkerRef.current) {
       currentMarkerRef.current.setMap(null);
@@ -938,12 +932,6 @@ export default function Home() {
       const hdg = (fromPt[0] !== toPt[0] || fromPt[1] !== toPt[1])
         ? calcHeading(fromPt, toPt)
         : null;
-      demoMarkerRef.current?.setPosition(pos);
-      demoMarkerRef.current?.setIcon({
-        url: 'data:image/svg+xml,' + encodeURIComponent(makeNavMarkerSvg(hdg)),
-        anchor: new google.maps.Point(22, 22),
-        scaledSize: new google.maps.Size(44, 44),
-      });
       mapInstanceRef.current?.setCenter(pos);
       // pointsのidxをelevationsのインデックスに変換
       const elevIdx = Math.round(idx / (pts.length - 1) * (elevations.length - 1));
@@ -961,19 +949,6 @@ export default function Home() {
     };
 
     setTimeout(() => {
-      if (mapInstanceRef.current) {
-        const marker = new google.maps.Marker({
-          position: { lat: pts[0][0], lng: pts[0][1] },
-          map: mapInstanceRef.current,
-          icon: {
-            url: 'data:image/svg+xml,' + encodeURIComponent(makeNavMarkerSvg()),
-            anchor: new google.maps.Point(22, 22),
-            scaledSize: new google.maps.Size(44, 44),
-          },
-          zIndex: 9999,
-        });
-        demoMarkerRef.current = marker;
-      }
       demoStartTimeRef.current = performance.now();
       demoRAFRef.current = requestAnimationFrame(animate);
     }, 300);
@@ -985,10 +960,6 @@ export default function Home() {
     setIsDemoMode(false);
     setCurrentSpeed(0);
     setTab('distance');
-    if (demoMarkerRef.current) {
-      demoMarkerRef.current.setMap(null);
-      demoMarkerRef.current = null;
-    }
     // 現在位置マーカーを再表示
     if (currentMarkerRef.current && mapInstanceRef.current) {
       currentMarkerRef.current.setMap(mapInstanceRef.current);
@@ -1114,6 +1085,23 @@ export default function Home() {
             >
               <Plus size={28} color="white" />
             </button>
+          </div>
+        )}
+
+        {/* Fixed screen center marker (demo mode) */}
+        {isDemoMode && (
+          <div style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 501,
+            pointerEvents: 'none',
+          }}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44">
+              <circle cx="22" cy="22" r="10" fill="#4A90D9" stroke="white" strokeWidth="2.5"/>
+              <circle cx="22" cy="22" r="4" fill="white"/>
+            </svg>
           </div>
         )}
 
