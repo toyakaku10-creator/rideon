@@ -1125,15 +1125,13 @@ export default function Home() {
             zIndex: 500,
             background: 'rgba(0,0,0,0.6)',
             borderRadius: '20px',
-            padding: '5px 24px 0px',
+            padding: '5px 28px 0px',
             display: 'flex',
             alignItems: 'baseline',
             gap: '4px',
             pointerEvents: 'none',
-            width: '100px',
             textAlign: 'center',
             justifyContent: 'center',
-            boxSizing: 'border-box',
           }}>
             <span style={{fontSize: '28px', fontWeight: '500', color: 'white', fontVariantNumeric: 'tabular-nums'}}>
               {currentSpeed.toFixed(1)}
