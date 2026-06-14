@@ -1042,6 +1042,29 @@ export default function Home() {
           </div>
         )}
 
+        {/* Speed sub display (ride mode) */}
+        {tab === 'speed' && !isDemoMode && (
+          <div style={{
+            position: 'absolute',
+            top: '8px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 500,
+            background: 'rgba(0,0,0,0.6)',
+            borderRadius: '20px',
+            padding: '4px 16px',
+            display: 'flex',
+            alignItems: 'baseline',
+            gap: '4px',
+            pointerEvents: 'none',
+          }}>
+            <span style={{fontSize: '28px', fontWeight: '500', color: 'white'}}>
+              {Math.round(currentSpeed)}
+            </span>
+            <span style={{fontSize: '12px', color: 'rgba(255,255,255,0.7)'}}>km/h</span>
+          </div>
+        )}
+
         {/* Floating RideOn button */}
         <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 500 }}>
           <button
