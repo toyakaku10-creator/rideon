@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function POST(request: NextRequest) {
   const { points } = await request.json()
 
-  const MAX_POINTS = 512
+  const MAX_POINTS = 256
 
   // 累積距離を計算
   const cumDist: number[] = [0]
