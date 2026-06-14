@@ -1078,7 +1078,7 @@ export default function Home() {
             zIndex: 500,
             background: 'rgba(0,0,0,0.6)',
             borderRadius: '20px',
-            padding: '4px 16px',
+            padding: '5px 10px',
             display: 'flex',
             alignItems: 'baseline',
             gap: '4px',
