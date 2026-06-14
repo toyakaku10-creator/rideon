@@ -20,15 +20,19 @@ interface ElevationChartProps {
 }
 
 export default function ElevationChart({ elevations, totalDistance, onPositionChange, currentIndex, rideDistance }: ElevationChartProps) {
-  const lineId = useRef(`elevation-line-${Math.random().toString(36).slice(2)}`);
+  const gradientId = useRef(`elevation-progress-gradient-${Math.random().toString(36).slice(2)}`);
 
   useEffect(() => {
     if (rideDistance == null || !totalDistance) return;
     const ratio = Math.min(rideDistance / totalDistance, 1);
-    const lineEl = document.getElementById(lineId.current);
-    if (lineEl) {
-      lineEl.setAttribute('x1', `${ratio * 100}%`);
-      lineEl.setAttribute('x2', `${ratio * 100}%`);
+    const gradEl = document.getElementById(gradientId.current);
+    if (gradEl) {
+      gradEl.innerHTML = `
+        <stop offset="0%" stop-color="#D4AF37" stop-opacity="0.9"/>
+        <stop offset="${ratio * 100}%" stop-color="#D4AF37" stop-opacity="0.9"/>
+        <stop offset="${ratio * 100}%" stop-color="#D4AF37" stop-opacity="0.2"/>
+        <stop offset="100%" stop-color="#D4AF37" stop-opacity="0.2"/>
+      `;
     }
   }, [rideDistance, totalDistance]);
 
@@ -56,32 +60,27 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
 
   return (
     <div className="mt-2 mb-1">
-      {/* Chart */}
       <div
         onTouchStart={handleTouch}
         onTouchMove={handleTouch}
         style={{ position: 'relative', touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none' } as React.CSSProperties}
       >
-        {/* 現在位置インジケーター（走行中・DOM直接操作） */}
-        {rideDistance != null && (
-          <svg
-            style={{ position: 'absolute', top: 0, left: 35, width: 'calc(100% - 55px)', height: '100%', pointerEvents: 'none', zIndex: 10 }}
-          >
-            <line
-              id={lineId.current}
-              x1="0%" y1="0" x2="0%" y2="100%"
-              stroke="#D4AF37"
-              strokeWidth={2}
-              strokeDasharray="4,2"
-            />
-          </svg>
-        )}
         <ResponsiveContainer width="100%" height={72}>
           <AreaChart data={data} margin={{ top: 4, right: 20, left: -10, bottom: 0 }}>
             <defs>
-              <linearGradient id="elevGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#D4AF37" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#D4AF37" stopOpacity={0.05} />
+              <linearGradient id={gradientId.current} x1="0" y1="0" x2="1" y2="0">
+                {rideDistance != null ? (
+                  <>
+                    <stop offset="0%" stopColor="#D4AF37" stopOpacity={0.9} />
+                    <stop offset="0%" stopColor="#D4AF37" stopOpacity={0.2} />
+                    <stop offset="100%" stopColor="#D4AF37" stopOpacity={0.2} />
+                  </>
+                ) : (
+                  <>
+                    <stop offset="0%" stopColor="#D4AF37" stopOpacity={0.3} />
+                    <stop offset="100%" stopColor="#D4AF37" stopOpacity={0.05} />
+                  </>
+                )}
               </linearGradient>
             </defs>
             <XAxis
@@ -124,7 +123,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
               dataKey="elev"
               stroke="#D4AF37"
               strokeWidth={1.5}
-              fill="url(#elevGradient)"
+              fill={`url(#${gradientId.current})`}
               dot={false}
               isAnimationActive={false}
             />
