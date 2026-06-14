@@ -131,7 +131,7 @@ export default function SpeedPanel({
             <div style={{ fontSize: '10px', color: '#888', marginBottom: '4px' }}>
               {showRemaining ? '残り' : '走行距離'}
             </div>
-            <div style={{ fontSize: '16px', fontWeight: '700' }}>
+            <div style={{ fontSize: '16px', fontWeight: '700', fontVariantNumeric: 'tabular-nums', minWidth: '60px', display: 'inline-block', textAlign: 'right' }}>
               {showRemaining ? remainingKm.toFixed(2) : rideKm.toFixed(2)}
             </div>
             <div style={{ fontSize: '10px', color: '#888' }}>km</div>
