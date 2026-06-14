@@ -41,19 +41,11 @@ const SpeedMeter = ({ speed }: { speed: number }) => {
       <line x1={cx} y1={cy} x2={x} y2={y} stroke="#D4AF37" strokeWidth="2.5" strokeLinecap="round"/>
       <circle cx={cx} cy={cy} r="7" fill="#D4AF37"/>
       <circle cx={cx} cy={cy} r="3" fill="white"/>
-      <text
-        x={cx} y={cy - 30} textAnchor="middle" fontSize="24" fontWeight="bold" fill="#333"
-        style={{ transformBox: 'fill-box' as React.CSSProperties['transformBox'], transformOrigin: 'center', transform: 'scaleY(-1)' }}
-      >{speed.toFixed(1)}</text>
-      <text
-        x={cx} y={cy - 16} textAnchor="middle" fontSize="11" fill="#999"
-        style={{ transformBox: 'fill-box' as React.CSSProperties['transformBox'], transformOrigin: 'center', transform: 'scaleY(-1)' }}
-      >km/h</text>
+      <text x={cx} y={cy - 30} textAnchor="middle" fontSize="24" fontWeight="bold" fill="#333">{speed.toFixed(1)}</text>
+      <text x={cx} y={cy - 16} textAnchor="middle" fontSize="11" fill="#999">km/h</text>
     </svg>
   )
 }
-
-const FLIP_TEXT: React.CSSProperties = { display: 'block', transform: 'scaleY(-1)' };
 
 export default function SpeedPanel({
   currentSpeed,
@@ -77,22 +69,15 @@ export default function SpeedPanel({
 
   return (
     <div
-      className="bg-[var(--surface)]"
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 500,
-        transform: 'scaleY(-1)',
-      }}
+      className="bg-[var(--surface)] border-t border-[var(--border)] shrink-0"
+      style={{ position: 'relative', paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}
     >
       <div style={{ maxWidth: '480px', margin: '0 auto' }}>
         {/* Nav route name */}
         {navRoute && (
           <div style={{ padding: '8px 16px 0' }}>
             <div className="bg-[var(--surface2)] rounded-xl px-3 py-2">
-              <span className="text-[var(--text)] text-sm font-medium truncate" style={FLIP_TEXT}>
+              <span className="text-[var(--text)] text-sm font-medium truncate block">
                 {navRoute.name}
               </span>
             </div>
@@ -106,12 +91,12 @@ export default function SpeedPanel({
             style={{ flex: 1, textAlign: 'center', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' } as React.CSSProperties}
             onClick={() => setShowMax((prev) => !prev)}
           >
-            <div style={{ fontSize: '10px', color: '#888', marginBottom: '4px', ...FLIP_TEXT }}>{subLabel}</div>
-            <div style={{ fontSize: '16px', fontWeight: '700', ...FLIP_TEXT }}>{subSpeed.toFixed(1)}</div>
-            <div style={{ fontSize: '10px', color: '#888', ...FLIP_TEXT }}>km/h</div>
+            <div style={{ fontSize: '10px', color: '#888', marginBottom: '4px' }}>{subLabel}</div>
+            <div style={{ fontSize: '16px', fontWeight: '700' }}>{subSpeed.toFixed(1)}</div>
+            <div style={{ fontSize: '10px', color: '#888' }}>km/h</div>
           </div>
 
-          {/* 現在速度（メーター泡） — absolute で飛び出す */}
+          {/* 現在速度（メーター泡） — absolute で上に飛び出す */}
           <div style={{ flex: 2 }} />
           <div style={{
             position: 'absolute',
@@ -139,19 +124,19 @@ export default function SpeedPanel({
             style={{ flex: 1, textAlign: 'center', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' } as React.CSSProperties}
             onClick={() => setShowRemaining((prev) => !prev)}
           >
-            <div style={{ fontSize: '10px', color: '#888', marginBottom: '4px', ...FLIP_TEXT }}>
+            <div style={{ fontSize: '10px', color: '#888', marginBottom: '4px' }}>
               {showRemaining ? '残り' : '走行距離'}
             </div>
-            <div style={{ fontSize: '16px', fontWeight: '700', ...FLIP_TEXT }}>
+            <div style={{ fontSize: '16px', fontWeight: '700' }}>
               {showRemaining ? remainingKm.toFixed(2) : rideKm.toFixed(2)}
             </div>
-            <div style={{ fontSize: '10px', color: '#888', ...FLIP_TEXT }}>km</div>
+            <div style={{ fontSize: '10px', color: '#888' }}>km</div>
           </div>
         </div>
 
         {/* Elevation chart for loaded route */}
         {navElevations.length >= 2 && (
-          <div style={{ padding: '0 16px 8px', transform: 'scaleY(-1)' }}>
+          <div style={{ padding: '0 16px 8px' }}>
             <ElevationChart
               elevations={navElevations}
               totalDistance={navTotalDistance}
