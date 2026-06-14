@@ -521,8 +521,9 @@ export default function Home() {
   }, []);
 
   const handleClear = useCallback(() => {
+    if (tab === 'speed') return;
     setShowClearConfirm(true);
-  }, []);
+  }, [tab]);
 
   const executeClear = useCallback(() => {
     setWaypoints([]);
