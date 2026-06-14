@@ -709,6 +709,16 @@ export default function Home() {
       if (data.elevations && data.elevations.length > 0) {
         setElevations(data.elevations);
         skipElevationFetchRef.current = true;
+      } else {
+        const pts = data.points;
+        fetch('/api/elevation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ points: pts }),
+        })
+          .then(r => r.json())
+          .then(d => { if (d.elevations) setElevations(d.elevations); })
+          .catch(() => {});
       }
       setIsShareImport(true);
       setTimeout(() => setOpenSaveSheet(true), 500);
