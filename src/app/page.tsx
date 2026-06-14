@@ -427,6 +427,38 @@ export default function Home() {
     mapInstanceRef.current.setCenter({ lat: currentPosition.lat, lng: currentPosition.lng });
   }, [currentPosition, tab]);
 
+  // Restore interrupted ride on startup
+  useEffect(() => {
+    const saved = localStorage.getItem('rideon-active-ride');
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        if (window.confirm('前回のライドが中断されています。記録を復元しますか？')) {
+          rideTrackRef.current = data.track ?? [];
+          rideStartTimeRef.current = data.startTime ?? Date.now();
+          setRideDistance(data.distance ?? 0);
+          setMaxSpeed(data.maxSpeed ?? 0);
+          setTab('speed');
+        }
+      } catch { /* ignore corrupt data */ }
+      localStorage.removeItem('rideon-active-ride');
+    }
+  }, []);
+
+  // Auto-save active ride every 10 seconds
+  useEffect(() => {
+    if (tab !== 'speed' || isDemoMode) return;
+    const interval = setInterval(() => {
+      localStorage.setItem('rideon-active-ride', JSON.stringify({
+        track: rideTrackRef.current,
+        startTime: rideStartTimeRef.current,
+        distance: rideDistance,
+        maxSpeed,
+      }));
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [tab, isDemoMode, rideDistance, maxSpeed]);
+
   // Navigation turn detection
   useEffect(() => {
     if (!currentPosition || !navRoute) { setNavInstruction(''); return; }
@@ -1077,6 +1109,7 @@ export default function Home() {
                   } catch { /* ignore */ }
                 }
                 rideStartTimeRef.current = null;
+                localStorage.removeItem('rideon-active-ride');
                 setTab('distance');
               } else {
                 // ライドモード開始
