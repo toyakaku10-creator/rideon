@@ -487,6 +487,7 @@ export default function CycleMap({
           position={{ lat: currentPosition.lat, lng: currentPosition.lng }}
           icon={makePositionIcon(heading)}
           zIndex={9999}
+          optimized={false}
           onLoad={(m) => onMarkerReady?.(m)}
         />
       )}
