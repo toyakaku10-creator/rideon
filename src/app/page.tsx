@@ -1100,16 +1100,16 @@ export default function Home() {
             zIndex: 501,
             pointerEvents: 'none',
           }}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44">
-              <g transform={`rotate(${(isDemoMode ? demoHeading : heading) ?? 0} 22 22)`}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56">
+              <g transform={`rotate(${(isDemoMode ? demoHeading : heading) ?? 0} 28 28)`}>
                 {(isDemoMode ? demoHeading : heading) != null && (
                   <>
-                    <polygon points="22,2 28,12 16,12" fill="#4A90D9" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
-                    <rect x="16" y="10" width="12" height="4" fill="white"/>
+                    <polygon points="28,2 35,14 21,14" fill="#4A90D9" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
+                    <rect x="21" y="12" width="14" height="4" fill="white"/>
                   </>
                 )}
-                <circle cx="22" cy="22" r="10" fill="#4A90D9" stroke="white" strokeWidth="2.5"/>
-                <circle cx="22" cy="22" r="4" fill="white"/>
+                <circle cx="28" cy="28" r="12" fill="#4A90D9" stroke="white" strokeWidth="2.5"/>
+                <circle cx="28" cy="28" r="5" fill="white"/>
               </g>
             </svg>
           </div>
