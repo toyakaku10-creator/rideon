@@ -241,6 +241,26 @@ export default function CycleMap({
   const currentMarkerInstanceRef = useRef<google.maps.Marker | null>(null);
 
   useEffect(() => {
+    if (!map || !currentPosition || tab !== 'speed' || isDemoMode) {
+      if (currentMarkerInstanceRef.current) {
+        currentMarkerInstanceRef.current.setMap(null);
+        currentMarkerInstanceRef.current = null;
+      }
+      return;
+    }
+    if (!currentMarkerInstanceRef.current) {
+      const marker = new google.maps.Marker({
+        position: currentPosition,
+        map,
+        icon: makePositionIcon(heading),
+        zIndex: 9999,
+      });
+      currentMarkerInstanceRef.current = marker;
+      onMarkerReady?.(marker);
+    }
+  }, [map, tab, isDemoMode]);
+
+  useEffect(() => {
     if (currentMarkerInstanceRef.current) {
       currentMarkerInstanceRef.current.setIcon(makePositionIcon(heading));
     }
@@ -494,18 +514,6 @@ export default function CycleMap({
         />
       )}
 
-      {/* Current position marker (speed mode) */}
-      {tab === 'speed' && currentPosition && !isDemoMode && (
-        <Marker
-          position={{ lat: currentPosition.lat, lng: currentPosition.lng }}
-          icon={makePositionIcon(heading)}
-          zIndex={9999}
-          onLoad={(m) => {
-            currentMarkerInstanceRef.current = m;
-            onMarkerReady?.(m);
-          }}
-        />
-      )}
     </GoogleMap>
   );
 }
