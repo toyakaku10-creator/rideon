@@ -458,7 +458,7 @@ export default function Home() {
     // 前回の地図更新位置から5m以上動いた時だけ更新
     if (lastMapUpdatePosRef.current) {
       const dist = haversineDistance(lastMapUpdatePosRef.current, currentPosition);
-      if (dist < 5) return;
+      if (dist < 3) return;
     }
 
     lastMapUpdatePosRef.current = currentPosition;
