@@ -924,7 +924,7 @@ export default function Home() {
           map: mapInstanceRef.current,
           icon: {
             url: 'data:image/svg+xml,' + encodeURIComponent(makeNavMarkerSvg()),
-            anchor: new google.maps.Point(22, 30),
+            anchor: new google.maps.Point(22, 28),
             scaledSize: new google.maps.Size(44, 44),
           },
           zIndex: 9999,
