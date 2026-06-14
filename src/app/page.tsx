@@ -396,7 +396,14 @@ export default function Home() {
         const cur = { lat: latitude, lng: longitude };
         setCurrentPosition(cur);
         setGpsAccuracy(accuracy);
-        setHeading(h != null && !isNaN(h) ? h : null);
+        let finalHeading = (h != null && !isNaN(h)) ? h : null;
+        if (finalHeading == null && prevGpsPos.current) {
+          finalHeading = calcHeading(
+            [prevGpsPos.current.lat, prevGpsPos.current.lng],
+            [latitude, longitude]
+          );
+        }
+        setHeading(finalHeading);
         if (tab === 'speed' && !isDemoModeRef.current) {
           rideTrackRef.current.push(cur);
           if (prevGpsPos.current) {
