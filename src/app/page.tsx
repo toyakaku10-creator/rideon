@@ -1078,16 +1078,17 @@ export default function Home() {
             zIndex: 500,
             background: 'rgba(0,0,0,0.6)',
             borderRadius: '20px',
-            padding: '5px 16px',
+            padding: '3px 16px',
             display: 'flex',
             alignItems: 'baseline',
             gap: '4px',
             pointerEvents: 'none',
-            width: '90px',
+            width: '100px',
             textAlign: 'center',
             justifyContent: 'center',
+            boxSizing: 'border-box',
           }}>
-            <span style={{fontSize: '28px', fontWeight: '500', color: 'white'}}>
+            <span style={{fontSize: '28px', fontWeight: '500', color: 'white', display: 'inline-block', width: '60px', textAlign: 'right'}}>
               {currentSpeed.toFixed(1)}
             </span>
             <span style={{fontSize: '12px', color: 'rgba(255,255,255,0.7)'}}>km/h</span>
