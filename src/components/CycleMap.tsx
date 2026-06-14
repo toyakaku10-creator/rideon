@@ -478,14 +478,6 @@ export default function CycleMap({
         />
       )}
 
-      {/* Current position marker (ride mode) */}
-      {tab === 'speed' && currentPosition && !isDemoMode && (
-        <Marker
-          position={{ lat: currentPosition.lat, lng: currentPosition.lng }}
-          icon={makePositionIcon(heading)}
-          zIndex={9999}
-        />
-      )}
 
     </GoogleMap>
   );

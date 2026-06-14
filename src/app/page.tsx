@@ -1090,8 +1090,8 @@ export default function Home() {
           </div>
         )}
 
-        {/* Fixed screen center marker (demo mode) */}
-        {isDemoMode && (
+        {/* Fixed screen center marker (ride mode and demo mode) */}
+        {tab === 'speed' && (
           <div style={{
             position: 'absolute',
             top: '50%',
@@ -1101,8 +1101,8 @@ export default function Home() {
             pointerEvents: 'none',
           }}>
             <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44">
-              <g transform={`rotate(${demoHeading ?? 0} 22 22)`}>
-                {demoHeading != null && (
+              <g transform={`rotate(${(isDemoMode ? demoHeading : heading) ?? 0} 22 22)`}>
+                {(isDemoMode ? demoHeading : heading) != null && (
                   <>
                     <polygon points="22,2 28,12 16,12" fill="#4A90D9" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
                     <rect x="16" y="10" width="12" height="4" fill="white"/>
