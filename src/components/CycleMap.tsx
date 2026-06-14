@@ -100,91 +100,15 @@ function makeStartGoalIcon(size = 28): google.maps.Icon {
   };
 }
 
-function makePositionIcon(heading: number | null, gradient = 0): google.maps.Icon {
-  const hasHeading = heading != null && !isNaN(heading);
-  const abs = Math.abs(gradient);
-  const size = 18;
-
-  // 色を勾配で決定: 緑(default) / 黄(3〜6%) / 水玉赤(6%以上)
-  let wheelColor = '#4CAF50';
-  if (abs >= 6) {
-    wheelColor = '#CC0000';
-  } else if (abs >= 3) {
-    wheelColor = '#FFD700';
-  }
-
-  // 急坂（6%以上）: 水玉の丸
-  if (abs >= 6) {
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
-      <defs><clipPath id="pc"><circle cx="9" cy="9" r="7"/></clipPath></defs>
-      <circle cx="9" cy="9" r="8" fill="white" stroke="${wheelColor}" stroke-width="2"/>
-      <g clip-path="url(#pc)">
-        <circle cx="3" cy="3" r="1.5" fill="${wheelColor}"/>
-        <circle cx="9" cy="3" r="1.5" fill="${wheelColor}"/>
-        <circle cx="15" cy="3" r="1.5" fill="${wheelColor}"/>
-        <circle cx="3" cy="9" r="1.5" fill="${wheelColor}"/>
-        <circle cx="9" cy="9" r="1.5" fill="${wheelColor}"/>
-        <circle cx="15" cy="9" r="1.5" fill="${wheelColor}"/>
-        <circle cx="3" cy="15" r="1.5" fill="${wheelColor}"/>
-        <circle cx="9" cy="15" r="1.5" fill="${wheelColor}"/>
-        <circle cx="15" cy="15" r="1.5" fill="${wheelColor}"/>
-        <circle cx="6" cy="6" r="1.5" fill="${wheelColor}"/>
-        <circle cx="12" cy="6" r="1.5" fill="${wheelColor}"/>
-        <circle cx="6" cy="12" r="1.5" fill="${wheelColor}"/>
-        <circle cx="12" cy="12" r="1.5" fill="${wheelColor}"/>
-      </g>
-    </svg>`;
-    return {
-      url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
-      scaledSize: new google.maps.Size(size, size),
-      anchor: new google.maps.Point(size / 2, size / 2),
-    };
-  }
-
-  if (hasHeading) {
-    // 三角＋×スポーク車輪を一体でheading方向に回転
-    const S = 34;
-    const cx = 17, cy = 17;
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${S}" height="${S}">
-      <g transform="rotate(${heading}, ${cx}, ${cy})">
-        <polygon points="${cx},1 ${cx - 5},9 ${cx + 5},9" fill="${wheelColor}"/>
-        <circle cx="${cx}" cy="${cy}" r="8" fill="none" stroke="${wheelColor}" stroke-width="2"/>
-        <circle cx="${cx}" cy="${cy}" r="2" fill="none" stroke="${wheelColor}" stroke-width="1.5"/>
-        <line x1="11" y1="11" x2="16" y2="16" stroke="${wheelColor}" stroke-width="1.5"/>
-        <line x1="18" y1="18" x2="23" y2="23" stroke="${wheelColor}" stroke-width="1.5"/>
-        <line x1="23" y1="11" x2="18" y2="16" stroke="${wheelColor}" stroke-width="1.5"/>
-        <line x1="16" y1="18" x2="11" y2="23" stroke="${wheelColor}" stroke-width="1.5"/>
-        <line x1="17" y1="9" x2="17" y2="15" stroke="${wheelColor}" stroke-width="1.5"/>
-        <line x1="17" y1="19" x2="17" y2="25" stroke="${wheelColor}" stroke-width="1.5"/>
-        <line x1="9" y1="17" x2="15" y2="17" stroke="${wheelColor}" stroke-width="1.5"/>
-        <line x1="19" y1="17" x2="25" y2="17" stroke="${wheelColor}" stroke-width="1.5"/>
-      </g>
-    </svg>`;
-    return {
-      url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
-      scaledSize: new google.maps.Size(S, S),
-      anchor: new google.maps.Point(cx, cy),
-    };
-  } else {
-    // ×スポーク車輪（静止）
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="${wheelColor}" stroke-width="2" stroke-linecap="round">
-      <circle cx="12" cy="12" r="10" stroke-width="3"/>
-      <circle cx="12" cy="12" r="3"/>
-      <line x1="4" y1="4" x2="9" y2="9"/>
-      <line x1="15" y1="15" x2="20" y2="20"/>
-      <line x1="20" y1="4" x2="15" y2="9"/>
-      <line x1="9" y1="15" x2="4" y2="20"/>
-      <line x1="12" y1="2" x2="12" y2="9"/>
-      <line x1="12" y1="15" x2="12" y2="22"/>
-      <line x1="2" y1="12" x2="9" y2="12"/>
-      <line x1="15" y1="12" x2="22" y2="12"/>
-    </svg>`;
-    return {
-      url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
-      scaledSize: new google.maps.Size(size, size),
-      anchor: new google.maps.Point(size / 2, size / 2),
-    };
-  }
+function makePositionIcon(): google.maps.Icon {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+    <circle cx="10" cy="10" r="8" fill="#4A90D9" stroke="white" stroke-width="2"/>
+  </svg>`;
+  return {
+    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
+    scaledSize: new google.maps.Size(20, 20),
+    anchor: new google.maps.Point(10, 10),
+  };
 }
 
 function makeElevationMarkerIcon(distanceLabel?: string): google.maps.Icon {
@@ -270,7 +194,6 @@ interface CycleMapProps {
   onSpotClick?: (spot: Spot) => void;
   logTrack?: { lat: number; lng: number }[] | null;
   referenceSegments?: RouteSegment[];
-  gradient?: number;
   onMapReady?: (map: google.maps.Map) => void;
   onMarkerReady?: (marker: google.maps.Marker) => void;
 }
@@ -299,7 +222,6 @@ export default function CycleMap({
   onSpotClick,
   logTrack,
   referenceSegments,
-  gradient = 0,
   onMapReady,
   onMarkerReady,
 }: CycleMapProps) {
@@ -560,7 +482,7 @@ export default function CycleMap({
       {tab === 'speed' && currentPosition && !isDemoMode && (
         <Marker
           position={{ lat: currentPosition.lat, lng: currentPosition.lng }}
-          icon={makePositionIcon(heading, gradient)}
+          icon={makePositionIcon()}
           zIndex={999}
           onLoad={(m) => onMarkerReady?.(m)}
         />

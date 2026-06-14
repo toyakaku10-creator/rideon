@@ -955,28 +955,6 @@ export default function Home() {
     tab === 'speed' ? (currentPosition ?? initialCenter) : initialCenter;
   const mapFollow = tab === 'speed' && currentPosition !== null;
 
-  const currentGradient = (() => {
-    if (navElevationIndex === null || elevations.length < 3) return 0;
-    const i = navElevationIndex;
-    const n = elevations.length;
-    const range = 5;
-    const from = Math.max(0, i - range);
-    const to = Math.min(n - 1, i + range);
-    if (from === to) return 0;
-    const elevDiff = elevations[to] - elevations[from];
-    // 対応するルートポイントを使って実距離を計算
-    const allPoints = segments.flatMap((s) => s.geometry);
-    const m = allPoints.length;
-    if (m < 2) return 0;
-    const fromPtIdx = Math.round((from / (n - 1)) * (m - 1));
-    const toPtIdx = Math.round((to / (n - 1)) * (m - 1));
-    let dist = 0;
-    for (let k = fromPtIdx; k < toPtIdx; k++) {
-      dist += haversineDistance(allPoints[k], allPoints[k + 1]);
-    }
-    return dist > 0 ? (elevDiff / dist) * 100 : 0;
-  })();
-
   const elevationMarkerPos = (() => {
     if (elevationIndex === null || elevations.length < 2) return undefined;
     const allPoints = segments.flatMap((s) => s.geometry);
@@ -1022,7 +1000,6 @@ export default function Home() {
           })()}
           elevationMarkerPos={elevationMarkerPos}
           elevationMarkerDistance={elevationMarkerDistance}
-          gradient={currentGradient}
           spots={[...spots, ...sharedSpots]}
           onLongPress={(lat, lng) => { if (!isSpotMode) return; setSpotDialog({ lat, lng }); setSpotName(''); setSpotCategory('pin'); }}
           onSpotClick={(spot) => { if (spots.some((s) => s.id === spot.id)) setSpotDeleteConfirm(spot); }}
