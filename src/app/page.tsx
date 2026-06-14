@@ -174,6 +174,7 @@ export default function Home() {
   const currentMarkerRef = useRef<google.maps.Marker | null>(null);
   const demoMarkerRef = useRef<google.maps.Marker | null>(null);
   const skipElevationFetchRef = useRef(false);
+  const pendingElevationsRef = useRef<number[] | undefined>(undefined);
   const demoElevIndexRef = useRef<number>(0);
   const demoProgressRef = useRef<number>(0);
 
@@ -700,7 +701,8 @@ export default function Home() {
   }, []);
 
   const handleSave = useCallback(
-    (name: string) => {
+    (name: string, elevationsOverride?: number[]) => {
+      const elev = elevationsOverride ?? elevations;
       const route: SavedRoute = {
         id: Date.now().toString(),
         name,
@@ -709,7 +711,7 @@ export default function Home() {
         segments,
         totalDistance,
         createdAt: new Date().toISOString(),
-        elevations: elevations.length >= 2 ? elevations : undefined,
+        elevations: elev.length >= 2 ? elev : undefined,
       };
       const updated = [...savedRoutes, route];
       setSavedRoutes(updated);
@@ -724,6 +726,7 @@ export default function Home() {
   );
 
   const handleImportSave = useCallback(async () => {
+    let fetchedElevations: number[] | undefined;
     if (isImported) {
       const points = segments.flatMap((s) => s.geometry);
       try {
@@ -733,9 +736,13 @@ export default function Home() {
           body: JSON.stringify({ points }),
         });
         const data = await res.json();
-        if (data.elevations) setElevations(data.elevations);
+        if (data.elevations) {
+          setElevations(data.elevations);
+          fetchedElevations = data.elevations;
+        }
       } catch { /* silent fail */ }
     }
+    pendingElevationsRef.current = fetchedElevations;
     setOpenSaveSheet(true);
   }, [isImported, segments]);
 
@@ -1193,7 +1200,7 @@ export default function Home() {
           onRouteTypeChange={handleRouteTypeChange}
           onUndo={handleUndo}
           onClear={handleClear}
-          onSave={handleSave}
+          onSave={(name) => { handleSave(name, pendingElevationsRef.current); pendingElevationsRef.current = undefined; }}
           openSaveSheet={openSaveSheet}
           onSaveSheetClose={() => setOpenSaveSheet(false)}
           savedRoutes={savedRoutes}
