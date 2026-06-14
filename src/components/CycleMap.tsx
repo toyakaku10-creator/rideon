@@ -105,12 +105,12 @@ function makePositionIcon(heading: number | null): google.maps.Icon {
   const hasHeading = heading != null && !isNaN(heading);
   const rot = hasHeading ? heading : 0;
   const svg = hasHeading
-    ? `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="42" viewBox="0 0 30 42"><g transform="rotate(${rot} 15 30)"><polygon points="15,2 22,14 8,14" fill="#4A90D9" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><circle cx="15" cy="30" r="12" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="15" cy="30" r="5" fill="white"/></g></svg>`
-    : `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="42" viewBox="0 0 30 42"><circle cx="15" cy="12" r="12" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="15" cy="12" r="5" fill="white"/></svg>`;
+    ? `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44"><g transform="rotate(${rot} 22 22)"><polygon points="22,6 28,16 16,16" fill="#4A90D9" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><rect x="16" y="14" width="12" height="4" fill="white"/><circle cx="22" cy="28" r="12" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="22" cy="28" r="5" fill="white"/></g></svg>`
+    : `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44"><circle cx="22" cy="22" r="12" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="22" cy="22" r="5" fill="white"/></svg>`;
   return {
     url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
-    anchor: new google.maps.Point(15, hasHeading ? 30 : 12),
-    scaledSize: new google.maps.Size(30, 42),
+    anchor: new google.maps.Point(22, 28),
+    scaledSize: new google.maps.Size(44, 44),
   };
 }
 
