@@ -756,6 +756,7 @@ export default function Home() {
     })
       .then((r) => r.json())
       .then((data) => {
+        console.log('elevation fetch result:', data.elevations?.length);
         if (data.elevations) {
           setElevations(data.elevations);
           skipElevationFetchRef.current = false;
