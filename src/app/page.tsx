@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Bike, Play, Pause, Square, Plus, Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin, type LucideProps } from 'lucide-react';
 import type { Tab, RouteType, LatLng, RouteSegment, SavedRoute, RideLog, Spot } from '@/types';
@@ -391,6 +391,23 @@ export default function Home() {
     const elevIdx = Math.round(minPtIdx / (allPoints.length - 1) * (elevations.length - 1));
     setNavElevationIndex(elevIdx);
   }, [currentPosition, segments, elevations]);
+
+  // 現在地からゴールまでのルート上の残り距離
+  const remainingDistance = useMemo(() => {
+    if (!currentPosition || segments.length === 0) return null;
+    const allPoints = segments.flatMap(s => s.geometry);
+    if (allPoints.length < 2) return null;
+    let minDist = Infinity, minIdx = 0;
+    allPoints.forEach((p, i) => {
+      const d = Math.abs(p.lat - currentPosition.lat) + Math.abs(p.lng - currentPosition.lng);
+      if (d < minDist) { minDist = d; minIdx = i; }
+    });
+    let dist = 0;
+    for (let i = minIdx; i < allPoints.length - 1; i++) {
+      dist += haversineDistance(allPoints[i], allPoints[i + 1]);
+    }
+    return dist;
+  }, [currentPosition, segments]);
 
   // GPS tracking — always active (ride-mode stats only in speed tab)
   useEffect(() => {
@@ -1350,6 +1367,7 @@ export default function Home() {
           navTotalDistance={totalDistance}
           navElevationIndex={navElevationIndex ?? undefined}
           rideDistance={rideDistance}
+          remainingDistance={remainingDistance}
           demoElevIndexRef={demoElevIndexRef}
           demoProgressRef={demoProgressRef}
         />

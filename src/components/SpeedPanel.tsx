@@ -15,6 +15,7 @@ interface SpeedPanelProps {
   navTotalDistance?: number;
   navElevationIndex?: number;
   rideDistance?: number; // meters
+  remainingDistance?: number | null; // meters — from current position to goal
   demoElevIndexRef?: React.RefObject<number>;
   demoProgressRef?: React.RefObject<number>;
 }
@@ -56,6 +57,7 @@ export default function SpeedPanel({
   navTotalDistance = 0,
   navElevationIndex,
   rideDistance = 0,
+  remainingDistance,
   demoElevIndexRef,
   demoProgressRef,
 }: SpeedPanelProps) {
@@ -65,7 +67,9 @@ export default function SpeedPanel({
   const subSpeed = showMax ? maxSpeed : avgSpeed;
   const subLabel = showMax ? '最高' : '平均';
   const rideKm = rideDistance / 1000;
-  const remainingKm = Math.max(0, navTotalDistance / 1000 - rideKm);
+  const remainingKm = remainingDistance != null
+    ? remainingDistance / 1000
+    : Math.max(0, navTotalDistance / 1000 - rideKm);
 
   return (
     <div
