@@ -1085,7 +1085,7 @@ export default function Home() {
             pointerEvents: 'none',
           }}>
             <span style={{fontSize: '28px', fontWeight: '500', color: 'white'}}>
-              {Math.round(currentSpeed)}
+              {currentSpeed.toFixed(1)}
             </span>
             <span style={{fontSize: '12px', color: 'rgba(255,255,255,0.7)'}}>km/h</span>
           </div>
