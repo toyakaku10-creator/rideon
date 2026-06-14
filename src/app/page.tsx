@@ -1115,6 +1115,23 @@ export default function Home() {
           </div>
         )}
 
+        {/* Fixed screen center marker (ride/demo mode) */}
+        {(tab === 'speed' || isDemoMode) && (
+          <div style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 500,
+            pointerEvents: 'none',
+          }}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44">
+              <circle cx="22" cy="22" r="9" fill="#4A90D9" stroke="white" strokeWidth="2.5"/>
+              <circle cx="22" cy="22" r="4" fill="white"/>
+            </svg>
+          </div>
+        )}
+
         {/* Speed sub display (ride mode) */}
         {(tab === 'speed' || isDemoMode) && (
           <div style={{
