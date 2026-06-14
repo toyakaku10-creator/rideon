@@ -102,6 +102,17 @@ function makeStartGoalIcon(size = 28): google.maps.Icon {
 
 
 
+function makePositionIcon(heading: number | null): google.maps.Icon {
+  const hasHeading = heading != null && !isNaN(heading);
+  const rot = hasHeading ? heading : 0;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44"><g transform="rotate(${rot} 22 22)">${hasHeading ? `<polygon points="22,2 28,12 16,12" fill="#4A90D9" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><rect x="16" y="10" width="12" height="4" fill="white"/>` : ''}<circle cx="22" cy="22" r="10" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="22" cy="22" r="4" fill="white"/></g></svg>`;
+  return {
+    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
+    anchor: new google.maps.Point(22, 22),
+    scaledSize: new google.maps.Size(44, 44),
+  };
+}
+
 function makeElevationMarkerIcon(distanceLabel?: string): google.maps.Icon {
   if (distanceLabel) {
     const W = 56, labelH = 18, gap = 2, dotR = 5;
@@ -471,11 +482,7 @@ export default function CycleMap({
       {tab === 'speed' && currentPosition && !isDemoMode && (
         <Marker
           position={{ lat: currentPosition.lat, lng: currentPosition.lng }}
-          icon={{
-            url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="10" cy="10" r="4" fill="white"/></svg>`),
-            anchor: new google.maps.Point(10, 10),
-            scaledSize: new google.maps.Size(20, 20),
-          }}
+          icon={makePositionIcon(heading)}
           zIndex={9999}
         />
       )}

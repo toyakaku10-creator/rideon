@@ -1117,24 +1117,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* Direction triangle (ride/demo mode) */}
-        {(tab === 'speed' || isDemoMode) && heading !== null && (
-          <div style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: `translate(-50%, -50%) rotate(${heading}deg)`,
-            zIndex: 501,
-            pointerEvents: 'none',
-            width: 0,
-            height: 0,
-            borderLeft: '6px solid transparent',
-            borderRight: '6px solid transparent',
-            borderBottom: '12px solid #4A90D9',
-            marginTop: '-22px',
-          }}/>
-        )}
-
         {/* Speed sub display (ride mode) */}
         {(tab === 'speed' || isDemoMode) && (
           <div style={{
