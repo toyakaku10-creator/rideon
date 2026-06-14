@@ -103,7 +103,7 @@ function makeNavMarkerSvg(heading?: number | null): string {
   const hasHeading = heading != null && !isNaN(heading);
   const rot = hasHeading ? heading : 0;
   if (hasHeading) {
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44"><g transform="rotate(${rot} 22 22)"><polygon points="22,6 28,16 16,16" fill="#4A90D9" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><rect x="16" y="14" width="12" height="4" fill="white"/><circle cx="22" cy="28" r="12" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="22" cy="28" r="5" fill="white"/></g></svg>`;
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44"><g transform="rotate(${rot} 22 22)"><polygon points="22,2 28,12 16,12" fill="#4A90D9" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><rect x="16" y="10" width="12" height="4" fill="white"/><circle cx="22" cy="22" r="12" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="22" cy="22" r="5" fill="white"/></g></svg>`;
   } else {
     return `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44"><circle cx="22" cy="22" r="12" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="22" cy="22" r="5" fill="white"/></svg>`;
   }
@@ -899,7 +899,7 @@ export default function Home() {
       demoMarkerRef.current?.setPosition(pos);
       demoMarkerRef.current?.setIcon({
         url: 'data:image/svg+xml,' + encodeURIComponent(makeNavMarkerSvg(hdg)),
-        anchor: new google.maps.Point(22, hdg != null ? 28 : 22),
+        anchor: new google.maps.Point(22, 22),
         scaledSize: new google.maps.Size(44, 44),
       });
       mapInstanceRef.current?.setCenter(pos);
