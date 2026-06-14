@@ -1146,7 +1146,7 @@ export default function Home() {
               background: tab === 'speed' ? '#D4AF37' : 'rgba(255,255,255,0.9)',
               border: '2px solid #D4AF37',
               borderRadius: '20px',
-              padding: '5px 16px',
+              padding: '5px 10px',
               cursor: 'pointer',
               boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
               backdropFilter: 'blur(4px)',
