@@ -103,9 +103,9 @@ function makeNavMarkerSvg(heading?: number | null): string {
   const hasHeading = heading != null && !isNaN(heading);
   const rot = hasHeading ? heading : 0;
   if (hasHeading) {
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="42" viewBox="0 0 30 42"><g transform="rotate(${rot} 15 30)"><polygon points="15,2 22,14 8,14" fill="#4A90D9" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><circle cx="15" cy="30" r="12" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="15" cy="30" r="5" fill="white"/></g></svg>`;
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44"><g transform="rotate(${rot} 22 22)"><polygon points="22,4 29,16 15,16" fill="#4A90D9" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><circle cx="22" cy="30" r="12" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="22" cy="30" r="5" fill="white"/></g></svg>`;
   } else {
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="42" viewBox="0 0 30 42"><circle cx="15" cy="12" r="12" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="15" cy="12" r="5" fill="white"/></svg>`;
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44"><circle cx="22" cy="22" r="12" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="22" cy="22" r="5" fill="white"/></svg>`;
   }
 }
 
@@ -899,8 +899,8 @@ export default function Home() {
       demoMarkerRef.current?.setPosition(pos);
       demoMarkerRef.current?.setIcon({
         url: 'data:image/svg+xml,' + encodeURIComponent(makeNavMarkerSvg(hdg)),
-        anchor: new google.maps.Point(15, hdg != null ? 30 : 12),
-        scaledSize: new google.maps.Size(30, 42),
+        anchor: new google.maps.Point(22, hdg != null ? 30 : 22),
+        scaledSize: new google.maps.Size(44, 44),
       });
       mapInstanceRef.current?.setCenter(pos);
       // pointsのidxをelevationsのインデックスに変換
@@ -924,8 +924,8 @@ export default function Home() {
           map: mapInstanceRef.current,
           icon: {
             url: 'data:image/svg+xml,' + encodeURIComponent(makeNavMarkerSvg()),
-            anchor: new google.maps.Point(15, 12),
-            scaledSize: new google.maps.Size(30, 42),
+            anchor: new google.maps.Point(22, 22),
+            scaledSize: new google.maps.Size(44, 44),
           },
           zIndex: 9999,
         });
