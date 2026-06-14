@@ -949,6 +949,7 @@ export default function Home() {
 
       setRideDistance(totalDist * progress);
       if (now - lastStateUpdate > 50) {
+        setCurrentPosition(pos);
         setCurrentSpeed(16 + (Math.random() - 0.5) * 2);
         lastStateUpdate = now;
       }
