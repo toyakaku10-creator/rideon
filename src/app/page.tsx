@@ -178,6 +178,7 @@ export default function Home() {
   const demoRAFRef = useRef<number | null>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const lastMapCenterRef = useRef(0);
+  const lastHeadingUpdateRef = useRef(0);
   const lastMapUpdatePosRef = useRef<{lat: number, lng: number} | null>(null);
   const currentMarkerRef = useRef<google.maps.Marker | null>(null);
   const skipElevationFetchRef = useRef(false);
@@ -429,7 +430,11 @@ export default function Home() {
             [latitude, longitude]
           );
         }
-        setHeading(finalHeading);
+        const now = Date.now();
+        if (now - lastHeadingUpdateRef.current > 1000) {
+          lastHeadingUpdateRef.current = now;
+          setHeading(finalHeading);
+        }
         if (tab === 'speed' && !isDemoModeRef.current) {
           rideTrackRef.current.push(cur);
           if (prevGpsPos.current) {
