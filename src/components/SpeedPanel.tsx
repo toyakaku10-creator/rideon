@@ -69,8 +69,15 @@ export default function SpeedPanel({
 
   return (
     <div
-      className="bg-[var(--surface)] border-t border-[var(--border)] shrink-0"
-      style={{ position: 'relative', paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}
+      className="bg-[var(--surface)]"
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 500,
+        paddingTop: 'max(8px, env(safe-area-inset-top))',
+      }}
     >
       <div style={{ maxWidth: '480px', margin: '0 auto' }}>
         {/* Nav route name */}
