@@ -365,7 +365,7 @@ export default function CycleMap({
                 strokeColor: '#ffffff',
                 strokeWeight: 7,
                 strokeOpacity: 0.9,
-                zIndex: i * 2,
+                zIndex: 1,
                 clickable: false,
               }}
             />
@@ -375,7 +375,7 @@ export default function CycleMap({
                 strokeColor: POLYLINE_COLOR,
                 strokeWeight: 4,
                 strokeOpacity: 1,
-                zIndex: i * 2 + 1,
+                zIndex: 2,
                 clickable: false,
               }}
             />
