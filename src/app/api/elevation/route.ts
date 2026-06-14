@@ -4,6 +4,7 @@ export async function POST(request: NextRequest) {
   const { points } = await request.json()
 
   const MAX_POINTS = 512
+  const BATCH_SIZE = 128
 
   // 累積距離を計算
   const cumDist: number[] = [0]
@@ -28,42 +29,26 @@ export async function POST(request: NextRequest) {
   }
 
   const apiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-  console.log('API key exists:', !!apiKey, 'length:', apiKey?.length)
 
-  const body = {
-    locations: sampled.map((p: { lat: number; lng: number }) => ({
-      latitude: p.lat,
-      longitude: p.lng,
-    })),
+  // 128点ずつ分割してリクエスト
+  const batches: {lat: number, lng: number}[][] = []
+  for (let i = 0; i < sampled.length; i += BATCH_SIZE) {
+    batches.push(sampled.slice(i, i + BATCH_SIZE))
   }
 
-  const res = await fetch(
-    `https://maps.googleapis.com/maps/api/elevation/json?key=${apiKey}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+  const allElevations: number[] = []
+  for (const batch of batches) {
+    const locations = batch
+      .map((p: { lat: number; lng: number }) => `${p.lat},${p.lng}`)
+      .join('|')
+    const url = `https://maps.googleapis.com/maps/api/elevation/json?locations=${locations}&key=${apiKey}`
+    const res = await fetch(url)
+    const data = await res.json()
+    if (data.status !== 'OK') {
+      return NextResponse.json({ error: data.error_message || data.status }, { status: 500 })
     }
-  )
-  const text = await res.text()
-  console.log('Elevation API response status:', res.status)
-  console.log('Elevation API response text:', text.substring(0, 500))
-
-  let data
-  try {
-    data = JSON.parse(text)
-  } catch {
-    return NextResponse.json({ error: 'Invalid response' }, { status: 500 })
+    allElevations.push(...data.results.map((r: { elevation: number }) => r.elevation))
   }
 
-  console.log('Elevation data status:', data.status)
-  console.log('Elevation error:', data.error_message)
-  if (data.status !== 'OK') {
-    console.error('Elevation API error:', data.status, data.error_message)
-    return NextResponse.json({ error: data.error_message || data.status }, { status: 500 })
-  }
-
-  return NextResponse.json({
-    elevations: data.results.map((r: { elevation: number }) => r.elevation),
-  })
+  return NextResponse.json({ elevations: allElevations })
 }
