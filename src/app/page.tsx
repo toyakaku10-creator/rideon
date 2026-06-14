@@ -176,6 +176,7 @@ export default function Home() {
   const demoStartTimeRef = useRef(0);
   const demoRAFRef = useRef<number | null>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
+  const lastMapCenterRef = useRef(0);
   const currentMarkerRef = useRef<google.maps.Marker | null>(null);
   const demoMarkerRef = useRef<google.maps.Marker | null>(null);
   const skipElevationFetchRef = useRef(false);
@@ -452,8 +453,10 @@ export default function Home() {
   // Follow current position in GPS speed mode (demo handles its own camera)
   useEffect(() => {
     if (!currentPosition || tab !== 'speed' || isDemoModeRef.current) return;
-    if (!mapInstanceRef.current) return;
-    mapInstanceRef.current.setCenter({ lat: currentPosition.lat, lng: currentPosition.lng });
+    const now = Date.now();
+    if (now - lastMapCenterRef.current < 1000) return;
+    lastMapCenterRef.current = now;
+    mapInstanceRef.current?.setCenter({ lat: currentPosition.lat, lng: currentPosition.lng });
   }, [currentPosition, tab]);
 
   // Restore interrupted ride on startup
