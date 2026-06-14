@@ -101,10 +101,12 @@ function bearingDeg(a: LatLng, b: LatLng): number {
 
 function makeNavMarkerSvg(heading?: number | null): string {
   const hasHeading = heading != null && !isNaN(heading);
-  const html = hasHeading
-    ? `<div style="display:flex;flex-direction:column;align-items:center;gap:2px;transform:rotate(${heading}deg);"><div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #4A90D9;"></div><div style="width:20px;height:20px;border-radius:50%;background:#4A90D9;border:2.5px solid white;display:flex;align-items:center;justify-content:center;"><div style="width:6px;height:6px;border-radius:50%;background:white;"></div></div></div>`
-    : `<div style="width:20px;height:20px;border-radius:50%;background:#4A90D9;border:2.5px solid white;display:flex;align-items:center;justify-content:center;"><div style="width:6px;height:6px;border-radius:50%;background:white;"></div></div>`;
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="34"><foreignObject width="24" height="34">${html}</foreignObject></svg>`;
+  const rot = hasHeading ? heading : 0;
+  if (hasHeading) {
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="34" viewBox="0 0 24 34"><g transform="rotate(${rot} 12 24)"><polygon points="12,2 18,12 6,12" fill="#4A90D9" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><circle cx="12" cy="24" r="10" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="12" cy="24" r="4" fill="white"/></g></svg>`;
+  } else {
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="10" cy="10" r="4" fill="white"/></svg>`;
+  }
 }
 
 function calcHeading(from: [number, number], to: [number, number]): number {
@@ -897,8 +899,8 @@ export default function Home() {
       demoMarkerRef.current?.setPosition(pos);
       demoMarkerRef.current?.setIcon({
         url: 'data:image/svg+xml,' + encodeURIComponent(makeNavMarkerSvg(hdg)),
-        anchor: new google.maps.Point(12, hdg != null ? 24 : 10),
-        scaledSize: new google.maps.Size(24, 34),
+        anchor: new google.maps.Point(hdg != null ? 12 : 10, hdg != null ? 24 : 10),
+        scaledSize: hdg != null ? new google.maps.Size(24, 34) : new google.maps.Size(20, 20),
       });
       mapInstanceRef.current?.setCenter(pos);
       // pointsのidxをelevationsのインデックスに変換
@@ -922,8 +924,8 @@ export default function Home() {
           map: mapInstanceRef.current,
           icon: {
             url: 'data:image/svg+xml,' + encodeURIComponent(makeNavMarkerSvg()),
-            anchor: new google.maps.Point(12, 10),
-            scaledSize: new google.maps.Size(24, 34),
+            anchor: new google.maps.Point(10, 10),
+            scaledSize: new google.maps.Size(20, 20),
           },
           zIndex: 9999,
         });
