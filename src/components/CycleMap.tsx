@@ -240,6 +240,7 @@ export default function CycleMap({
   const lastTapRef = useRef(0);
   const currentMarkerInstanceRef = useRef<google.maps.Marker | null>(null);
   const lastHeadingUpdateRef = useRef(0);
+  const iconCacheRef = useRef<Map<string, google.maps.Icon>>(new Map());
 
   useEffect(() => {
     if (!map || !currentPosition || tab !== 'speed' || isDemoMode) {
@@ -266,7 +267,12 @@ export default function CycleMap({
     if (now - lastHeadingUpdateRef.current < 500) return;
     lastHeadingUpdateRef.current = now;
     if (currentMarkerInstanceRef.current) {
-      currentMarkerInstanceRef.current.setIcon(makePositionIcon(heading));
+      const cacheKey = `${heading ?? 'null'}`;
+      if (!iconCacheRef.current.has(cacheKey)) {
+        iconCacheRef.current.set(cacheKey, makePositionIcon(heading));
+      }
+      const icon = iconCacheRef.current.get(cacheKey)!;
+      currentMarkerInstanceRef.current.setIcon(icon);
     }
   }, [heading]);
 
