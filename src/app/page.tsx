@@ -1083,6 +1083,9 @@ export default function Home() {
             alignItems: 'baseline',
             gap: '4px',
             pointerEvents: 'none',
+            minWidth: '90px',
+            textAlign: 'center',
+            justifyContent: 'center',
           }}>
             <span style={{fontSize: '28px', fontWeight: '500', color: 'white'}}>
               {currentSpeed.toFixed(1)}
