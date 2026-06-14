@@ -467,6 +467,19 @@ export default function CycleMap({
         />
       )}
 
+      {/* Current position marker (ride mode) */}
+      {tab === 'speed' && currentPosition && !isDemoMode && (
+        <Marker
+          position={{ lat: currentPosition.lat, lng: currentPosition.lng }}
+          icon={{
+            url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="10" cy="10" r="4" fill="white"/></svg>`),
+            anchor: new google.maps.Point(10, 10),
+            scaledSize: new google.maps.Size(20, 20),
+          }}
+          zIndex={9999}
+        />
+      )}
+
     </GoogleMap>
   );
 }
