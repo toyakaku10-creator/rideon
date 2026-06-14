@@ -1043,7 +1043,7 @@ export default function Home() {
         )}
 
         {/* Speed sub display (ride mode) */}
-        {tab === 'speed' && !isDemoMode && (
+        {(tab === 'speed' || isDemoMode) && (
           <div style={{
             position: 'absolute',
             top: '8px',
