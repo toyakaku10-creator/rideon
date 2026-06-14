@@ -42,7 +42,7 @@ const SpeedMeter = ({ speed }: { speed: number }) => {
       <line x1={cx} y1={cy} x2={x} y2={y} stroke="#D4AF37" strokeWidth="2.5" strokeLinecap="round"/>
       <circle cx={cx} cy={cy} r="7" fill="#D4AF37"/>
       <circle cx={cx} cy={cy} r="3" fill="white"/>
-      <text x={cx} y={cy - 30} textAnchor="middle" fontSize="24" fontWeight="bold" fill="#333">{speed.toFixed(1)}</text>
+      <text x={cx} y={cy - 30} textAnchor="middle" fontSize="24" fontWeight="bold" fill="#333" fontVariant="tabular-nums">{speed.toFixed(1)}</text>
       <text x={cx} y={cy - 16} textAnchor="middle" fontSize="11" fill="#999">km/h</text>
     </svg>
   )
