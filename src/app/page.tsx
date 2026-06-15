@@ -527,6 +527,7 @@ export default function Home() {
         distance: rideDistance,
         maxSpeed,
       }));
+      console.log('ride saved to localStorage');
     }, 10000);
     return () => clearInterval(interval);
   }, [tab, isDemoMode, rideDistance, maxSpeed]);
