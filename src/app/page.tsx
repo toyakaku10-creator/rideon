@@ -517,7 +517,9 @@ export default function Home() {
 
   // Auto-save active ride every 10 seconds
   useEffect(() => {
+    alert('useEffect実行 tab=' + tab);
     if (tab !== 'speed' || isDemoMode) return;
+    alert('interval開始');
     const interval = setInterval(() => {
       localStorage.setItem('rideon-active-ride', JSON.stringify({
         track: rideTrackRef.current,
