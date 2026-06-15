@@ -458,7 +458,7 @@ export default function Home() {
   // Follow current position in GPS speed mode (demo handles its own camera)
   useEffect(() => {
     if (!currentPosition || tab !== 'speed' || isDemoMode) return;
-    mapInstanceRef.current?.panTo({ lat: currentPosition.lat, lng: currentPosition.lng });
+    mapInstanceRef.current?.setCenter({ lat: currentPosition.lat, lng: currentPosition.lng });
   }, [currentPosition, tab, isDemoMode]);
 
   // Restore interrupted ride on startup
