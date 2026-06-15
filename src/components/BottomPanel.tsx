@@ -911,12 +911,34 @@ export default function BottomPanel({
                   </SortableContext>
                 </DndContext>
               )}
-              <div style={{ padding: '12px 0', borderTop: '1px solid #eee' }}>
-                <p style={{ fontSize: '13px', color: '#888', margin: '0 0 8px' }}>マップスタイル</p>
+              <div style={{ padding: '12px 16px', borderTop: '1px solid #eee' }}>
+                <p style={{ fontSize: '13px', color: '#888', margin: '0 0 10px' }}>マップスタイル</p>
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <button onClick={() => onMapStyleChange?.('default')} style={{ flex: 1, padding: '8px', background: mapStyle === 'default' ? '#D4AF37' : '#f5f5f5', color: mapStyle === 'default' ? '#000' : '#666', border: '1px solid #ddd', borderRadius: '8px', fontSize: '13px', cursor: 'pointer' }}>標準</button>
-                  <button onClick={() => onMapStyleChange?.('soft')} style={{ flex: 1, padding: '8px', background: mapStyle === 'soft' ? '#D4AF37' : '#f5f5f5', color: mapStyle === 'soft' ? '#000' : '#666', border: '1px solid #ddd', borderRadius: '8px', fontSize: '13px', cursor: 'pointer' }}>ソフト</button>
-                  <button onClick={() => onMapStyleChange?.('gray')} style={{ flex: 1, padding: '8px', background: mapStyle === 'gray' ? '#D4AF37' : '#f5f5f5', color: mapStyle === 'gray' ? '#000' : '#666', border: '1px solid #ddd', borderRadius: '8px', fontSize: '13px', cursor: 'pointer' }}>グレー</button>
+                  {([
+                    { id: 'default', label: '標準', bg: '#e8f4e8', road: '#f5f0e8', water: '#c8dfc8' },
+                    { id: 'soft', label: 'ソフト', bg: '#eef5ee', road: '#f8f5f0', water: '#daeada' },
+                    { id: 'gray', label: 'グレー', bg: '#e0e0e0', road: '#f0f0f0', water: '#cccccc' },
+                  ] as const).map(style => (
+                    <button key={style.id} onClick={() => onMapStyleChange?.(style.id)} style={{
+                      flex: 1, padding: '0', border: mapStyle === style.id ? '2px solid #D4AF37' : '1px solid #ddd',
+                      borderRadius: '8px', overflow: 'hidden', cursor: 'pointer', background: 'none',
+                    }}>
+                      <svg viewBox="0 0 80 60" width="100%" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="80" height="60" fill={style.bg}/>
+                        <rect x="0" y="18" width="80" height="24" fill={style.water}/>
+                        <rect x="10" y="0" width="8" height="60" fill={style.road}/>
+                        <rect x="35" y="0" width="6" height="60" fill={style.road}/>
+                        <rect x="60" y="0" width="7" height="60" fill={style.road}/>
+                        <rect x="0" y="5" width="80" height="5" fill="white" opacity="0.9"/>
+                        <rect x="0" y="38" width="80" height="5" fill="white" opacity="0.9"/>
+                        <circle cx="40" cy="30" r="5" fill="#4A90D9" stroke="white" strokeWidth="1.5"/>
+                        <circle cx="40" cy="30" r="2" fill="white"/>
+                      </svg>
+                      <p style={{ fontSize: '11px', margin: '4px 0', color: mapStyle === style.id ? '#D4AF37' : '#666', fontWeight: mapStyle === style.id ? '600' : '400' }}>
+                        {style.label}
+                      </p>
+                    </button>
+                  ))}
                 </div>
               </div>
               <div style={{ height: 'calc(20px + env(safe-area-inset-bottom))' }} />
