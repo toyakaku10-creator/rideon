@@ -170,6 +170,7 @@ const MAP_OPTIONS: google.maps.MapOptions = {
   zoomControl: false,
   gestureHandling: 'greedy',
   clickableIcons: false,
+  isFractionalZoomEnabled: false,
 };
 
 interface CycleMapProps {
