@@ -529,7 +529,8 @@ export default function Home() {
       alert('保存しました');
     }, 10000);
     return () => clearInterval(interval);
-  }, [tab, isDemoMode, rideDistance, maxSpeed]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, isDemoMode]);
 
   // Navigation turn detection
   useEffect(() => {
