@@ -1256,6 +1256,7 @@ export default function Home() {
                 setCurrentSpeed(0);
                 setRideDistance(0);
                 setTab('speed');
+                alert('ライドモード開始 tab=speed');
               }
             }}
             style={{
