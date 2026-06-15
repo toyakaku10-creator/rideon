@@ -183,6 +183,7 @@ export default function Home() {
   const interactTimerRef = useRef<NodeJS.Timeout | null>(null);
   const currentMarkerRef = useRef<google.maps.Marker | null>(null);
   const pauseMarkerRef = useRef<google.maps.Marker | null>(null);
+  const rideStopMarkerRef = useRef<google.maps.Marker | null>(null);
   const skipElevationFetchRef = useRef(false);
   const pendingElevationsRef = useRef<number[] | undefined>(undefined);
   const demoElevIndexRef = useRef<number>(0);
@@ -472,6 +473,31 @@ export default function Home() {
     if (userInteractingRef.current) return;
     mapInstanceRef.current?.setCenter({ lat: currentPosition.lat, lng: currentPosition.lng });
   }, [currentPosition, tab, isDemoMode]);
+
+  // Show map-fixed marker when stopped in ride mode
+  useEffect(() => {
+    if (tab !== 'speed' || isDemoMode) return;
+
+    if (currentSpeed === 0 && currentPosition && mapInstanceRef.current) {
+      if (!rideStopMarkerRef.current) {
+        rideStopMarkerRef.current = new google.maps.Marker({
+          position: currentPosition,
+          map: mapInstanceRef.current,
+          icon: {
+            url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56"><circle cx="28" cy="28" r="12" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="28" cy="28" r="5" fill="white"/></svg>`),
+            anchor: new google.maps.Point(28, 28),
+            scaledSize: new google.maps.Size(56, 56),
+          },
+          zIndex: 9999,
+        });
+      }
+    } else {
+      if (rideStopMarkerRef.current) {
+        rideStopMarkerRef.current.setMap(null);
+        rideStopMarkerRef.current = null;
+      }
+    }
+  }, [currentSpeed, tab, isDemoMode]);
 
   // Restore interrupted ride on startup
   useEffect(() => {
@@ -1125,8 +1151,8 @@ export default function Home() {
           </div>
         )}
 
-        {/* Fixed screen center marker (ride mode and demo mode, hidden during pause) */}
-        {tab === 'speed' && !isPaused && (
+        {/* Fixed screen center marker (ride mode and demo mode, hidden during pause or stop) */}
+        {tab === 'speed' && !isPaused && !(tab === 'speed' && !isDemoMode && currentSpeed === 0) && (
           <div style={{
             position: 'absolute',
             top: '50%',
