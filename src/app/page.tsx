@@ -526,6 +526,7 @@ export default function Home() {
         maxSpeed,
       }));
       console.log('ride saved to localStorage');
+      alert('保存しました');
     }, 10000);
     return () => clearInterval(interval);
   }, [tab, isDemoMode, rideDistance, maxSpeed]);
