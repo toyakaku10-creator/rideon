@@ -137,6 +137,9 @@ export default function Home() {
   const [isGpxImport, setIsGpxImport] = useState(false);
   const [isShareImport, setIsShareImport] = useState(false);
   const [openSaveSheet, setOpenSaveSheet] = useState(false);
+  const [showRestoreDialog, setShowRestoreDialog] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [savedRideData, setSavedRideData] = useState<any>(null);
 
   // Elevation
   const [elevations, setElevations] = useState<number[]>([]);
@@ -505,13 +508,8 @@ export default function Home() {
     if (saved) {
       try {
         const data = JSON.parse(saved);
-        if (window.confirm('前回のライドが中断されています。再開しますか？')) {
-          rideTrackRef.current = data.track ?? [];
-          rideStartTimeRef.current = data.startTime ?? Date.now();
-          setRideDistance(data.distance ?? 0);
-          setMaxSpeed(data.maxSpeed ?? 0);
-          setTab('speed');
-        }
+        setSavedRideData(data);
+        setShowRestoreDialog(true);
       } catch { /* ignore corrupt data */ }
       localStorage.removeItem('rideon-active-ride');
     }
@@ -1535,6 +1533,37 @@ export default function Home() {
             >保存する</button>
           </div>
         </>
+      )}
+      {showRestoreDialog && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9999,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <div style={{ background: 'white', borderRadius: '12px', padding: '24px', margin: '16px', maxWidth: '320px' }}>
+            <p style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px' }}>
+              前回のライドが中断されています。再開しますか？
+            </p>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                onClick={() => {
+                  if (savedRideData) {
+                    rideTrackRef.current = savedRideData.track ?? [];
+                    rideStartTimeRef.current = savedRideData.startTime ?? Date.now();
+                    setRideDistance(savedRideData.distance ?? 0);
+                    setMaxSpeed(savedRideData.maxSpeed ?? 0);
+                    setTab('speed');
+                  }
+                  setShowRestoreDialog(false);
+                }}
+                style={{ flex: 1, padding: '10px', background: '#D4AF37', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer' }}
+              >再開</button>
+              <button
+                onClick={() => setShowRestoreDialog(false)}
+                style={{ flex: 1, padding: '10px', background: '#f5f5f5', border: '1px solid #ddd', borderRadius: '8px', cursor: 'pointer' }}
+              >キャンセル</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
