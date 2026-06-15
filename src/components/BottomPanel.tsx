@@ -347,6 +347,8 @@ interface BottomPanelProps {
   onToggleSpotMode?: () => void;
   onReorderRoutes?: (routes: SavedRoute[]) => void;
   isElevationLoading?: boolean;
+  mapStyle?: 'default' | 'gray';
+  onMapStyleChange?: (style: 'default' | 'gray') => void;
 }
 
 export default function BottomPanel({
@@ -392,6 +394,8 @@ export default function BottomPanel({
   onToggleSpotMode,
   onReorderRoutes,
   isElevationLoading = false,
+  mapStyle = 'default',
+  onMapStyleChange,
 }: BottomPanelProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { delay: 250, tolerance: 5 } }),
@@ -907,6 +911,13 @@ export default function BottomPanel({
                   </SortableContext>
                 </DndContext>
               )}
+              <div style={{ padding: '12px 0', borderTop: '1px solid #eee' }}>
+                <p style={{ fontSize: '13px', color: '#888', margin: '0 0 8px' }}>マップスタイル</p>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button onClick={() => onMapStyleChange?.('default')} style={{ flex: 1, padding: '8px', background: mapStyle === 'default' ? '#D4AF37' : '#f5f5f5', color: mapStyle === 'default' ? '#000' : '#666', border: '1px solid #ddd', borderRadius: '8px', fontSize: '13px', cursor: 'pointer' }}>標準</button>
+                  <button onClick={() => onMapStyleChange?.('gray')} style={{ flex: 1, padding: '8px', background: mapStyle === 'gray' ? '#D4AF37' : '#f5f5f5', color: mapStyle === 'gray' ? '#000' : '#666', border: '1px solid #ddd', borderRadius: '8px', fontSize: '13px', cursor: 'pointer' }}>グレー</button>
+                </div>
+              </div>
               <div style={{ height: 'calc(20px + env(safe-area-inset-bottom))' }} />
             </div>
           )}

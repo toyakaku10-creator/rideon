@@ -123,6 +123,7 @@ function angleDiff(a: number, b: number): number {
 export default function Home() {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>('distance');
+  const [mapStyle, setMapStyle] = useState<'default' | 'gray'>('default');
 
   // Distance measurement
   const [waypoints, setWaypoints] = useState<LatLng[]>([]);
@@ -1109,6 +1110,7 @@ export default function Home() {
           referenceSegments={referenceRoute?.segments}
           onMapReady={(m) => { mapInstanceRef.current = m; }}
           onUserInteraction={handleUserInteraction}
+          mapStyle={mapStyle}
         />
 
 
@@ -1452,6 +1454,8 @@ export default function Home() {
             setSavedRoutes(routes);
             localStorage.setItem(STORAGE_KEY, JSON.stringify(routes));
           }}
+          mapStyle={mapStyle}
+          onMapStyleChange={setMapStyle}
         />
       ) : (
         <SpeedPanel

@@ -62,6 +62,15 @@ const LIBRARIES: Libraries = ['geometry'];
 
 const darkMapStyles: google.maps.MapTypeStyle[] = [];
 
+const grayMapStyles: google.maps.MapTypeStyle[] = [
+  { elementType: 'geometry', stylers: [{ color: '#e8e8e8' }] },
+  { elementType: 'labels.text.fill', stylers: [{ color: '#666666' }] },
+  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#c8d8e8' }] },
+  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#ffffff' }] },
+  { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#d8d8d8' }] },
+  { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#d0d0d0' }] },
+];
+
 const POLYLINE_COLOR = '#FF6B00';
 
 function makeLabelIcon(label: string, bg: string, size = 28): google.maps.Icon {
@@ -199,6 +208,7 @@ interface CycleMapProps {
   referenceSegments?: RouteSegment[];
   onMapReady?: (map: google.maps.Map) => void;
   onUserInteraction?: () => void;
+  mapStyle?: 'default' | 'gray';
 }
 
 export default function CycleMap({
@@ -227,6 +237,7 @@ export default function CycleMap({
   referenceSegments,
   onMapReady,
   onUserInteraction,
+  mapStyle = 'default',
 }: CycleMapProps) {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
@@ -347,7 +358,7 @@ export default function CycleMap({
       mapContainerStyle={{ width: '100%', height: '100%' }}
       center={DEFAULT_CENTER}
       zoom={13}
-      options={{ ...MAP_OPTIONS, styles: darkMapStyles }}
+      options={{ ...MAP_OPTIONS, styles: mapStyle === 'gray' ? grayMapStyles : darkMapStyles }}
       onClick={handleMapClick}
       onLoad={handleLoad}
       onUnmount={handleUnmount}
