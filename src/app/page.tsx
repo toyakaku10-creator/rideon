@@ -1171,8 +1171,8 @@ export default function Home() {
               <g transform={`rotate(${(isDemoMode ? demoHeading : heading) ?? 0} 28 28)`}>
                 {(isDemoMode ? demoHeading : heading) != null && (
                   <>
-                    <polygon points="28,2 35,14 21,14" fill="#4A90D9" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
-                    <rect x="21" y="12" width="14" height="4" fill="white"/>
+                    <polygon points="28,4 35,16 21,16" fill="#4A90D9" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
+                    <rect x="21" y="14" width="14" height="4" fill="white"/>
                   </>
                 )}
                 <circle cx="28" cy="28" r="12" fill="#4A90D9" stroke="white" strokeWidth="2.5"/>
