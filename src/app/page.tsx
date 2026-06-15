@@ -487,9 +487,9 @@ export default function Home() {
           position: currentPosition,
           map: mapInstanceRef.current,
           icon: {
-            url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56"><circle cx="28" cy="28" r="12" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="28" cy="28" r="5" fill="white"/></svg>`),
-            anchor: new google.maps.Point(28, 28),
-            scaledSize: new google.maps.Size(56, 56),
+            url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><circle cx="30" cy="30" r="13" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="30" cy="30" r="5" fill="white"/></svg>`),
+            anchor: new google.maps.Point(30, 30),
+            scaledSize: new google.maps.Size(60, 60),
           },
           zIndex: 9999,
         });
@@ -1030,9 +1030,9 @@ export default function Home() {
         position: center,
         map: mapInstanceRef.current,
         icon: {
-          url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56"><circle cx="28" cy="28" r="12" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="28" cy="28" r="5" fill="white"/></svg>`),
-          anchor: new google.maps.Point(28, 28),
-          scaledSize: new google.maps.Size(56, 56),
+          url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><circle cx="30" cy="30" r="13" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="30" cy="30" r="5" fill="white"/></svg>`),
+          anchor: new google.maps.Point(30, 30),
+          scaledSize: new google.maps.Size(60, 60),
         },
         zIndex: 9999,
       });
@@ -1169,16 +1169,16 @@ export default function Home() {
             zIndex: 501,
             pointerEvents: 'none',
           }}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56">
-              <g transform={`rotate(${(isDemoMode ? demoHeading : heading) ?? 0} 28 28)`}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60">
+              <g transform={`rotate(${(isDemoMode ? demoHeading : heading) ?? 0} 30 30)`}>
                 {(isDemoMode ? demoHeading : heading) != null && (
                   <>
-                    <polygon points="28,4 35,16 21,16" fill="#4A90D9" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
-                    <rect x="21" y="14" width="14" height="4" fill="white"/>
+                    <polygon points="30,4 37,17 23,17" fill="#4A90D9" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
+                    <rect x="23" y="15" width="14" height="4" fill="white"/>
                   </>
                 )}
-                <circle cx="28" cy="28" r="12" fill="#4A90D9" stroke="white" strokeWidth="2.5"/>
-                <circle cx="28" cy="28" r="5" fill="white"/>
+                <circle cx="30" cy="30" r="13" fill="#4A90D9" stroke="white" strokeWidth="2.5"/>
+                <circle cx="30" cy="30" r="5" fill="white"/>
               </g>
             </svg>
           </div>

@@ -105,11 +105,11 @@ function makeStartGoalIcon(size = 28): google.maps.Icon {
 function makePositionIcon(heading: number | null): google.maps.Icon {
   const hasHeading = heading != null && !isNaN(heading);
   const rot = hasHeading ? heading : 0;
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44"><g transform="rotate(${rot} 22 22)">${hasHeading ? `<polygon points="22,2 28,12 16,12" fill="#4A90D9" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><rect x="16" y="10" width="12" height="4" fill="white"/>` : ''}<circle cx="22" cy="22" r="10" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="22" cy="22" r="4" fill="white"/></g></svg>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><g transform="rotate(${rot} 30 30)">${hasHeading ? `<polygon points="30,4 37,17 23,17" fill="#4A90D9" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><rect x="23" y="15" width="14" height="4" fill="white"/>` : ''}<circle cx="30" cy="30" r="13" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="30" cy="30" r="5" fill="white"/></g></svg>`;
   return {
     url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
-    anchor: new google.maps.Point(22, 22),
-    scaledSize: new google.maps.Size(44, 44),
+    anchor: new google.maps.Point(30, 30),
+    scaledSize: new google.maps.Size(60, 60),
   };
 }
 
