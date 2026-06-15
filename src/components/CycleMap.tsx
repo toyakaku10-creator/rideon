@@ -62,6 +62,11 @@ const LIBRARIES: Libraries = ['geometry'];
 
 const darkMapStyles: google.maps.MapTypeStyle[] = [];
 
+const softMapStyles: google.maps.MapTypeStyle[] = [
+  { elementType: 'geometry', stylers: [{ saturation: -50 }] },
+  { elementType: 'labels.text.fill', stylers: [{ saturation: -30 }] },
+];
+
 const grayMapStyles: google.maps.MapTypeStyle[] = [
   { elementType: 'geometry', stylers: [{ color: '#e8e8e8' }] },
   { elementType: 'labels.text.fill', stylers: [{ color: '#666666' }] },
@@ -208,7 +213,7 @@ interface CycleMapProps {
   referenceSegments?: RouteSegment[];
   onMapReady?: (map: google.maps.Map) => void;
   onUserInteraction?: () => void;
-  mapStyle?: 'default' | 'gray';
+  mapStyle?: 'default' | 'soft' | 'gray';
 }
 
 export default function CycleMap({
@@ -358,7 +363,7 @@ export default function CycleMap({
       mapContainerStyle={{ width: '100%', height: '100%' }}
       center={DEFAULT_CENTER}
       zoom={13}
-      options={{ ...MAP_OPTIONS, styles: mapStyle === 'gray' ? grayMapStyles : darkMapStyles }}
+      options={{ ...MAP_OPTIONS, styles: mapStyle === 'gray' ? grayMapStyles : mapStyle === 'soft' ? softMapStyles : darkMapStyles }}
       onClick={handleMapClick}
       onLoad={handleLoad}
       onUnmount={handleUnmount}

@@ -347,8 +347,8 @@ interface BottomPanelProps {
   onToggleSpotMode?: () => void;
   onReorderRoutes?: (routes: SavedRoute[]) => void;
   isElevationLoading?: boolean;
-  mapStyle?: 'default' | 'gray';
-  onMapStyleChange?: (style: 'default' | 'gray') => void;
+  mapStyle?: 'default' | 'soft' | 'gray';
+  onMapStyleChange?: (style: 'default' | 'soft' | 'gray') => void;
 }
 
 export default function BottomPanel({
@@ -915,6 +915,7 @@ export default function BottomPanel({
                 <p style={{ fontSize: '13px', color: '#888', margin: '0 0 8px' }}>マップスタイル</p>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <button onClick={() => onMapStyleChange?.('default')} style={{ flex: 1, padding: '8px', background: mapStyle === 'default' ? '#D4AF37' : '#f5f5f5', color: mapStyle === 'default' ? '#000' : '#666', border: '1px solid #ddd', borderRadius: '8px', fontSize: '13px', cursor: 'pointer' }}>標準</button>
+                  <button onClick={() => onMapStyleChange?.('soft')} style={{ flex: 1, padding: '8px', background: mapStyle === 'soft' ? '#D4AF37' : '#f5f5f5', color: mapStyle === 'soft' ? '#000' : '#666', border: '1px solid #ddd', borderRadius: '8px', fontSize: '13px', cursor: 'pointer' }}>ソフト</button>
                   <button onClick={() => onMapStyleChange?.('gray')} style={{ flex: 1, padding: '8px', background: mapStyle === 'gray' ? '#D4AF37' : '#f5f5f5', color: mapStyle === 'gray' ? '#000' : '#666', border: '1px solid #ddd', borderRadius: '8px', fontSize: '13px', cursor: 'pointer' }}>グレー</button>
                 </div>
               </div>

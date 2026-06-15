@@ -123,7 +123,7 @@ function angleDiff(a: number, b: number): number {
 export default function Home() {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>('distance');
-  const [mapStyle, setMapStyle] = useState<'default' | 'gray'>('default');
+  const [mapStyle, setMapStyle] = useState<'default' | 'soft' | 'gray'>('default');
 
   // Distance measurement
   const [waypoints, setWaypoints] = useState<LatLng[]>([]);
