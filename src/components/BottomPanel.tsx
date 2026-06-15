@@ -414,7 +414,7 @@ export default function BottomPanel({
   const [resetKey, setResetKey] = useState(0);
   const [selectedLogId, setSelectedLogId] = useState<string | null>(null);
   const [showShareSheet, setShowShareSheet] = useState(false);
-  const [historyTab, setHistoryTab] = useState<'routes' | 'spots' | 'logs'>('routes');
+  const [historyTab, setHistoryTab] = useState<'routes' | 'style' | 'spots' | 'logs'>('routes');
   const [rideLogs, setRideLogs] = useState<RideLog[]>([]);
   const [showDataMenu, setShowDataMenu] = useState(false);
   const [showGpxMenu, setShowGpxMenu] = useState(false);
@@ -796,7 +796,7 @@ export default function BottomPanel({
           </div>
           {/* Tabs */}
           <div style={{ flexShrink: 0, display: 'flex', gap: '0', padding: '0 16px 0', marginBottom: '8px' }}>
-            {([['routes', 'ルート'], ['spots', 'スポット'], ['logs', '走行記録']] as const).map(([t, label]) => (
+            {([['routes', 'ルート'], ['style', 'スタイル'], ['spots', 'スポット'], ['logs', '走行記録']] as const).map(([t, label]) => (
               <button key={t} onClick={() => setHistoryTab(t)} style={{ flex: 1, padding: '8px 0', fontSize: '12px', fontWeight: '600', background: 'none', border: 'none', borderBottom: historyTab === t ? '2px solid #D4AF37' : '2px solid #eee', color: historyTab === t ? '#D4AF37' : '#999', cursor: 'pointer' }}>
                 {label}
               </button>
@@ -911,37 +911,40 @@ export default function BottomPanel({
                   </SortableContext>
                 </DndContext>
               )}
-              <div style={{ padding: '12px 16px', borderTop: '1px solid #eee' }}>
-                <p style={{ fontSize: '13px', color: '#888', margin: '0 0 10px' }}>マップスタイル</p>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  {([
-                    { id: 'default', label: '標準', bg: '#e8f4e8', road: '#f5f0e8', water: '#c8dfc8' },
-                    { id: 'soft', label: 'ソフト', bg: '#eef5ee', road: '#f8f5f0', water: '#daeada' },
-                    { id: 'gray', label: 'グレー', bg: '#e0e0e0', road: '#f0f0f0', water: '#cccccc' },
-                  ] as const).map(style => (
-                    <button key={style.id} onClick={() => onMapStyleChange?.(style.id)} style={{
-                      flex: 1, padding: '0', border: mapStyle === style.id ? '2px solid #D4AF37' : '1px solid #ddd',
-                      borderRadius: '8px', overflow: 'hidden', cursor: 'pointer', background: 'none',
-                    }}>
-                      <svg viewBox="0 0 80 60" width="100%" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="80" height="60" fill={style.bg}/>
-                        <rect x="0" y="18" width="80" height="24" fill={style.water}/>
-                        <rect x="10" y="0" width="8" height="60" fill={style.road}/>
-                        <rect x="35" y="0" width="6" height="60" fill={style.road}/>
-                        <rect x="60" y="0" width="7" height="60" fill={style.road}/>
-                        <rect x="0" y="5" width="80" height="5" fill="white" opacity="0.9"/>
-                        <rect x="0" y="38" width="80" height="5" fill="white" opacity="0.9"/>
-                        <circle cx="40" cy="30" r="5" fill="#4A90D9" stroke="white" strokeWidth="1.5"/>
-                        <circle cx="40" cy="30" r="2" fill="white"/>
-                      </svg>
-                      <p style={{ fontSize: '11px', margin: '4px 0', color: mapStyle === style.id ? '#D4AF37' : '#666', fontWeight: mapStyle === style.id ? '600' : '400' }}>
-                        {style.label}
-                      </p>
-                    </button>
-                  ))}
-                </div>
-              </div>
               <div style={{ height: 'calc(20px + env(safe-area-inset-bottom))' }} />
+            </div>
+          )}
+
+          {/* Style tab */}
+          {historyTab === 'style' && (
+            <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '16px', boxSizing: 'border-box' } as React.CSSProperties}>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                {([
+                  { id: 'default', label: '標準', bg: '#e8f4e8', road: '#f5f0e8', water: '#c8dfc8' },
+                  { id: 'soft', label: 'ソフト', bg: '#eef5ee', road: '#f8f5f0', water: '#daeada' },
+                  { id: 'gray', label: 'グレー', bg: '#e0e0e0', road: '#f0f0f0', water: '#cccccc' },
+                ] as const).map(style => (
+                  <button key={style.id} onClick={() => onMapStyleChange?.(style.id)} style={{
+                    flex: 1, padding: '0', border: mapStyle === style.id ? '2px solid #D4AF37' : '1px solid #ddd',
+                    borderRadius: '8px', overflow: 'hidden', cursor: 'pointer', background: 'none',
+                  }}>
+                    <svg viewBox="0 0 80 60" width="100%" xmlns="http://www.w3.org/2000/svg">
+                      <rect width="80" height="60" fill={style.bg}/>
+                      <rect x="0" y="18" width="80" height="24" fill={style.water}/>
+                      <rect x="10" y="0" width="8" height="60" fill={style.road}/>
+                      <rect x="35" y="0" width="6" height="60" fill={style.road}/>
+                      <rect x="60" y="0" width="7" height="60" fill={style.road}/>
+                      <rect x="0" y="5" width="80" height="5" fill="white" opacity="0.9"/>
+                      <rect x="0" y="38" width="80" height="5" fill="white" opacity="0.9"/>
+                      <circle cx="40" cy="30" r="5" fill="#4A90D9" stroke="white" strokeWidth="1.5"/>
+                      <circle cx="40" cy="30" r="2" fill="white"/>
+                    </svg>
+                    <p style={{ fontSize: '11px', margin: '4px 0', color: mapStyle === style.id ? '#D4AF37' : '#666', fontWeight: mapStyle === style.id ? '600' : '400' }}>
+                      {style.label}
+                    </p>
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
