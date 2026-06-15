@@ -487,9 +487,9 @@ export default function Home() {
           position: currentPosition,
           map: mapInstanceRef.current,
           icon: {
-            url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="15" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="35" cy="35" r="6" fill="white"/></svg>`),
-            anchor: new google.maps.Point(35, 35),
-            scaledSize: new google.maps.Size(70, 70),
+            url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><circle cx="32" cy="32" r="14" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="32" cy="32" r="6" fill="white"/></svg>`),
+            anchor: new google.maps.Point(32, 32),
+            scaledSize: new google.maps.Size(64, 64),
           },
           zIndex: 9999,
         });
@@ -1169,16 +1169,16 @@ export default function Home() {
             zIndex: 501,
             pointerEvents: 'none',
           }}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="70" height="70" viewBox="0 0 70 70">
-              <g transform={`rotate(${(isDemoMode ? demoHeading : heading) ?? 0} 35 35)`}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+              <g transform={`rotate(${(isDemoMode ? demoHeading : heading) ?? 0} 32 32)`}>
                 {(isDemoMode ? demoHeading : heading) != null && (
                   <>
-                    <polygon points="35,4 44,18 26,18" fill="#4A90D9" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
-                    <rect x="26" y="16" width="18" height="4" fill="white"/>
+                    <polygon points="32,4 40,16 24,16" fill="#4A90D9" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
+                    <rect x="24" y="14" width="16" height="4" fill="white"/>
                   </>
                 )}
-                <circle cx="35" cy="35" r="15" fill="#4A90D9" stroke="white" strokeWidth="2.5"/>
-                <circle cx="35" cy="35" r="6" fill="white"/>
+                <circle cx="32" cy="32" r="14" fill="#4A90D9" stroke="white" strokeWidth="2.5"/>
+                <circle cx="32" cy="32" r="6" fill="white"/>
               </g>
             </svg>
           </div>
