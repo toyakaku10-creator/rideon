@@ -182,6 +182,7 @@ export default function Home() {
   const userInteractingRef = useRef(false);
   const interactTimerRef = useRef<NodeJS.Timeout | null>(null);
   const currentMarkerRef = useRef<google.maps.Marker | null>(null);
+  const pauseMarkerRef = useRef<google.maps.Marker | null>(null);
   const skipElevationFetchRef = useRef(false);
   const pendingElevationsRef = useRef<number[] | undefined>(undefined);
   const demoElevIndexRef = useRef<number>(0);
@@ -987,9 +988,29 @@ export default function Home() {
       demoRAFRef.current = null;
     }
     setIsPaused(true);
+
+    // 現在のデモ位置に地図上マーカーを配置
+    const center = mapInstanceRef.current?.getCenter();
+    if (center && mapInstanceRef.current) {
+      pauseMarkerRef.current = new google.maps.Marker({
+        position: center,
+        map: mapInstanceRef.current,
+        icon: {
+          url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44"><circle cx="22" cy="22" r="10" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="22" cy="22" r="4" fill="white"/></svg>`),
+          anchor: new google.maps.Point(22, 22),
+          scaledSize: new google.maps.Size(44, 44),
+        },
+        zIndex: 9999,
+      });
+    }
   };
 
   const resumeDemo = () => {
+    // 地図上マーカーを削除
+    if (pauseMarkerRef.current) {
+      pauseMarkerRef.current.setMap(null);
+      pauseMarkerRef.current = null;
+    }
     const baseDuration = (totalDistance / 16000) * 3600 * 1000 / 100;
     demoStartTimeRef.current = performance.now() - demoProgressRef.current * baseDuration / demoSpeedRef.current;
     setIsPaused(false);
@@ -1104,8 +1125,8 @@ export default function Home() {
           </div>
         )}
 
-        {/* Fixed screen center marker (ride mode and demo mode) */}
-        {tab === 'speed' && (
+        {/* Fixed screen center marker (ride mode and demo mode, hidden during pause) */}
+        {tab === 'speed' && !isPaused && (
           <div style={{
             position: 'absolute',
             top: '50%',
