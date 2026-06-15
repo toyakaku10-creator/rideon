@@ -179,6 +179,8 @@ export default function Home() {
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const lastMapCenterRef = useRef(0);
   const lastHeadingUpdateRef = useRef(0);
+  const userInteractingRef = useRef(false);
+  const interactTimerRef = useRef<NodeJS.Timeout | null>(null);
   const currentMarkerRef = useRef<google.maps.Marker | null>(null);
   const skipElevationFetchRef = useRef(false);
   const pendingElevationsRef = useRef<number[] | undefined>(undefined);
@@ -455,9 +457,18 @@ export default function Home() {
     return () => navigator.geolocation.clearWatch(watchId);
   }, [tab]);
 
+  const handleUserInteraction = useCallback(() => {
+    userInteractingRef.current = true;
+    if (interactTimerRef.current) clearTimeout(interactTimerRef.current);
+    interactTimerRef.current = setTimeout(() => {
+      userInteractingRef.current = false;
+    }, 3000);
+  }, []);
+
   // Follow current position in GPS speed mode (demo handles its own camera)
   useEffect(() => {
     if (!currentPosition || tab !== 'speed' || isDemoMode) return;
+    if (userInteractingRef.current) return;
     mapInstanceRef.current?.setCenter({ lat: currentPosition.lat, lng: currentPosition.lng });
   }, [currentPosition, tab, isDemoMode]);
 
@@ -1042,6 +1053,7 @@ export default function Home() {
           logTrack={logTrack}
           referenceSegments={referenceRoute?.segments}
           onMapReady={(m) => { mapInstanceRef.current = m; }}
+          onUserInteraction={handleUserInteraction}
         />
 
 

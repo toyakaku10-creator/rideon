@@ -197,6 +197,7 @@ interface CycleMapProps {
   logTrack?: { lat: number; lng: number }[] | null;
   referenceSegments?: RouteSegment[];
   onMapReady?: (map: google.maps.Map) => void;
+  onUserInteraction?: () => void;
 }
 
 export default function CycleMap({
@@ -224,6 +225,7 @@ export default function CycleMap({
   logTrack,
   referenceSegments,
   onMapReady,
+  onUserInteraction,
 }: CycleMapProps) {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
@@ -253,6 +255,17 @@ export default function CycleMap({
     });
     return () => google.maps.event.removeListener(listener);
   }, [map]);
+
+  // Notify parent of user interaction (drag/zoom) to pause auto-follow
+  useEffect(() => {
+    if (!map || !onUserInteraction) return;
+    const dragListener = map.addListener('dragstart', () => onUserInteraction());
+    const zoomListener = map.addListener('zoom_changed', () => onUserInteraction());
+    return () => {
+      google.maps.event.removeListener(dragListener);
+      google.maps.event.removeListener(zoomListener);
+    };
+  }, [map, onUserInteraction]);
 
   // fitBounds when import data arrives
   useEffect(() => {
