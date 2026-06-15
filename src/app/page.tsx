@@ -505,7 +505,7 @@ export default function Home() {
     if (saved) {
       try {
         const data = JSON.parse(saved);
-        if (window.confirm('前回のライドが中断されています。記録を復元しますか？')) {
+        if (window.confirm('前回のライドが中断されています。再開しますか？')) {
           rideTrackRef.current = data.track ?? [];
           rideStartTimeRef.current = data.startTime ?? Date.now();
           setRideDistance(data.distance ?? 0);
