@@ -1030,9 +1030,9 @@ export default function Home() {
         position: center,
         map: mapInstanceRef.current,
         icon: {
-          url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><circle cx="30" cy="30" r="13" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="30" cy="30" r="5" fill="white"/></svg>`),
-          anchor: new google.maps.Point(30, 30),
-          scaledSize: new google.maps.Size(60, 60),
+          url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><circle cx="32" cy="32" r="14" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="32" cy="32" r="6" fill="white"/></svg>`),
+          anchor: new google.maps.Point(32, 32),
+          scaledSize: new google.maps.Size(64, 64),
         },
         zIndex: 9999,
       });
