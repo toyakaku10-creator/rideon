@@ -996,9 +996,9 @@ export default function Home() {
         position: center,
         map: mapInstanceRef.current,
         icon: {
-          url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44"><circle cx="22" cy="22" r="10" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="22" cy="22" r="4" fill="white"/></svg>`),
-          anchor: new google.maps.Point(22, 22),
-          scaledSize: new google.maps.Size(44, 44),
+          url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56"><circle cx="28" cy="28" r="12" fill="#4A90D9" stroke="white" stroke-width="2.5"/><circle cx="28" cy="28" r="5" fill="white"/></svg>`),
+          anchor: new google.maps.Point(28, 28),
+          scaledSize: new google.maps.Size(56, 56),
         },
         zIndex: 9999,
       });
