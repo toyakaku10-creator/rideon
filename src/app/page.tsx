@@ -524,6 +524,9 @@ export default function Home() {
         startTime: rideStartTimeRef.current,
         distance: rideDistance,
         maxSpeed,
+        waypoints,
+        segments,
+        elevations,
       }));
     }, 10000);
     return () => clearInterval(interval);
@@ -1551,6 +1554,9 @@ export default function Home() {
                     rideStartTimeRef.current = savedRideData.startTime ?? Date.now();
                     setRideDistance(savedRideData.distance ?? 0);
                     setMaxSpeed(savedRideData.maxSpeed ?? 0);
+                    if (savedRideData.waypoints) setWaypoints(savedRideData.waypoints);
+                    if (savedRideData.segments) setSegments(savedRideData.segments);
+                    if (savedRideData.elevations) setElevations(savedRideData.elevations);
                     setTab('speed');
                   }
                   setShowRestoreDialog(false);
