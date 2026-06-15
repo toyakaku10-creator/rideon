@@ -256,14 +256,18 @@ export default function CycleMap({
     return () => google.maps.event.removeListener(listener);
   }, [map]);
 
-  // Notify parent of user interaction (drag/zoom) to pause auto-follow
+  // Notify parent of user interaction (drag/zoom/touch) to pause auto-follow
   useEffect(() => {
     if (!map || !onUserInteraction) return;
     const dragListener = map.addListener('dragstart', () => onUserInteraction());
     const zoomListener = map.addListener('zoom_changed', () => onUserInteraction());
+    const touchListener = map.addListener('touchstart', () => onUserInteraction());
+    const mouseListener = map.addListener('mousedown', () => onUserInteraction());
     return () => {
       google.maps.event.removeListener(dragListener);
       google.maps.event.removeListener(zoomListener);
+      google.maps.event.removeListener(touchListener);
+      google.maps.event.removeListener(mouseListener);
     };
   }, [map, onUserInteraction]);
 
