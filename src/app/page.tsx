@@ -1234,6 +1234,10 @@ export default function Home() {
                 }
                 rideStartTimeRef.current = null;
                 localStorage.removeItem('rideon-active-ride');
+                if (rideStopMarkerRef.current) {
+                  rideStopMarkerRef.current.setMap(null);
+                  rideStopMarkerRef.current = null;
+                }
                 setTab('distance');
               } else {
                 // ライドモード開始
