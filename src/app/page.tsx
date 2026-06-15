@@ -1006,6 +1006,12 @@ export default function Home() {
     if (currentMarkerRef.current && mapInstanceRef.current) {
       currentMarkerRef.current.setMap(mapInstanceRef.current);
     }
+    // 一時停止マーカーをクリア
+    if (pauseMarkerRef.current) {
+      pauseMarkerRef.current.setMap(null);
+      pauseMarkerRef.current = null;
+    }
+    setIsPaused(false);
   };
 
   const pauseDemo = () => {
