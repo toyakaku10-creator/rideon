@@ -87,13 +87,14 @@ const MAP_STYLES: Record<string, google.maps.MapTypeStyle[]> = {
     { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#ffffff' }] },
     { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#eeeeee' }] },
   ],
-  dark: [
-    { elementType: 'geometry', stylers: [{ color: '#212121' }] },
-    { elementType: 'labels.text.fill', stylers: [{ color: '#757575' }] },
-    { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#000000' }] },
-    { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#373737' }] },
-    { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#181818' }] },
-    { featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#1a1a1a' }] },
+  highcontrast: [
+    { elementType: 'geometry', stylers: [{ color: '#c8d8b8' }] },
+    { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#a0c0d8' }] },
+    { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#ffffff' }] },
+    { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#333333' }] },
+    { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#90a890' }] },
+    { elementType: 'labels.text.fill', stylers: [{ color: '#000000' }] },
+    { elementType: 'labels.text.stroke', stylers: [{ color: '#ffffff' }] },
   ],
 };
 
@@ -234,7 +235,7 @@ interface CycleMapProps {
   referenceSegments?: RouteSegment[];
   onMapReady?: (map: google.maps.Map) => void;
   onUserInteraction?: () => void;
-  mapStyle?: 'default' | 'soft' | 'gray' | 'retro' | 'silver' | 'dark';
+  mapStyle?: 'default' | 'soft' | 'gray' | 'retro' | 'silver' | 'highcontrast';
 }
 
 export default function CycleMap({

@@ -347,8 +347,8 @@ interface BottomPanelProps {
   onToggleSpotMode?: () => void;
   onReorderRoutes?: (routes: SavedRoute[]) => void;
   isElevationLoading?: boolean;
-  mapStyle?: 'default' | 'soft' | 'gray' | 'retro' | 'silver' | 'dark';
-  onMapStyleChange?: (style: 'default' | 'soft' | 'gray' | 'retro' | 'silver' | 'dark') => void;
+  mapStyle?: 'default' | 'soft' | 'gray' | 'retro' | 'silver' | 'highcontrast';
+  onMapStyleChange?: (style: 'default' | 'soft' | 'gray' | 'retro' | 'silver' | 'highcontrast') => void;
 }
 
 export default function BottomPanel({
@@ -394,7 +394,7 @@ export default function BottomPanel({
   onToggleSpotMode,
   onReorderRoutes,
   isElevationLoading = false,
-  mapStyle = 'default' as 'default' | 'soft' | 'gray' | 'retro' | 'silver' | 'dark',
+  mapStyle = 'default' as 'default' | 'soft' | 'gray' | 'retro' | 'silver' | 'highcontrast',
   onMapStyleChange,
 }: BottomPanelProps) {
   const sensors = useSensors(
@@ -925,7 +925,7 @@ export default function BottomPanel({
                   { id: 'gray',    label: 'グレー',    bg: '#e0e0e0', road: '#f0f0f0', water: '#c0ccd8', label2: '#666' },
                   { id: 'retro',   label: 'レトロ',    bg: '#ebe3cd', road: '#f5f1e6', water: '#b9d3c2', label2: '#666' },
                   { id: 'silver',  label: 'シルバー',   bg: '#f5f5f5', road: '#ffffff', water: '#d8e4ec', label2: '#666' },
-                  { id: 'dark',    label: 'ダーク',    bg: '#1a1a1a', road: '#373737', water: '#000000', label2: '#ccc' },
+                  { id: 'highcontrast', label: 'ハイコントラスト', bg: '#c8d8b8', road: '#ffffff', water: '#a0c0d8', label2: '#666' },
                 ] as const).map(style => (
                   <button key={style.id} onClick={() => onMapStyleChange?.(style.id)} style={{
                     width: 'calc(33.33% - 6px)', padding: '0', border: mapStyle === style.id ? '2px solid #D4AF37' : '1px solid #ddd',
