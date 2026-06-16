@@ -942,7 +942,7 @@ export default function BottomPanel({
                       <circle cx="40" cy="30" r="5" fill="#4A90D9" stroke="white" strokeWidth="1.5"/>
                       <circle cx="40" cy="30" r="2" fill="white"/>
                     </svg>
-                    <p style={{ fontSize: '11px', margin: '4px 0', color: mapStyle === style.id ? '#D4AF37' : style.label2, fontWeight: mapStyle === style.id ? '600' : '400', background: style.id === 'dark' ? '#1a1a1a' : undefined }}>
+                    <p style={{ fontSize: '11px', margin: '4px 0', color: mapStyle === style.id ? '#D4AF37' : style.label2, fontWeight: mapStyle === style.id ? '600' : '400' }}>
                       {style.label}
                     </p>
                   </button>
