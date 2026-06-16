@@ -79,11 +79,13 @@ const MAP_STYLES: Record<string, google.maps.MapTypeStyle[]> = {
     { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#f5f1e6' }] },
     { elementType: 'labels.text.fill', stylers: [{ color: '#523735' }] },
   ],
-  outdoor: [
-    { featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#d8e8c8' }] },
-    { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#a8c8e0' }] },
-    { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#f0ecd8' }] },
-    { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#b8d4a0' }] },
+  silver: [
+    { elementType: 'geometry', stylers: [{ color: '#f5f5f5' }] },
+    { elementType: 'labels.text.fill', stylers: [{ color: '#616161' }] },
+    { elementType: 'labels.text.stroke', stylers: [{ color: '#f5f5f5' }] },
+    { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#d8e4ec' }] },
+    { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#ffffff' }] },
+    { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#eeeeee' }] },
   ],
   dark: [
     { elementType: 'geometry', stylers: [{ color: '#212121' }] },
@@ -232,7 +234,7 @@ interface CycleMapProps {
   referenceSegments?: RouteSegment[];
   onMapReady?: (map: google.maps.Map) => void;
   onUserInteraction?: () => void;
-  mapStyle?: 'default' | 'soft' | 'gray' | 'retro' | 'outdoor' | 'dark';
+  mapStyle?: 'default' | 'soft' | 'gray' | 'retro' | 'silver' | 'dark';
 }
 
 export default function CycleMap({

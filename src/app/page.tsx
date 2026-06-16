@@ -123,8 +123,8 @@ function angleDiff(a: number, b: number): number {
 export default function Home() {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>('distance');
-  const [mapStyle, setMapStyle] = useState<'default' | 'soft' | 'gray' | 'retro' | 'outdoor' | 'dark'>(() =>
-    (typeof window !== 'undefined' ? localStorage.getItem('rideon-map-style') : null) as 'default' | 'soft' | 'gray' | 'retro' | 'outdoor' | 'dark' | null ?? 'default'
+  const [mapStyle, setMapStyle] = useState<'default' | 'soft' | 'gray' | 'retro' | 'silver' | 'dark'>(() =>
+    (typeof window !== 'undefined' ? localStorage.getItem('rideon-map-style') : null) as 'default' | 'soft' | 'gray' | 'retro' | 'silver' | 'dark' | null ?? 'default'
   );
 
   // Distance measurement
@@ -878,7 +878,7 @@ export default function Home() {
   }, [isImported, segments]);
 
   const handleMapStyleChange = (style: string) => {
-    setMapStyle(style as 'default' | 'soft' | 'gray' | 'retro' | 'outdoor' | 'dark');
+    setMapStyle(style as 'default' | 'soft' | 'gray' | 'retro' | 'silver' | 'dark');
     localStorage.setItem('rideon-map-style', style);
   };
 
