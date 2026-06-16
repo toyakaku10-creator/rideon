@@ -123,7 +123,9 @@ function angleDiff(a: number, b: number): number {
 export default function Home() {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>('distance');
-  const [mapStyle, setMapStyle] = useState<'default' | 'soft' | 'gray'>('default');
+  const [mapStyle, setMapStyle] = useState<'default' | 'soft' | 'gray' | 'retro' | 'outdoor' | 'dark'>(() =>
+    (typeof window !== 'undefined' ? localStorage.getItem('rideon-map-style') : null) as 'default' | 'soft' | 'gray' | 'retro' | 'outdoor' | 'dark' | null ?? 'default'
+  );
 
   // Distance measurement
   const [waypoints, setWaypoints] = useState<LatLng[]>([]);
@@ -1455,7 +1457,7 @@ export default function Home() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(routes));
           }}
           mapStyle={mapStyle}
-          onMapStyleChange={setMapStyle}
+          onMapStyleChange={(s) => { setMapStyle(s); localStorage.setItem('rideon-map-style', s); }}
         />
       ) : (
         <SpeedPanel

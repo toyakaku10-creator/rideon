@@ -347,8 +347,8 @@ interface BottomPanelProps {
   onToggleSpotMode?: () => void;
   onReorderRoutes?: (routes: SavedRoute[]) => void;
   isElevationLoading?: boolean;
-  mapStyle?: 'default' | 'soft' | 'gray';
-  onMapStyleChange?: (style: 'default' | 'soft' | 'gray') => void;
+  mapStyle?: 'default' | 'soft' | 'gray' | 'retro' | 'outdoor' | 'dark';
+  onMapStyleChange?: (style: 'default' | 'soft' | 'gray' | 'retro' | 'outdoor' | 'dark') => void;
 }
 
 export default function BottomPanel({
@@ -394,7 +394,7 @@ export default function BottomPanel({
   onToggleSpotMode,
   onReorderRoutes,
   isElevationLoading = false,
-  mapStyle = 'default',
+  mapStyle = 'default' as 'default' | 'soft' | 'gray' | 'retro' | 'outdoor' | 'dark',
   onMapStyleChange,
 }: BottomPanelProps) {
   const sensors = useSensors(
@@ -918,15 +918,18 @@ export default function BottomPanel({
           {/* Style tab */}
           {historyTab === 'style' && (
             <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '16px', boxSizing: 'border-box' } as React.CSSProperties}>
-              <div style={{ display: 'flex', gap: '8px' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 {([
-                  { id: 'default', label: '標準', bg: '#e8f4e8', road: '#f5f0e8', water: '#c8dfc8' },
-                  { id: 'soft', label: 'ソフト', bg: '#eef5ee', road: '#f8f5f0', water: '#daeada' },
-                  { id: 'gray', label: 'グレー', bg: '#e0e0e0', road: '#f0f0f0', water: '#cccccc' },
+                  { id: 'default', label: '標準',      bg: '#e8f4e8', road: '#f5f0e8', water: '#c8dfc8', label2: '#666' },
+                  { id: 'soft',    label: 'ソフト',    bg: '#eef5ee', road: '#f8f5f0', water: '#daeada', label2: '#666' },
+                  { id: 'gray',    label: 'グレー',    bg: '#e0e0e0', road: '#f0f0f0', water: '#c0ccd8', label2: '#666' },
+                  { id: 'retro',   label: 'レトロ',    bg: '#ebe3cd', road: '#f5f1e6', water: '#b9d3c2', label2: '#666' },
+                  { id: 'outdoor', label: 'アウトドア', bg: '#d8e8c8', road: '#f0ecd8', water: '#a8c8e0', label2: '#666' },
+                  { id: 'dark',    label: 'ダーク',    bg: '#1a1a1a', road: '#373737', water: '#000000', label2: '#ccc' },
                 ] as const).map(style => (
                   <button key={style.id} onClick={() => onMapStyleChange?.(style.id)} style={{
-                    flex: 1, padding: '0', border: mapStyle === style.id ? '2px solid #D4AF37' : '1px solid #ddd',
-                    borderRadius: '8px', overflow: 'hidden', cursor: 'pointer', background: 'none',
+                    width: 'calc(33.33% - 6px)', padding: '0', border: mapStyle === style.id ? '2px solid #D4AF37' : '1px solid #ddd',
+                    borderRadius: '8px', overflow: 'hidden', cursor: 'pointer', background: 'none', boxSizing: 'border-box',
                   }}>
                     <svg viewBox="0 0 80 60" width="100%" xmlns="http://www.w3.org/2000/svg">
                       <rect width="80" height="60" fill={style.bg}/>
@@ -934,12 +937,12 @@ export default function BottomPanel({
                       <rect x="10" y="0" width="8" height="60" fill={style.road}/>
                       <rect x="35" y="0" width="6" height="60" fill={style.road}/>
                       <rect x="60" y="0" width="7" height="60" fill={style.road}/>
-                      <rect x="0" y="5" width="80" height="5" fill="white" opacity="0.9"/>
-                      <rect x="0" y="38" width="80" height="5" fill="white" opacity="0.9"/>
+                      <rect x="0" y="5" width="80" height="5" fill="white" opacity="0.15"/>
+                      <rect x="0" y="38" width="80" height="5" fill="white" opacity="0.15"/>
                       <circle cx="40" cy="30" r="5" fill="#4A90D9" stroke="white" strokeWidth="1.5"/>
                       <circle cx="40" cy="30" r="2" fill="white"/>
                     </svg>
-                    <p style={{ fontSize: '11px', margin: '4px 0', color: mapStyle === style.id ? '#D4AF37' : '#666', fontWeight: mapStyle === style.id ? '600' : '400' }}>
+                    <p style={{ fontSize: '11px', margin: '4px 0', color: mapStyle === style.id ? '#D4AF37' : style.label2, fontWeight: mapStyle === style.id ? '600' : '400', background: style.id === 'dark' ? '#1a1a1a' : undefined }}>
                       {style.label}
                     </p>
                   </button>

@@ -60,21 +60,40 @@ function makeSpotIcon(category: string, name: string, circleSize = 24, iconSize 
 
 const LIBRARIES: Libraries = ['geometry'];
 
-const darkMapStyles: google.maps.MapTypeStyle[] = [];
-
-const softMapStyles: google.maps.MapTypeStyle[] = [
-  { elementType: 'geometry', stylers: [{ saturation: -50 }] },
-  { elementType: 'labels.text.fill', stylers: [{ saturation: -30 }] },
-];
-
-const grayMapStyles: google.maps.MapTypeStyle[] = [
-  { elementType: 'geometry', stylers: [{ color: '#e8e8e8' }] },
-  { elementType: 'labels.text.fill', stylers: [{ color: '#666666' }] },
-  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#c8d8e8' }] },
-  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#ffffff' }] },
-  { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#d8d8d8' }] },
-  { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#d0d0d0' }] },
-];
+const MAP_STYLES: Record<string, google.maps.MapTypeStyle[]> = {
+  default: [],
+  soft: [
+    { elementType: 'geometry', stylers: [{ saturation: -50 }] },
+    { elementType: 'labels.text.fill', stylers: [{ saturation: -30 }] },
+  ],
+  gray: [
+    { elementType: 'geometry', stylers: [{ color: '#e8e8e8' }] },
+    { elementType: 'labels.text.fill', stylers: [{ color: '#666666' }] },
+    { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#c8d8e8' }] },
+    { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#ffffff' }] },
+    { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#d8d8d8' }] },
+  ],
+  retro: [
+    { elementType: 'geometry', stylers: [{ color: '#ebe3cd' }] },
+    { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#b9d3c2' }] },
+    { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#f5f1e6' }] },
+    { elementType: 'labels.text.fill', stylers: [{ color: '#523735' }] },
+  ],
+  outdoor: [
+    { featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#d8e8c8' }] },
+    { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#a8c8e0' }] },
+    { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#f0ecd8' }] },
+    { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#b8d4a0' }] },
+  ],
+  dark: [
+    { elementType: 'geometry', stylers: [{ color: '#212121' }] },
+    { elementType: 'labels.text.fill', stylers: [{ color: '#757575' }] },
+    { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#000000' }] },
+    { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#373737' }] },
+    { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#181818' }] },
+    { featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#1a1a1a' }] },
+  ],
+};
 
 const POLYLINE_COLOR = '#FF6B00';
 
@@ -213,7 +232,7 @@ interface CycleMapProps {
   referenceSegments?: RouteSegment[];
   onMapReady?: (map: google.maps.Map) => void;
   onUserInteraction?: () => void;
-  mapStyle?: 'default' | 'soft' | 'gray';
+  mapStyle?: 'default' | 'soft' | 'gray' | 'retro' | 'outdoor' | 'dark';
 }
 
 export default function CycleMap({
@@ -363,7 +382,7 @@ export default function CycleMap({
       mapContainerStyle={{ width: '100%', height: '100%' }}
       center={DEFAULT_CENTER}
       zoom={13}
-      options={{ ...MAP_OPTIONS, styles: mapStyle === 'gray' ? grayMapStyles : mapStyle === 'soft' ? softMapStyles : darkMapStyles }}
+      options={{ ...MAP_OPTIONS, styles: MAP_STYLES[mapStyle] ?? [] }}
       onClick={handleMapClick}
       onLoad={handleLoad}
       onUnmount={handleUnmount}
