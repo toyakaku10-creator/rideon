@@ -877,6 +877,11 @@ export default function Home() {
     setOpenSaveSheet(true);
   }, [isImported, segments]);
 
+  const handleMapStyleChange = (style: string) => {
+    setMapStyle(style as 'default' | 'soft' | 'gray' | 'retro' | 'outdoor' | 'dark');
+    localStorage.setItem('rideon-map-style', style);
+  };
+
   const handleDemoSpeedChange = (speed: number) => {
     setDemoSpeed(speed);
     demoSpeedRef.current = speed;
@@ -1457,7 +1462,7 @@ export default function Home() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(routes));
           }}
           mapStyle={mapStyle}
-          onMapStyleChange={(s) => { setMapStyle(s); localStorage.setItem('rideon-map-style', s); }}
+          onMapStyleChange={handleMapStyleChange}
         />
       ) : (
         <SpeedPanel
