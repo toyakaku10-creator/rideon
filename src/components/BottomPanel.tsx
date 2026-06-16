@@ -920,11 +920,11 @@ export default function BottomPanel({
             <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '16px', boxSizing: 'border-box' } as React.CSSProperties}>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 {([
-                  { id: 'default', label: '標準',      bg: '#e8f4e8', road: '#f5f0e8', water: '#c8dfc8', label2: '#666' },
-                  { id: 'soft',    label: 'ソフト',    bg: '#eef5ee', road: '#f8f5f0', water: '#daeada', label2: '#666' },
-                  { id: 'gray',    label: 'グレー',    bg: '#e0e0e0', road: '#f0f0f0', water: '#c0ccd8', label2: '#666' },
-                  { id: 'retro',   label: 'レトロ',    bg: '#ebe3cd', road: '#f5f1e6', water: '#b9d3c2', label2: '#666' },
-                  { id: 'silver',  label: 'シルバー',   bg: '#f5f5f5', road: '#ffffff', water: '#d8e4ec', label2: '#666' },
+                  { id: 'default',     label: '標準',           bg: '#e8f4e8', road: '#f5f0e8', water: '#c8dfc8', label2: '#666' },
+                  { id: 'soft',        label: 'ソフト',         bg: '#eef5ee', road: '#f8f5f0', water: '#daeada', label2: '#666' },
+                  { id: 'silver',      label: 'シルバー',       bg: '#f5f5f5', road: '#ffffff', water: '#d8e4ec', label2: '#666' },
+                  { id: 'gray',        label: 'グレー',         bg: '#e0e0e0', road: '#f0f0f0', water: '#c0ccd8', label2: '#666' },
+                  { id: 'retro',       label: 'レトロ',         bg: '#ebe3cd', road: '#f5f1e6', water: '#b9d3c2', label2: '#666' },
                   { id: 'highcontrast', label: 'ハイコントラスト', bg: '#c8d8b8', road: '#ffffff', water: '#a0c0d8', label2: '#666' },
                 ] as const).map(style => (
                   <button key={style.id} onClick={() => onMapStyleChange?.(style.id)} style={{
