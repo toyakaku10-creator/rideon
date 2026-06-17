@@ -347,8 +347,8 @@ interface BottomPanelProps {
   onToggleSpotMode?: () => void;
   onReorderRoutes?: (routes: SavedRoute[]) => void;
   isElevationLoading?: boolean;
-  mapStyle?: 'default' | 'soft' | 'gray' | 'retro' | 'silver' | 'highcontrast';
-  onMapStyleChange?: (style: 'default' | 'soft' | 'gray' | 'retro' | 'silver' | 'highcontrast') => void;
+  mapStyle?: 'default' | 'roadmap' | 'gray' | 'retro' | 'silver' | 'highcontrast';
+  onMapStyleChange?: (style: 'default' | 'roadmap' | 'gray' | 'retro' | 'silver' | 'highcontrast') => void;
 }
 
 export default function BottomPanel({
@@ -394,7 +394,7 @@ export default function BottomPanel({
   onToggleSpotMode,
   onReorderRoutes,
   isElevationLoading = false,
-  mapStyle = 'default' as 'default' | 'soft' | 'gray' | 'retro' | 'silver' | 'highcontrast',
+  mapStyle = 'default' as 'default' | 'roadmap' | 'gray' | 'retro' | 'silver' | 'highcontrast',
   onMapStyleChange,
 }: BottomPanelProps) {
   const sensors = useSensors(
@@ -921,7 +921,7 @@ export default function BottomPanel({
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 {([
                   { id: 'default',     label: '標準',           bg: '#e8f4e8', road: '#f5f0e8', water: '#c8dfc8', label2: '#666' },
-                  { id: 'soft',        label: 'ソフト',         bg: '#eef5ee', road: '#f8f5f0', water: '#daeada', label2: '#666' },
+                  { id: 'roadmap',     label: 'ロードマップ',   bg: '#eef5ee', road: '#f5d76e', water: '#daeada', label2: '#666' },
                   { id: 'silver',      label: 'シルバー',       bg: '#f5f5f5', road: '#ffffff', water: '#d8e4ec', label2: '#666' },
                   { id: 'gray',        label: 'グレー',         bg: '#e0e0e0', road: '#f0f0f0', water: '#c0ccd8', label2: '#666' },
                   { id: 'retro',       label: 'レトロ',         bg: '#ebe3cd', road: '#f5f1e6', water: '#b9d3c2', label2: '#666' },

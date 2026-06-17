@@ -62,9 +62,12 @@ const LIBRARIES: Libraries = ['geometry'];
 
 const MAP_STYLES: Record<string, google.maps.MapTypeStyle[]> = {
   default: [],
-  soft: [
+  roadmap: [
     { elementType: 'geometry', stylers: [{ saturation: -50 }] },
     { elementType: 'labels.text.fill', stylers: [{ saturation: -30 }] },
+    { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#f5d76e' }] },
+    { featureType: 'road.arterial', elementType: 'geometry', stylers: [{ color: '#ffffff' }] },
+    { featureType: 'road.local', elementType: 'geometry', stylers: [{ color: '#e8e8e8' }] },
   ],
   gray: [
     { elementType: 'geometry', stylers: [{ color: '#e8e8e8' }] },
@@ -235,7 +238,7 @@ interface CycleMapProps {
   referenceSegments?: RouteSegment[];
   onMapReady?: (map: google.maps.Map) => void;
   onUserInteraction?: () => void;
-  mapStyle?: 'default' | 'soft' | 'gray' | 'retro' | 'silver' | 'highcontrast';
+  mapStyle?: 'default' | 'roadmap' | 'gray' | 'retro' | 'silver' | 'highcontrast';
 }
 
 export default function CycleMap({
