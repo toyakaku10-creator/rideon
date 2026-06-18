@@ -63,8 +63,6 @@ const LIBRARIES: Libraries = ['geometry'];
 const MAP_STYLES: Record<string, google.maps.MapTypeStyle[]> = {
   default: [],
   roadmap: [
-    { elementType: 'geometry', stylers: [{ saturation: -50 }] },
-    { elementType: 'labels.text.fill', stylers: [{ saturation: -30 }] },
     { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#f5d76e' }] },
     { featureType: 'road.arterial', elementType: 'geometry', stylers: [{ color: '#ffffff' }] },
     { featureType: 'road.local', elementType: 'geometry', stylers: [{ color: '#e8e8e8' }] },
