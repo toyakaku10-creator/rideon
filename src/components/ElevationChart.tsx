@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   AreaChart,
   Area,
@@ -19,19 +19,12 @@ interface ElevationChartProps {
 
 export default function ElevationChart({ elevations, totalDistance, onPositionChange, rideDistance }: ElevationChartProps) {
   const gradientId = useRef(`elevation-progress-gradient-${Math.random().toString(36).slice(2)}`);
+  const [progressRatio, setProgressRatio] = useState(0);
 
   useEffect(() => {
     if (rideDistance == null || !totalDistance) return;
     const ratio = Math.min(rideDistance / totalDistance, 1);
-    const gradEl = document.getElementById(gradientId.current);
-    if (gradEl) {
-      gradEl.innerHTML = `
-        <stop offset="0%" stop-color="#D4AF37" stop-opacity="0.9"/>
-        <stop offset="${ratio * 100}%" stop-color="#D4AF37" stop-opacity="0.9"/>
-        <stop offset="${ratio * 100}%" stop-color="#D4AF37" stop-opacity="0.2"/>
-        <stop offset="100%" stop-color="#D4AF37" stop-opacity="0.2"/>
-      `;
-    }
+    setProgressRatio(ratio);
   }, [rideDistance, totalDistance]);
 
   if (elevations.length < 2) return null;
@@ -70,7 +63,8 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
                 {rideDistance != null ? (
                   <>
                     <stop offset="0%" stopColor="#D4AF37" stopOpacity={0.9} />
-                    <stop offset="0%" stopColor="#D4AF37" stopOpacity={0.2} />
+                    <stop offset={`${progressRatio * 100}%`} stopColor="#D4AF37" stopOpacity={0.9} />
+                    <stop offset={`${progressRatio * 100}%`} stopColor="#D4AF37" stopOpacity={0.2} />
                     <stop offset="100%" stopColor="#D4AF37" stopOpacity={0.2} />
                   </>
                 ) : (
