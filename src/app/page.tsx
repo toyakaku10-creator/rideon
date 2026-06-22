@@ -536,6 +536,15 @@ export default function Home() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, isDemoMode]);
 
+  // Force-close all dialogs when entering ride mode
+  useEffect(() => {
+    if (tab === 'speed' && !isDemoMode) {
+      setShowClearConfirm(false);
+      setSpotDeleteConfirm(null);
+      setShowRestoreDialog(false);
+    }
+  }, [tab, isDemoMode]);
+
   // Navigation turn detection
   useEffect(() => {
     if (!currentPosition || !navRoute) { setNavInstruction(''); return; }
