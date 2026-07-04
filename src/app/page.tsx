@@ -412,7 +412,7 @@ export default function Home() {
     if (allPoints.length < 2) return null;
     let minDist = Infinity, minIdx = 0;
     allPoints.forEach((p, i) => {
-      const d = Math.abs(p.lat - currentPosition.lat) + Math.abs(p.lng - currentPosition.lng);
+      const d = haversineDistance(currentPosition, p);
       if (d < minDist) { minDist = d; minIdx = i; }
     });
     let dist = 0;
