@@ -1234,7 +1234,7 @@ export default function Home() {
         {(tab === 'speed' || isDemoMode) && segments.length > 0 && (
           <div style={{
             position: 'absolute',
-            bottom: '80px',
+            bottom: '40px',
             right: '12px',
             zIndex: 500,
             width: '80px',
@@ -1257,7 +1257,14 @@ export default function Home() {
                 const toX = (lng: number) => pad + (lng - minLng) / (maxLng - minLng) * (80 - pad * 2)
                 const toY = (lat: number) => pad + (maxLat - lat) / (maxLat - minLat) * (80 - pad * 2)
                 const d = allPoints.map((p, i) => `${i === 0 ? 'M' : 'L'}${toX(p.lng).toFixed(1)},${toY(p.lat).toFixed(1)}`).join(' ')
-                return <path d={d} fill="none" stroke="#FF6B00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                return <>
+                  <path d={d} fill="none" stroke="#FF6B00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  {currentPosition && (() => {
+                    const x = toX(currentPosition.lng)
+                    const y = toY(currentPosition.lat)
+                    return <circle cx={x} cy={y} r="4" fill="#4A90D9" stroke="white" strokeWidth="1.5"/>
+                  })()}
+                </>
               })()}
             </svg>
           </div>
