@@ -1224,7 +1224,7 @@ export default function Home() {
             justifyContent: 'center',
           }}>
             <span style={{fontSize: '28px', fontWeight: '500', color: 'white', fontVariantNumeric: 'tabular-nums'}}>
-              {currentSpeed.toFixed(1)}
+              {(currentSpeed > 3 ? currentSpeed : 0).toFixed(1)}
             </span>
             <span style={{fontSize: '12px', color: 'rgba(255,255,255,0.7)'}}>km/h</span>
           </div>
