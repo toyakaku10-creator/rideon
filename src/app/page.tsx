@@ -1230,6 +1230,39 @@ export default function Home() {
           </div>
         )}
 
+        {/* Route thumbnail minimap (ride mode) */}
+        {(tab === 'speed' || isDemoMode) && segments.length > 0 && (
+          <div style={{
+            position: 'absolute',
+            bottom: '80px',
+            right: '12px',
+            zIndex: 500,
+            width: '80px',
+            height: '80px',
+            background: 'rgba(255,255,255,0.85)',
+            borderRadius: '8px',
+            border: '1px solid #D4AF37',
+            overflow: 'hidden',
+            pointerEvents: 'none',
+          }}>
+            <svg width="80" height="80" viewBox="0 0 80 80">
+              {(() => {
+                const allPoints = segments.flatMap(s => s.geometry)
+                if (allPoints.length < 2) return null
+                const lats = allPoints.map(p => p.lat)
+                const lngs = allPoints.map(p => p.lng)
+                const minLat = Math.min(...lats), maxLat = Math.max(...lats)
+                const minLng = Math.min(...lngs), maxLng = Math.max(...lngs)
+                const pad = 6
+                const toX = (lng: number) => pad + (lng - minLng) / (maxLng - minLng) * (80 - pad * 2)
+                const toY = (lat: number) => pad + (maxLat - lat) / (maxLat - minLat) * (80 - pad * 2)
+                const d = allPoints.map((p, i) => `${i === 0 ? 'M' : 'L'}${toX(p.lng).toFixed(1)},${toY(p.lat).toFixed(1)}`).join(' ')
+                return <path d={d} fill="none" stroke="#FF6B00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              })()}
+            </svg>
+          </div>
+        )}
+
         {/* Floating RideOn button */}
         <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 500 }}>
           <button
