@@ -1234,7 +1234,7 @@ export default function Home() {
         {(tab === 'speed' || isDemoMode) && segments.length > 0 && (
           <div style={{
             position: 'absolute',
-            bottom: '40px',
+            bottom: '34px',
             right: '12px',
             zIndex: 500,
             width: '80px',
