@@ -1372,7 +1372,7 @@ export default function Home() {
           return (
             <div style={{
               position: 'absolute',
-              bottom: '80px',
+              bottom: '116px',
               right: '12px',
               zIndex: 500,
               display: 'flex',
