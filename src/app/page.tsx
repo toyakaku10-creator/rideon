@@ -1206,27 +1206,51 @@ export default function Home() {
         {(tab === 'speed' || isDemoMode) && (
           <div style={{
             position: 'absolute',
-            top: '12px',
+            top: '8px',
             left: '50%',
             transform: 'translateX(-50%)',
             zIndex: 500,
-            background: 'rgba(0,0,0,0.6)',
-            borderRadius: '20px',
-            padding: '8px 14px',
-            width: '110px',
-            boxSizing: 'border-box',
-            lineHeight: '1',
-            display: 'flex',
-            alignItems: 'baseline',
-            gap: '4px',
             pointerEvents: 'none',
-            textAlign: 'center',
-            justifyContent: 'center',
           }}>
-            <span style={{fontSize: '28px', fontWeight: '500', color: 'white', fontVariantNumeric: 'tabular-nums'}}>
-              {(currentSpeed > 3 ? currentSpeed : 0).toFixed(1)}
-            </span>
-            <span style={{fontSize: '12px', color: 'rgba(255,255,255,0.7)'}}>km/h</span>
+            {(() => {
+              const spd = (tab === 'speed' ? currentSpeed : currentSpeed) > 3 ? (tab === 'speed' ? currentSpeed : currentSpeed) : 0
+              const maxSpd = 60
+              const ratio = Math.min(spd / maxSpd, 1)
+              const angle = -90 + ratio * 180
+              const cx = 60, cy = 55, r = 28
+              const nx = cx + r * Math.sin((angle * Math.PI) / 180)
+              const ny = cy - r * Math.cos((angle * Math.PI) / 180)
+              const arcLen = Math.PI * r
+              const goldLen = arcLen * Math.min(ratio / 0.8, 1)
+              const redLen = ratio > 0.8 ? arcLen * ((ratio - 0.8) / 0.2) : 0
+              return (
+                <svg width="120" height="110" viewBox="0 0 120 110">
+                  <circle cx="60" cy="60" r="58" fill="#111"/>
+                  {/* tick marks */}
+                  {Array.from({length: 13}).map((_, i) => {
+                    const a = -90 + i * 15
+                    const r1 = 52, r2 = i % 4 === 0 ? 45 : 48
+                    const x1 = 60 + r1 * Math.cos(a * Math.PI / 180)
+                    const y1 = 55 + r1 * Math.sin(a * Math.PI / 180)
+                    const x2 = 60 + r2 * Math.cos(a * Math.PI / 180)
+                    const y2 = 55 + r2 * Math.sin(a * Math.PI / 180)
+                    return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="white" strokeWidth="0.8"/>
+                  })}
+                  {/* arc background */}
+                  <path d={`M ${60-r} ${55} A ${r} ${r} 0 0 1 ${60+r} ${55}`} fill="none" stroke="#333" strokeWidth="4" strokeLinecap="round"/>
+                  {/* gold arc */}
+                  <path d={`M ${60-r} ${55} A ${r} ${r} 0 0 1 ${60+r} ${55}`} fill="none" stroke="#D4AF37" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${goldLen} ${arcLen}`}/>
+                  {/* red arc */}
+                  {redLen > 0 && <path d={`M ${60-r} ${55} A ${r} ${r} 0 0 1 ${60+r} ${55}`} fill="none" stroke="#E53935" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${redLen} ${arcLen}`} strokeDashoffset={-goldLen}/>}
+                  {/* needle */}
+                  <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+                  <circle cx={cx} cy={cy} r="3" fill="#333" stroke="white" strokeWidth="1"/>
+                  {/* speed number */}
+                  <text x="60" y="90" textAnchor="middle" fontSize="26" fontWeight="700" fill="white" fontFamily="sans-serif">{spd.toFixed(1)}</text>
+                  <text x="60" y="104" textAnchor="middle" fontSize="10" fill="#888" fontFamily="sans-serif">km/h</text>
+                </svg>
+              )
+            })()}
           </div>
         )}
 
