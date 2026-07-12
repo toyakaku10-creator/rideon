@@ -1218,37 +1218,39 @@ export default function Home() {
               const maxSpd = 60
               const ratio = Math.min(spd / maxSpd, 1)
               const angle = -90 + ratio * 180
-              const cx = 60, cy = 55, r = 24
+              const cx = 60, cy = 65, r = 28
               const nx = cx + r * Math.sin((angle * Math.PI) / 180)
               const ny = cy - r * Math.cos((angle * Math.PI) / 180)
               const arcLen = Math.PI * r
               const goldLen = arcLen * Math.min(ratio / 0.8, 1)
               const redLen = ratio > 0.8 ? arcLen * ((ratio - 0.8) / 0.2) : 0
               return (
-                <svg width="90" height="90" viewBox="0 0 120 120">
-                  <circle cx="60" cy="60" r="58" fill="#111"/>
+                <svg width="90" height="100" viewBox="0 0 120 130">
+                  {/* arc background */}
+                  <path d={`M ${cx-r} ${cy} A ${r} ${r} 0 0 1 ${cx+r} ${cy}`} fill="none" stroke="#333" strokeWidth="4" strokeLinecap="round"/>
+                  {/* gold arc */}
+                  <path d={`M ${cx-r} ${cy} A ${r} ${r} 0 0 1 ${cx+r} ${cy}`} fill="none" stroke="#D4AF37" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${goldLen} ${arcLen}`}/>
+                  {/* red arc */}
+                  {redLen > 0 && <path d={`M ${cx-r} ${cy} A ${r} ${r} 0 0 1 ${cx+r} ${cy}`} fill="none" stroke="#E53935" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${redLen} ${arcLen}`} strokeDashoffset={-goldLen}/>}
                   {/* tick marks */}
                   {Array.from({length: 13}).map((_, i) => {
                     const a = -90 + i * 15
-                    const r1 = 52, r2 = i % 4 === 0 ? 45 : 48
-                    const x1 = 60 + r1 * Math.cos(a * Math.PI / 180)
-                    const y1 = 55 + r1 * Math.sin(a * Math.PI / 180)
-                    const x2 = 60 + r2 * Math.cos(a * Math.PI / 180)
-                    const y2 = 55 + r2 * Math.sin(a * Math.PI / 180)
+                    const r1 = r + 5, r2 = i % 4 === 0 ? r + 11 : r + 8
+                    const x1 = cx + r1 * Math.cos(a * Math.PI / 180)
+                    const y1 = cy + r1 * Math.sin(a * Math.PI / 180)
+                    const x2 = cx + r2 * Math.cos(a * Math.PI / 180)
+                    const y2 = cy + r2 * Math.sin(a * Math.PI / 180)
+                    if (y1 > cy || y2 > cy) return null
                     return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="white" strokeWidth="0.8"/>
                   })}
-                  {/* arc background */}
-                  <path d={`M ${60-r} ${55} A ${r} ${r} 0 0 1 ${60+r} ${55}`} fill="none" stroke="#333" strokeWidth="4" strokeLinecap="round"/>
-                  {/* gold arc */}
-                  <path d={`M ${60-r} ${55} A ${r} ${r} 0 0 1 ${60+r} ${55}`} fill="none" stroke="#D4AF37" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${goldLen} ${arcLen}`}/>
-                  {/* red arc */}
-                  {redLen > 0 && <path d={`M ${60-r} ${55} A ${r} ${r} 0 0 1 ${60+r} ${55}`} fill="none" stroke="#E53935" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${redLen} ${arcLen}`} strokeDashoffset={-goldLen}/>}
                   {/* needle */}
                   <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-                  <circle cx={cx} cy={cy} r="3" fill="#333" stroke="white" strokeWidth="1"/>
+                  <circle cx={cx} cy={cy} r="3" fill="#555" stroke="white" strokeWidth="1"/>
+                  {/* black circle */}
+                  <circle cx="60" cy="95" r="32" fill="#111"/>
                   {/* speed number */}
-                  <text x="60" y="90" textAnchor="middle" fontSize="30" fontWeight="700" fill="white" fontFamily="sans-serif">{Math.round(spd)}</text>
-                  <text x="60" y="104" textAnchor="middle" fontSize="10" fill="#888" fontFamily="sans-serif">km/h</text>
+                  <text x="60" y="103" textAnchor="middle" fontSize="30" fontWeight="700" fill="white" fontFamily="sans-serif">{Math.round(spd)}</text>
+                  <text x="60" y="119" textAnchor="middle" fontSize="10" fill="#888" fontFamily="sans-serif">km/h</text>
                 </svg>
               )
             })()}
