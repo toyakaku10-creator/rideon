@@ -1271,7 +1271,7 @@ export default function Home() {
                   })}
                   {/* speed number */}
                   <text x="60" y="98" textAnchor="middle" fontSize="35" fontWeight="700" fill="white" fontFamily="sans-serif">{Math.round(spd)}</text>
-                  <text x="60" y="114" textAnchor="middle" fontSize="13" fill="#888" fontFamily="sans-serif">km/h</text>
+                  <text x="60" y="114" textAnchor="middle" fontSize="13" fill="white" fontFamily="sans-serif">km/h</text>
                 </svg>
               )
             })()}
