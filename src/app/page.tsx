@@ -1225,6 +1225,10 @@ export default function Home() {
               const redLen = ratio > 0.8 ? arcCirc * ((ratio - 0.8) / 0.2) : 0
               return (
                 <svg width="90" height="100" viewBox="0 10 120 120">
+                  <style>{`
+                    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+                    .dot-ring { transform-origin: 60px 90px; animation: spin 2s linear infinite; }
+                  `}</style>
                   {/* half circle fill */}
                   <path d="M 44 52 A 16 16 0 0 1 76 52 Z" fill="rgba(70,70,70,0.7)"/>
                   {/* arc background */}
@@ -1255,6 +1259,16 @@ export default function Home() {
                     const dotY = 90 + dotR * Math.sin(dotAngle)
                     return <circle cx={dotX} cy={dotY} r="4" fill="#D4AF37" stroke="white" strokeWidth="1"/>
                   })()}
+                  {/* 回転する点のリング */}
+                  <g className="dot-ring">
+                    {Array.from({length: 8}).map((_, i) => {
+                      const a = (i / 8) * 2 * Math.PI
+                      const dotR = 44
+                      const dx = 60 + dotR * Math.cos(a)
+                      const dy = 90 + dotR * Math.sin(a)
+                      return <circle key={i} cx={dx} cy={dy} r="2.5" fill="white" opacity={i === 0 ? 1 : (8-i)/8 * 0.6}/>
+                    })}
+                  </g>
                   {/* speed number */}
                   <text x="60" y="98" textAnchor="middle" fontSize="35" fontWeight="700" fill="white" fontFamily="sans-serif">{Math.round(spd)}</text>
                   <text x="60" y="114" textAnchor="middle" fontSize="13" fill="#888" fontFamily="sans-serif">km/h</text>
