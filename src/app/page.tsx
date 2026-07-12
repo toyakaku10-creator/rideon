@@ -1218,24 +1218,24 @@ export default function Home() {
               const maxSpd = 60
               const ratio = Math.min(spd / maxSpd, 1)
               const angle = -90 + ratio * 180
-              const cx = 60, cy = 45, r = 18
+              const cx = 60, cy = 50, r = 10
               const nx = cx + r * Math.sin((angle * Math.PI) / 180)
               const ny = cy - r * Math.cos((angle * Math.PI) / 180)
               const arcLen = Math.PI * r
               const goldLen = arcLen * Math.min(ratio / 0.8, 1)
               const redLen = ratio > 0.8 ? arcLen * ((ratio - 0.8) / 0.2) : 0
               return (
-                <svg width="100" height="110" viewBox="0 0 120 140">
+                <svg width="80" height="90" viewBox="0 0 120 130">
                   {/* arc background */}
-                  <path d="M 27 45 A 18 18 0 0 1 93 45" fill="none" stroke="#333" strokeWidth="4" strokeLinecap="round"/>
+                  <path d="M 40 50 A 10 10 0 0 1 80 50" fill="none" stroke="#333" strokeWidth="4" strokeLinecap="round"/>
                   {/* gold arc */}
-                  <path d="M 27 45 A 18 18 0 0 1 93 45" fill="none" stroke="#D4AF37" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${goldLen} ${arcLen}`}/>
+                  <path d="M 40 50 A 10 10 0 0 1 80 50" fill="none" stroke="#D4AF37" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${goldLen} ${arcLen}`}/>
                   {/* red arc */}
-                  {redLen > 0 && <path d="M 27 45 A 18 18 0 0 1 93 45" fill="none" stroke="#E53935" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${redLen} ${arcLen}`} strokeDashoffset={-goldLen}/>}
+                  {redLen > 0 && <path d="M 40 50 A 10 10 0 0 1 80 50" fill="none" stroke="#E53935" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${redLen} ${arcLen}`} strokeDashoffset={-goldLen}/>}
                   {/* tick marks */}
                   {Array.from({length: 13}).map((_, i) => {
                     const a = -90 + i * 15
-                    const r1 = r + 4, r2 = i % 4 === 0 ? r + 9 : r + 6
+                    const r1 = r + 3, r2 = i % 4 === 0 ? r + 7 : r + 5
                     const x1 = cx + r1 * Math.cos(a * Math.PI / 180)
                     const y1 = cy + r1 * Math.sin(a * Math.PI / 180)
                     const x2 = cx + r2 * Math.cos(a * Math.PI / 180)
@@ -1247,10 +1247,10 @@ export default function Home() {
                   <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
                   <circle cx={cx} cy={cy} r="3" fill="#555" stroke="white" strokeWidth="1"/>
                   {/* black circle */}
-                  <circle cx="60" cy="95" r="50" fill="#111"/>
+                  <circle cx="60" cy="90" r="40" fill="#111"/>
                   {/* speed number */}
-                  <text x="60" y="103" textAnchor="middle" fontSize="36" fontWeight="700" fill="white" fontFamily="sans-serif">{Math.round(spd)}</text>
-                  <text x="60" y="119" textAnchor="middle" fontSize="10" fill="#888" fontFamily="sans-serif">km/h</text>
+                  <text x="60" y="98" textAnchor="middle" fontSize="36" fontWeight="700" fill="white" fontFamily="sans-serif">{Math.round(spd)}</text>
+                  <text x="60" y="114" textAnchor="middle" fontSize="10" fill="#888" fontFamily="sans-serif">km/h</text>
                 </svg>
               )
             })()}
