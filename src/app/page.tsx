@@ -1254,10 +1254,10 @@ export default function Home() {
                   {/* 外周の白い点（固定、常に表示） */}
                   {Array.from({length: 24}).map((_, i) => {
                     const a = (i / 24) * 2 * Math.PI - Math.PI / 2
-                    const dotR = 44
+                    const dotR = 37
                     const dx = 60 + dotR * Math.cos(a)
                     const dy = 90 + dotR * Math.sin(a)
-                    return <circle key={i} cx={dx} cy={dy} r="1.5" fill="white" opacity="0.6"/>
+                    return <circle key={i} cx={dx} cy={dy} r="1.5" fill="white" opacity="0.5"/>
                   })}
                   {/* 明るく光る点が回転 */}
                   <g className="dot-spin">
