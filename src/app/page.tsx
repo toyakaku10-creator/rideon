@@ -1240,12 +1240,12 @@ export default function Home() {
                   {/* gold arc (fixed) */}
                   <path d="M 44 52 A 16 16 0 0 1 76 52" fill="none" stroke="#D4AF37" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${arcCirc * splitRatio} ${arcCirc}`}/>
                   {/* red arc (fixed) */}
-                  <path d="M 44 52 A 16 16 0 0 1 76 52" fill="none" stroke="#C0392B" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${arcCirc * (1 - splitRatio)} ${arcCirc}`} strokeDashoffset={`-${arcCirc * splitRatio}`}/>
+                  <path d="M 44 52 A 16 16 0 0 1 76 52" fill="none" stroke="#E57373" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${arcCirc * (1 - splitRatio)} ${arcCirc}`} strokeDashoffset={`-${arcCirc * splitRatio}`}/>
                   {/* tick marks */}
                   {Array.from({length: 7}).map((_, i) => {
                     const a = (-90 + i * 30) * Math.PI / 180
                     const tickSpeed = (i / 6) * 60
-                    const color = tickSpeed <= 16 ? '#D4AF37' : '#C0392B'
+                    const color = tickSpeed <= 16 ? '#D4AF37' : '#E57373'
                     return <line key={i}
                       x1={cx + 20 * Math.cos(a)} y1={cy + 20 * Math.sin(a)}
                       x2={cx + 13 * Math.cos(a)} y2={cy + 13 * Math.sin(a)}
