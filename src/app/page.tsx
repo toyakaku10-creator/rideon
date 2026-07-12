@@ -1206,7 +1206,7 @@ export default function Home() {
         {(tab === 'speed' || isDemoMode) && (
           <div style={{
             position: 'absolute',
-            top: '8px',
+            top: '4px',
             left: '50%',
             transform: 'translateX(-50%)',
             zIndex: 500,
@@ -1226,6 +1226,8 @@ export default function Home() {
               const redLen = ratio > 0.8 ? arcLen * ((ratio - 0.8) / 0.2) : 0
               return (
                 <svg width="80" height="90" viewBox="0 0 120 130">
+                  {/* needle fill */}
+                  <path d="M 40 50 A 10 10 0 0 1 60 50 Z" fill="rgba(128,128,128,0.3)"/>
                   {/* arc background */}
                   <path d="M 40 50 A 10 10 0 0 1 80 50" fill="none" stroke="#333" strokeWidth="4" strokeLinecap="round"/>
                   {/* gold arc */}
@@ -1249,7 +1251,7 @@ export default function Home() {
                   {/* black circle */}
                   <circle cx="60" cy="90" r="40" fill="#111"/>
                   {/* speed number */}
-                  <text x="60" y="98" textAnchor="middle" fontSize="36" fontWeight="700" fill="white" fontFamily="sans-serif">{Math.round(spd)}</text>
+                  <text x="60" y="98" textAnchor="middle" fontSize="33" fontWeight="700" fill="white" fontFamily="sans-serif">{Math.round(spd)}</text>
                   <text x="60" y="114" textAnchor="middle" fontSize="10" fill="#888" fontFamily="sans-serif">km/h</text>
                 </svg>
               )
