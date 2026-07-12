@@ -1211,7 +1211,7 @@ export default function Home() {
             transform: 'translateX(-50%)',
             zIndex: 500,
             pointerEvents: 'none',
-            opacity: 0.7,
+            opacity: 1,
           }}>
             {(() => {
               const spd = (tab === 'speed' ? currentSpeed : currentSpeed) > 3 ? (tab === 'speed' ? currentSpeed : currentSpeed) : 0
@@ -1225,7 +1225,7 @@ export default function Home() {
               const goldLen = arcCirc * Math.min(ratio / 0.8, 1)
               const redLen = ratio > 0.8 ? arcCirc * ((ratio - 0.8) / 0.2) : 0
               return (
-                <svg width="80" height="90" viewBox="0 10 120 120">
+                <svg width="90" height="100" viewBox="0 10 120 120">
                   {/* half circle fill */}
                   <path d="M 44 52 A 16 16 0 0 1 76 52 Z" fill="rgba(70,70,70,0.7)"/>
                   {/* arc background */}
