@@ -1325,7 +1325,7 @@ export default function Home() {
         {/* Floating RideOn button */}
         <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 500 }}>
           <div
-            style={{ position: 'relative', width: '130px', height: '56px', cursor: isDemoMode ? 'default' : 'pointer', userSelect: 'none', WebkitUserSelect: 'none' } as React.CSSProperties}
+            style={{ position: 'relative', width: '130px', height: '38px', cursor: isDemoMode ? 'default' : 'pointer', userSelect: 'none', WebkitUserSelect: 'none' } as React.CSSProperties}
             onClick={() => {
               if (isDemoMode) return;
               if (tab === 'speed') {
@@ -1373,18 +1373,18 @@ export default function Home() {
             }}
           >
             {tab === 'speed' ? (
-              <svg width="130" height="56" viewBox="0 0 130 56">
-                <rect x="28" y="2" width="100" height="52" fill="#D4AF37" stroke="#D4AF37" strokeWidth="2" rx="4"/>
-                <circle cx="28" cy="28" r="26" fill="white" stroke="#D4AF37" strokeWidth="2"/>
-                <rect x="16" y="16" width="24" height="24" fill="#D4AF37" rx="3"/>
-                <text x="80" y="34" textAnchor="middle" fontSize="18" fontWeight="700" fill="white" fontFamily="Dancing Script, cursive">RideOn</text>
+              <svg width="130" height="38" viewBox="0 0 130 38">
+                <rect x="19" y="2" width="109" height="34" fill="#D4AF37" stroke="#D4AF37" strokeWidth="2" rx="4"/>
+                <circle cx="19" cy="19" r="17" fill="white" stroke="#D4AF37" strokeWidth="2"/>
+                <rect x="10" y="10" width="18" height="18" fill="#D4AF37" rx="2"/>
+                <text x="85" y="24" textAnchor="middle" fontSize="18" fontWeight="700" fill="white" fontFamily="Dancing Script, cursive">RideOn</text>
               </svg>
             ) : (
-              <svg width="130" height="56" viewBox="0 0 130 56">
-                <rect x="28" y="2" width="100" height="52" fill="rgba(255,255,255,0.9)" stroke="#D4AF37" strokeWidth="2" rx="4"/>
-                <circle cx="28" cy="28" r="26" fill="#D4AF37"/>
-                <polygon points="18,16 18,40 38,28" fill="white"/>
-                <text x="80" y="34" textAnchor="middle" fontSize="18" fontWeight="700" fill="#D4AF37" fontFamily="Dancing Script, cursive">RideOn</text>
+              <svg width="130" height="38" viewBox="0 0 130 38">
+                <rect x="19" y="2" width="109" height="34" fill="rgba(255,255,255,0.9)" stroke="#D4AF37" strokeWidth="2" rx="4"/>
+                <circle cx="19" cy="19" r="17" fill="#D4AF37"/>
+                <polygon points="12,11 12,27 26,19" fill="white"/>
+                <text x="85" y="24" textAnchor="middle" fontSize="18" fontWeight="700" fill="#D4AF37" fontFamily="Dancing Script, cursive">RideOn</text>
               </svg>
             )}
           </div>
