@@ -1218,7 +1218,7 @@ export default function Home() {
               const maxSpd = 60
               const ratio = Math.min(spd / maxSpd, 1)
               const angle = -90 + ratio * 180
-              const cx = 60, cy = 50, r = 10
+              const cx = 60, cy = 50, r = 8
               const nx = cx + r * Math.sin((angle * Math.PI) / 180)
               const ny = cy - r * Math.cos((angle * Math.PI) / 180)
               const arcLen = Math.PI * r
@@ -1227,13 +1227,13 @@ export default function Home() {
               return (
                 <svg width="80" height="90" viewBox="0 10 120 120">
                   {/* needle fill */}
-                  <path d="M 40 50 A 10 10 0 0 1 60 50 Z" fill="rgba(128,128,128,0.3)"/>
+                  <path d="M 44 50 A 8 8 0 0 1 60 50 Z" fill="rgba(128,128,128,0.3)"/>
                   {/* arc background */}
-                  <path d="M 40 50 A 10 10 0 0 1 80 50" fill="none" stroke="#333" strokeWidth="4" strokeLinecap="round"/>
+                  <path d="M 44 50 A 8 8 0 0 1 76 50" fill="none" stroke="#333" strokeWidth="4" strokeLinecap="round"/>
                   {/* gold arc */}
-                  <path d="M 40 50 A 10 10 0 0 1 80 50" fill="none" stroke="#D4AF37" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${goldLen} ${arcLen}`}/>
+                  <path d="M 44 50 A 8 8 0 0 1 76 50" fill="none" stroke="#D4AF37" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${goldLen} ${arcLen}`}/>
                   {/* red arc */}
-                  {redLen > 0 && <path d="M 40 50 A 10 10 0 0 1 80 50" fill="none" stroke="#E53935" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${redLen} ${arcLen}`} strokeDashoffset={-goldLen}/>}
+                  {redLen > 0 && <path d="M 44 50 A 8 8 0 0 1 76 50" fill="none" stroke="#E53935" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${redLen} ${arcLen}`} strokeDashoffset={-goldLen}/>}
                   {/* tick marks */}
                   {Array.from({length: 13}).map((_, i) => {
                     const a = -90 + i * 15
