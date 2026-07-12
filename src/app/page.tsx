@@ -1332,7 +1332,7 @@ export default function Home() {
         `}</style>
         <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 500 }}>
           <div
-            className={!isDemoMode && tab !== 'speed' ? 'rideon-pulse' : undefined}
+            className={segments.length > 0 && tab !== 'speed' && !isDemoMode ? 'rideon-pulse' : ''}
             style={{ position: 'relative', width: '130px', height: '38px', cursor: 'pointer', userSelect: 'none', WebkitUserSelect: 'none' } as React.CSSProperties}
             onClick={() => {
               if (isDemoMode) { stopDemo(); return; }
