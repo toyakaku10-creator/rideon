@@ -1206,7 +1206,7 @@ export default function Home() {
         {(tab === 'speed' || isDemoMode) && (
           <div style={{
             position: 'absolute',
-            top: '-6px',
+            top: '-8px',
             left: '50%',
             transform: 'translateX(-50%)',
             zIndex: 500,
@@ -1249,7 +1249,7 @@ export default function Home() {
                   <circle cx="60" cy="90" r="40" fill="rgba(17,17,17,0.75)"/>
                   {/* speed number */}
                   <text x="60" y="98" textAnchor="middle" fontSize="35" fontWeight="700" fill="white" fontFamily="sans-serif">{Math.round(spd)}</text>
-                  <text x="60" y="114" textAnchor="middle" fontSize="10" fill="#888" fontFamily="sans-serif">km/h</text>
+                  <text x="60" y="114" textAnchor="middle" fontSize="13" fill="#888" fontFamily="sans-serif">km/h</text>
                 </svg>
               )
             })()}
