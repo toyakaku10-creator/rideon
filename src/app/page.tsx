@@ -1247,6 +1247,14 @@ export default function Home() {
                   <circle cx={cx} cy={cy} r="3" fill="#333" stroke="white" strokeWidth="1"/>
                   {/* black circle */}
                   <circle cx="60" cy="90" r="40" fill="rgba(17,17,17,0.75)"/>
+                  {/* 外周ドット：速度に応じて位置が変わる */}
+                  {(() => {
+                    const dotAngle = (-90 + ratio * 180) * Math.PI / 180
+                    const dotR = 43
+                    const dotX = 60 + dotR * Math.cos(dotAngle)
+                    const dotY = 90 + dotR * Math.sin(dotAngle)
+                    return <circle cx={dotX} cy={dotY} r="4" fill="#D4AF37" stroke="white" strokeWidth="1"/>
+                  })()}
                   {/* speed number */}
                   <text x="60" y="98" textAnchor="middle" fontSize="35" fontWeight="700" fill="white" fontFamily="sans-serif">{Math.round(spd)}</text>
                   <text x="60" y="114" textAnchor="middle" fontSize="13" fill="#888" fontFamily="sans-serif">km/h</text>
