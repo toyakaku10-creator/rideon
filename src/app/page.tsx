@@ -1226,8 +1226,11 @@ export default function Home() {
               const redLen = ratio > 0.8 ? arcLen * ((ratio - 0.8) / 0.2) : 0
               return (
                 <svg width="80" height="90" viewBox="0 10 120 120">
-                  {/* needle fill */}
-                  <path d={`M ${60-8} ${50} A 8 8 0 0 1 ${60+8} ${50} Z`} fill="rgba(80,80,80,0.6)"/>
+                  {/* gray half circle fill */}
+                  <polygon
+                    points={`${60-8},${50} ${60+8},${50} ${60},${50-8}`}
+                    fill="rgba(60,60,60,0.8)"
+                  />
                   {/* arc background */}
                   <path d="M 44 50 A 8 8 0 0 1 76 50" fill="none" stroke="#333" strokeWidth="4" strokeLinecap="round"/>
                   {/* gold arc */}
