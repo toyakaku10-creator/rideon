@@ -204,6 +204,15 @@ export default function Home() {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [sharedSpots, setSharedSpots] = useState<Spot[]>([]);
   const [isSpotMode, setIsSpotMode] = useState(false);
+  const [brightDot, setBrightDot] = useState(0);
+
+  useEffect(() => {
+    if (tab !== 'speed' && !isDemoMode) return
+    const timer = setInterval(() => {
+      setBrightDot(prev => (prev + 1) % 24)
+    }, 150)
+    return () => clearInterval(timer)
+  }, [tab, isDemoMode])
 
   // Center map on device location at startup
   useEffect(() => {
@@ -1225,10 +1234,6 @@ export default function Home() {
               const redLen = ratio > 0.8 ? arcCirc * ((ratio - 0.8) / 0.2) : 0
               return (
                 <svg width="90" height="100" viewBox="0 30 120 110">
-                  <style>{`
-                    @keyframes dotSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-                    .dot-spin { transform-origin: 60px 90px; animation: dotSpin 4s linear infinite; }
-                  `}</style>
                   {/* half circle fill */}
                   <path d="M 44 52 A 16 16 0 0 1 76 52 Z" fill="rgba(70,70,70,0.7)"/>
                   {/* arc background */}
@@ -1257,12 +1262,10 @@ export default function Home() {
                     const dotR = 37
                     const dx = 60 + dotR * Math.cos(a)
                     const dy = 90 + dotR * Math.sin(a)
-                    return <circle key={i} cx={dx} cy={dy} r="1.5" fill="white" opacity="0.5"/>
+                    const dist = Math.min(Math.abs(i - brightDot), 24 - Math.abs(i - brightDot))
+                    const opacity = Math.max(0.2, 1 - dist * 0.2)
+                    return <circle key={i} cx={dx} cy={dy} r="1.5" fill="white" opacity={opacity}/>
                   })}
-                  {/* 明るく光る点が回転 */}
-                  <g className="dot-spin">
-                    <circle cx="60" cy={90 - 37} r="2.5" fill="white" opacity="1"/>
-                  </g>
                   {/* speed number */}
                   <text x="60" y="98" textAnchor="middle" fontSize="35" fontWeight="700" fill="white" fontFamily="sans-serif">{Math.round(spd)}</text>
                   <text x="60" y="114" textAnchor="middle" fontSize="13" fill="#888" fontFamily="sans-serif">km/h</text>
