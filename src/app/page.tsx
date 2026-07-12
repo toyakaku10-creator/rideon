@@ -1211,6 +1211,7 @@ export default function Home() {
             transform: 'translateX(-50%)',
             zIndex: 500,
             pointerEvents: 'none',
+            opacity: 0.85,
           }}>
             {(() => {
               const spd = (tab === 'speed' ? currentSpeed : currentSpeed) > 3 ? (tab === 'speed' ? currentSpeed : currentSpeed) : 0
@@ -1224,7 +1225,7 @@ export default function Home() {
               const goldLen = arcLen * Math.min(ratio / 0.8, 1)
               const redLen = ratio > 0.8 ? arcLen * ((ratio - 0.8) / 0.2) : 0
               return (
-                <svg width="120" height="110" viewBox="0 0 120 110">
+                <svg width="100" height="92" viewBox="0 0 100 92">
                   <circle cx="60" cy="60" r="58" fill="#111"/>
                   {/* tick marks */}
                   {Array.from({length: 13}).map((_, i) => {
@@ -1246,7 +1247,7 @@ export default function Home() {
                   <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
                   <circle cx={cx} cy={cy} r="3" fill="#333" stroke="white" strokeWidth="1"/>
                   {/* speed number */}
-                  <text x="60" y="90" textAnchor="middle" fontSize="26" fontWeight="700" fill="white" fontFamily="sans-serif">{spd.toFixed(1)}</text>
+                  <text x="60" y="90" textAnchor="middle" fontSize="26" fontWeight="700" fill="white" fontFamily="sans-serif">{Math.round(spd)}</text>
                   <text x="60" y="104" textAnchor="middle" fontSize="10" fill="#888" fontFamily="sans-serif">km/h</text>
                 </svg>
               )
