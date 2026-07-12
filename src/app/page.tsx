@@ -1268,7 +1268,7 @@ export default function Home() {
                   })}
                   {/* needle */}
                   <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
-                  <circle cx={cx} cy={cy} r="3" fill="#333" stroke="white" strokeWidth="1"/>
+                  <circle cx={cx} cy={cy} r="3" fill="white" stroke="white" strokeWidth="1"/>
                   {/* speed number */}
                   <text x="60" y="98" textAnchor="middle" fontSize="35" fontWeight="700" fill="white" fontFamily="sans-serif">{Math.round(spd)}</text>
                   <text x="60" y="114" textAnchor="middle" fontSize="13" fill="white" fontFamily="sans-serif">km/h</text>
