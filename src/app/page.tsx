@@ -1324,7 +1324,8 @@ export default function Home() {
 
         {/* Floating RideOn button */}
         <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 500 }}>
-          <button
+          <div
+            style={{ position: 'relative', width: '130px', height: '56px', cursor: isDemoMode ? 'default' : 'pointer', userSelect: 'none', WebkitUserSelect: 'none' } as React.CSSProperties}
             onClick={() => {
               if (isDemoMode) return;
               if (tab === 'speed') {
@@ -1370,39 +1371,23 @@ export default function Home() {
                 setTab('speed');
               }
             }}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              fontFamily: "'Dancing Script', cursive",
-              fontSize: '20px',
-              fontWeight: 700,
-              color: tab === 'speed' ? '#fff' : '#D4AF37',
-              background: tab === 'speed' ? '#D4AF37' : 'rgba(255,255,255,0.9)',
-              border: '2px solid #D4AF37',
-              borderRadius: '20px',
-              padding: '5px 8px',
-              cursor: 'pointer',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
-              backdropFilter: 'blur(4px)',
-              userSelect: 'none',
-              WebkitUserSelect: 'none',
-              minWidth: '110px',
-              whiteSpace: 'nowrap',
-              justifyContent: 'center',
-              transition: 'all 0.2s',
-            } as React.CSSProperties}
           >
-            {isDemoMode ? (
-              <>Demo<Bike size={18} /></>
+            {tab === 'speed' ? (
+              <svg width="130" height="56" viewBox="0 0 130 56">
+                <rect x="28" y="2" width="100" height="52" fill="#D4AF37" stroke="#D4AF37" strokeWidth="2" rx="4"/>
+                <circle cx="28" cy="28" r="26" fill="white" stroke="#D4AF37" strokeWidth="2"/>
+                <rect x="16" y="16" width="24" height="24" fill="#D4AF37" rx="3"/>
+                <text x="80" y="34" textAnchor="middle" fontSize="18" fontWeight="700" fill="white" fontFamily="Dancing Script, cursive">RideOn</text>
+              </svg>
             ) : (
-              <>
-                {tab === 'speed' ? <Square size={12} fill="currentColor" /> : <Play size={12} fill="currentColor" />}
-                RideOn
-                <Bike size={18} />
-              </>
+              <svg width="130" height="56" viewBox="0 0 130 56">
+                <rect x="28" y="2" width="100" height="52" fill="rgba(255,255,255,0.9)" stroke="#D4AF37" strokeWidth="2" rx="4"/>
+                <circle cx="28" cy="28" r="26" fill="#D4AF37"/>
+                <polygon points="18,16 18,40 38,28" fill="white"/>
+                <text x="80" y="34" textAnchor="middle" fontSize="18" fontWeight="700" fill="#D4AF37" fontFamily="Dancing Script, cursive">RideOn</text>
+              </svg>
             )}
-          </button>
+          </div>
         </div>
 
         {isDemoMode && (() => {
