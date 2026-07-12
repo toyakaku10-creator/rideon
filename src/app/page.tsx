@@ -1218,7 +1218,7 @@ export default function Home() {
               const maxSpd = 60
               const ratio = Math.min(spd / maxSpd, 1)
               const angle = -90 + ratio * 180
-              const cx = 60, cy = 68, r = 22
+              const cx = 60, cy = 45, r = 18
               const nx = cx + r * Math.sin((angle * Math.PI) / 180)
               const ny = cy - r * Math.cos((angle * Math.PI) / 180)
               const arcLen = Math.PI * r
@@ -1227,11 +1227,11 @@ export default function Home() {
               return (
                 <svg width="100" height="110" viewBox="0 0 120 140">
                   {/* arc background */}
-                  <path d="M 28 68 A 22 22 0 0 1 92 68" fill="none" stroke="#333" strokeWidth="4" strokeLinecap="round"/>
+                  <path d="M 27 45 A 18 18 0 0 1 93 45" fill="none" stroke="#333" strokeWidth="4" strokeLinecap="round"/>
                   {/* gold arc */}
-                  <path d="M 28 68 A 22 22 0 0 1 92 68" fill="none" stroke="#D4AF37" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${goldLen} ${arcLen}`}/>
+                  <path d="M 27 45 A 18 18 0 0 1 93 45" fill="none" stroke="#D4AF37" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${goldLen} ${arcLen}`}/>
                   {/* red arc */}
-                  {redLen > 0 && <path d="M 28 68 A 22 22 0 0 1 92 68" fill="none" stroke="#E53935" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${redLen} ${arcLen}`} strokeDashoffset={-goldLen}/>}
+                  {redLen > 0 && <path d="M 27 45 A 18 18 0 0 1 93 45" fill="none" stroke="#E53935" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${redLen} ${arcLen}`} strokeDashoffset={-goldLen}/>}
                   {/* tick marks */}
                   {Array.from({length: 13}).map((_, i) => {
                     const a = -90 + i * 15
