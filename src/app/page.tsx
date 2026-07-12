@@ -1246,7 +1246,7 @@ export default function Home() {
                   <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
                   <circle cx={cx} cy={cy} r="3" fill="#333" stroke="white" strokeWidth="1"/>
                   {/* black circle */}
-                  <circle cx="60" cy="90" r="40" fill="#111"/>
+                  <circle cx="60" cy="90" r="40" fill="rgba(17,17,17,0.75)"/>
                   {/* speed number */}
                   <text x="60" y="98" textAnchor="middle" fontSize="35" fontWeight="700" fill="white" fontFamily="sans-serif">{Math.round(spd)}</text>
                   <text x="60" y="114" textAnchor="middle" fontSize="10" fill="#888" fontFamily="sans-serif">km/h</text>
