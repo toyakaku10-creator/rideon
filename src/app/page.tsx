@@ -1217,40 +1217,35 @@ export default function Home() {
               const spd = (tab === 'speed' ? currentSpeed : currentSpeed) > 3 ? (tab === 'speed' ? currentSpeed : currentSpeed) : 0
               const maxSpd = 60
               const ratio = Math.min(spd / maxSpd, 1)
-              const angle = -90 + ratio * 180
-              const cx = 60, cy = 50, r = 8
-              const nx = cx + r * Math.sin((angle * Math.PI) / 180)
-              const ny = cy - r * Math.cos((angle * Math.PI) / 180)
-              const arcLen = Math.PI * r
-              const goldLen = arcLen * Math.min(ratio / 0.8, 1)
-              const redLen = ratio > 0.8 ? arcLen * ((ratio - 0.8) / 0.2) : 0
+              const needleAngle = -90 + ratio * 180
+              const cx = 60, cy = 52, r = 16
+              const nx = cx + r * Math.sin(needleAngle * Math.PI / 180)
+              const ny = cy - r * Math.cos(needleAngle * Math.PI / 180)
+              const arcCirc = Math.PI * r
+              const goldLen = arcCirc * Math.min(ratio / 0.8, 1)
+              const redLen = ratio > 0.8 ? arcCirc * ((ratio - 0.8) / 0.2) : 0
               return (
                 <svg width="80" height="90" viewBox="0 10 120 120">
-                  {/* gray half circle fill */}
-                  <polygon
-                    points={`${60-8},${50} ${60+8},${50} ${60},${50-8}`}
-                    fill="rgba(60,60,60,0.8)"
-                  />
+                  {/* half circle fill */}
+                  <path d="M 44 52 A 16 16 0 0 1 76 52 Z" fill="rgba(70,70,70,0.7)"/>
                   {/* arc background */}
-                  <path d="M 44 50 A 8 8 0 0 1 76 50" fill="none" stroke="#333" strokeWidth="4" strokeLinecap="round"/>
+                  <path d="M 44 52 A 16 16 0 0 1 76 52" fill="none" stroke="#333" strokeWidth="4" strokeLinecap="round"/>
                   {/* gold arc */}
-                  <path d="M 44 50 A 8 8 0 0 1 76 50" fill="none" stroke="#D4AF37" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${goldLen} ${arcLen}`}/>
+                  <path d="M 44 52 A 16 16 0 0 1 76 52" fill="none" stroke="#D4AF37" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${goldLen} ${arcCirc}`}/>
                   {/* red arc */}
-                  {redLen > 0 && <path d="M 44 50 A 8 8 0 0 1 76 50" fill="none" stroke="#E53935" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${redLen} ${arcLen}`} strokeDashoffset={-goldLen}/>}
+                  {redLen > 0 && <path d="M 44 52 A 16 16 0 0 1 76 52" fill="none" stroke="#E53935" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${redLen} ${arcCirc}`} strokeDashoffset={-goldLen}/>}
                   {/* tick marks */}
                   {Array.from({length: 13}).map((_, i) => {
-                    const a = -90 + i * 15
-                    const r1 = r + 3, r2 = i % 4 === 0 ? r + 7 : r + 5
-                    const x1 = cx + r1 * Math.cos(a * Math.PI / 180)
-                    const y1 = cy + r1 * Math.sin(a * Math.PI / 180)
-                    const x2 = cx + r2 * Math.cos(a * Math.PI / 180)
-                    const y2 = cy + r2 * Math.sin(a * Math.PI / 180)
+                    const a = (-90 + i * 15) * Math.PI / 180
+                    const r1 = 20, r2 = i % 4 === 0 ? 13 : 16
+                    const x1 = cx + r1 * Math.cos(a), y1 = cy + r1 * Math.sin(a)
+                    const x2 = cx + r2 * Math.cos(a), y2 = cy + r2 * Math.sin(a)
                     if (y1 > cy || y2 > cy) return null
                     return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="white" strokeWidth="0.8"/>
                   })}
                   {/* needle */}
-                  <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-                  <circle cx={cx} cy={cy} r="3" fill="#555" stroke="white" strokeWidth="1"/>
+                  <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                  <circle cx={cx} cy={cy} r="3" fill="#333" stroke="white" strokeWidth="1"/>
                   {/* black circle */}
                   <circle cx="60" cy="90" r="40" fill="#111"/>
                   {/* speed number */}
