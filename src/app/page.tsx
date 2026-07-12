@@ -1249,7 +1249,9 @@ export default function Home() {
                     const x1 = cx + r1 * Math.cos(a), y1 = cy + r1 * Math.sin(a)
                     const x2 = cx + r2 * Math.cos(a), y2 = cy + r2 * Math.sin(a)
                     if (y1 > cy || y2 > cy) return null
-                    return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="white" strokeWidth="0.8"/>
+                    const tickSpeed = (i / 12) * 60
+                    const color = tickSpeed <= 16 ? '#D4AF37' : '#E53935'
+                    return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth="0.8"/>
                   })}
                   {/* needle */}
                   <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
