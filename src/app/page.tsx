@@ -1323,8 +1323,16 @@ export default function Home() {
         )}
 
         {/* Floating RideOn button */}
+        <style>{`
+          @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+          }
+          .rideon-pulse { animation: pulse 1.8s ease-in-out infinite; transform-origin: center; }
+        `}</style>
         <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 500 }}>
           <div
+            className={!isDemoMode && tab !== 'speed' ? 'rideon-pulse' : undefined}
             style={{ position: 'relative', width: '130px', height: '38px', cursor: 'pointer', userSelect: 'none', WebkitUserSelect: 'none' } as React.CSSProperties}
             onClick={() => {
               if (isDemoMode) { stopDemo(); return; }
