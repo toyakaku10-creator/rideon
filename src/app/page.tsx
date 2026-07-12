@@ -1230,17 +1230,20 @@ export default function Home() {
               const nx = cx + r * Math.sin(needleAngle * Math.PI / 180)
               const ny = cy - r * Math.cos(needleAngle * Math.PI / 180)
               const arcCirc = Math.PI * r
-              const splitRatio = 16 / 60
+              const blueEnd = arcCirc * (16 / 60)
+              const yellowEnd = arcCirc * (40 / 60)
               return (
                 <svg width="90" height="100" viewBox="0 30 120 110">
                   {/* half circle fill */}
                   <path d="M 44 52 A 16 16 0 0 1 76 52 Z" fill="rgba(70,70,70,0.7)"/>
                   {/* arc background */}
                   <path d="M 44 52 A 16 16 0 0 1 76 52" fill="none" stroke="#333" strokeWidth="4" strokeLinecap="round"/>
-                  {/* gold arc (fixed) */}
-                  <path d="M 44 52 A 16 16 0 0 1 76 52" fill="none" stroke="#D4AF37" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${arcCirc * splitRatio} ${arcCirc}`}/>
-                  {/* red arc (fixed) */}
-                  <path d="M 44 52 A 16 16 0 0 1 76 52" fill="none" stroke="#E57373" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${arcCirc * (1 - splitRatio)} ${arcCirc}`} strokeDashoffset={`-${arcCirc * splitRatio}`}/>
+                  {/* blue arc (0〜16km/h) */}
+                  <path d="M 44 52 A 16 16 0 0 1 76 52" fill="none" stroke="#4A90D9" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${blueEnd} ${arcCirc}`}/>
+                  {/* gold arc (16〜40km/h) */}
+                  <path d="M 44 52 A 16 16 0 0 1 76 52" fill="none" stroke="#D4AF37" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${yellowEnd - blueEnd} ${arcCirc}`} strokeDashoffset={`-${blueEnd}`}/>
+                  {/* red arc (40km/h〜) */}
+                  <path d="M 44 52 A 16 16 0 0 1 76 52" fill="none" stroke="#E57373" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${arcCirc - yellowEnd} ${arcCirc}`} strokeDashoffset={`-${yellowEnd}`}/>
                   {/* tick marks */}
                   {Array.from({length: 7}).map((_, i) => {
                     const a = (-90 + i * 30) * Math.PI / 180
