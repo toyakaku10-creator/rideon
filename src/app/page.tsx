@@ -1225,7 +1225,7 @@ export default function Home() {
               const goldLen = arcLen * Math.min(ratio / 0.8, 1)
               const redLen = ratio > 0.8 ? arcLen * ((ratio - 0.8) / 0.2) : 0
               return (
-                <svg width="80" height="90" viewBox="0 0 120 130">
+                <svg width="80" height="90" viewBox="0 10 120 120">
                   {/* needle fill */}
                   <path d="M 40 50 A 10 10 0 0 1 60 50 Z" fill="rgba(128,128,128,0.3)"/>
                   {/* arc background */}
