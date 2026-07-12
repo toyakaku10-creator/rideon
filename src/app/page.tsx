@@ -1224,7 +1224,7 @@ export default function Home() {
               const goldLen = arcCirc * Math.min(ratio / 0.8, 1)
               const redLen = ratio > 0.8 ? arcCirc * ((ratio - 0.8) / 0.2) : 0
               return (
-                <svg width="90" height="100" viewBox="0 10 120 120">
+                <svg width="90" height="100" viewBox="0 30 120 110">
                   <style>{`
                     @keyframes dotSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
                     .dot-spin { transform-origin: 60px 90px; animation: dotSpin 4s linear infinite; }
