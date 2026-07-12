@@ -1248,15 +1248,12 @@ export default function Home() {
                   {Array.from({length: 7}).map((_, i) => {
                     const a = (-90 + i * 30) * Math.PI / 180
                     const tickSpeed = (i / 6) * 60
-                    const color = tickSpeed <= 16 ? '#D4AF37' : '#E57373'
+                    const color = tickSpeed <= 16 ? '#D4AF37' : tickSpeed <= 40 ? '#FF8C00' : '#E57373'
                     return <line key={i}
                       x1={cx + 20 * Math.cos(a)} y1={cy + 20 * Math.sin(a)}
                       x2={cx + 13 * Math.cos(a)} y2={cy + 13 * Math.sin(a)}
                       stroke={color} strokeWidth="1.5"/>
                   })}
-                  {/* needle */}
-                  <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
-                  <circle cx={cx} cy={cy} r="3" fill="#333" stroke="white" strokeWidth="1"/>
                   {/* black circle */}
                   <circle cx="60" cy="90" r="40" fill="rgba(17,17,17,0.75)"/>
                   {/* 外周の白い点（固定、常に表示） */}
@@ -1269,6 +1266,9 @@ export default function Home() {
                     const opacity = Math.max(0.2, 1 - dist * 0.2)
                     return <circle key={i} cx={dx} cy={dy} r="1.5" fill="white" opacity={opacity}/>
                   })}
+                  {/* needle */}
+                  <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+                  <circle cx={cx} cy={cy} r="3" fill="#333" stroke="white" strokeWidth="1"/>
                   {/* speed number */}
                   <text x="60" y="98" textAnchor="middle" fontSize="35" fontWeight="700" fill="white" fontFamily="sans-serif">{Math.round(spd)}</text>
                   <text x="60" y="114" textAnchor="middle" fontSize="13" fill="white" fontFamily="sans-serif">km/h</text>
