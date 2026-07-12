@@ -1325,9 +1325,9 @@ export default function Home() {
         {/* Floating RideOn button */}
         <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 500 }}>
           <div
-            style={{ position: 'relative', width: '130px', height: '38px', cursor: isDemoMode ? 'default' : 'pointer', userSelect: 'none', WebkitUserSelect: 'none' } as React.CSSProperties}
+            style={{ position: 'relative', width: '130px', height: '38px', cursor: 'pointer', userSelect: 'none', WebkitUserSelect: 'none' } as React.CSSProperties}
             onClick={() => {
-              if (isDemoMode) return;
+              if (isDemoMode) { stopDemo(); return; }
               if (tab === 'speed') {
                 // ライドモード終了 → 走行記録を保存
                 const endTime = Date.now();
@@ -1372,7 +1372,14 @@ export default function Home() {
               }
             }}
           >
-            {tab === 'speed' ? (
+            {isDemoMode ? (
+              <svg width="130" height="38" viewBox="0 0 130 38">
+                <rect x="19" y="2" width="109" height="34" fill="#D4AF37" stroke="#D4AF37" strokeWidth="2" rx="4"/>
+                <circle cx="19" cy="19" r="17" fill="white" stroke="#D4AF37" strokeWidth="2"/>
+                <rect x="10" y="10" width="18" height="18" fill="#D4AF37" rx="2"/>
+                <text x="75" y="24" textAnchor="middle" fontSize="18" fontWeight="700" fill="white" fontFamily="Dancing Script, cursive">RideOn</text>
+              </svg>
+            ) : tab === 'speed' ? (
               <svg width="130" height="38" viewBox="0 0 130 38">
                 <rect x="19" y="2" width="109" height="34" fill="#D4AF37" stroke="#D4AF37" strokeWidth="2" rx="4"/>
                 <circle cx="19" cy="19" r="17" fill="white" stroke="#D4AF37" strokeWidth="2"/>
@@ -1409,7 +1416,7 @@ export default function Home() {
           return (
             <div style={{
               position: 'absolute',
-              bottom: '116px',
+              top: '58px',
               right: '12px',
               zIndex: 500,
               display: 'flex',
@@ -1417,9 +1424,6 @@ export default function Home() {
             }}>
               <button onClick={isPaused ? resumeDemo : pauseDemo} style={{ ...demoCtrlStyle, width: '44px', justifyContent: 'center' }}>
                 {isPaused ? <Play size={14} /> : <Pause size={14} />}
-              </button>
-              <button onClick={stopDemo} style={{ ...demoCtrlStyle, width: '64px', justifyContent: 'center' }}>
-                <Square size={14} />
               </button>
               <button onClick={handleSpeedToggle} style={{ ...demoCtrlStyle, width: '44px', justifyContent: 'center', background: demoSpeed > 1 ? '#B8960A' : '#D4AF37' }}>
                 {demoSpeed}x
