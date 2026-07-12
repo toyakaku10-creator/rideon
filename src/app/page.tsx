@@ -1227,7 +1227,7 @@ export default function Home() {
               return (
                 <svg width="80" height="90" viewBox="0 10 120 120">
                   {/* needle fill */}
-                  <path d="M 44 50 A 8 8 0 0 1 60 50 Z" fill="rgba(128,128,128,0.3)"/>
+                  <path d={`M ${60-8} ${50} A 8 8 0 0 1 ${60+8} ${50} Z`} fill="rgba(80,80,80,0.6)"/>
                   {/* arc background */}
                   <path d="M 44 50 A 8 8 0 0 1 76 50" fill="none" stroke="#333" strokeWidth="4" strokeLinecap="round"/>
                   {/* gold arc */}
