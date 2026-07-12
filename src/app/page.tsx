@@ -1249,7 +1249,7 @@ export default function Home() {
                   {/* black circle */}
                   <circle cx="60" cy="90" r="40" fill="#111"/>
                   {/* speed number */}
-                  <text x="60" y="98" textAnchor="middle" fontSize="33" fontWeight="700" fill="white" fontFamily="sans-serif">{Math.round(spd)}</text>
+                  <text x="60" y="98" textAnchor="middle" fontSize="35" fontWeight="700" fill="white" fontFamily="sans-serif">{Math.round(spd)}</text>
                   <text x="60" y="114" textAnchor="middle" fontSize="10" fill="#888" fontFamily="sans-serif">km/h</text>
                 </svg>
               )
