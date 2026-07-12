@@ -1261,7 +1261,7 @@ export default function Home() {
                   })}
                   {/* 明るく光る点が回転 */}
                   <g className="dot-spin">
-                    <circle cx="60" cy={90 - 44} r="2.5" fill="white" opacity="1"/>
+                    <circle cx="60" cy={90 - 37} r="2.5" fill="white" opacity="1"/>
                   </g>
                   {/* speed number */}
                   <text x="60" y="98" textAnchor="middle" fontSize="35" fontWeight="700" fill="white" fontFamily="sans-serif">{Math.round(spd)}</text>
