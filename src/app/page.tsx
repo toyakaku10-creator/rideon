@@ -1218,14 +1218,14 @@ export default function Home() {
               const maxSpd = 60
               const ratio = Math.min(spd / maxSpd, 1)
               const angle = -90 + ratio * 180
-              const cx = 60, cy = 55, r = 28
+              const cx = 60, cy = 55, r = 24
               const nx = cx + r * Math.sin((angle * Math.PI) / 180)
               const ny = cy - r * Math.cos((angle * Math.PI) / 180)
               const arcLen = Math.PI * r
               const goldLen = arcLen * Math.min(ratio / 0.8, 1)
               const redLen = ratio > 0.8 ? arcLen * ((ratio - 0.8) / 0.2) : 0
               return (
-                <svg width="90" height="83" viewBox="0 0 120 110">
+                <svg width="90" height="90" viewBox="0 0 120 120">
                   <circle cx="60" cy="60" r="58" fill="#111"/>
                   {/* tick marks */}
                   {Array.from({length: 13}).map((_, i) => {
@@ -1247,7 +1247,7 @@ export default function Home() {
                   <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
                   <circle cx={cx} cy={cy} r="3" fill="#333" stroke="white" strokeWidth="1"/>
                   {/* speed number */}
-                  <text x="60" y="90" textAnchor="middle" fontSize="26" fontWeight="700" fill="white" fontFamily="sans-serif">{Math.round(spd)}</text>
+                  <text x="60" y="90" textAnchor="middle" fontSize="30" fontWeight="700" fill="white" fontFamily="sans-serif">{Math.round(spd)}</text>
                   <text x="60" y="104" textAnchor="middle" fontSize="10" fill="#888" fontFamily="sans-serif">km/h</text>
                 </svg>
               )
