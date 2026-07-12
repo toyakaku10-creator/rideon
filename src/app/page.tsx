@@ -1211,7 +1211,6 @@ export default function Home() {
             transform: 'translateX(-50%)',
             zIndex: 500,
             pointerEvents: 'none',
-            opacity: 1,
           }}>
             {(() => {
               const spd = (tab === 'speed' ? currentSpeed : currentSpeed) > 3 ? (tab === 'speed' ? currentSpeed : currentSpeed) : 0
