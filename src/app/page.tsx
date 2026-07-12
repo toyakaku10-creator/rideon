@@ -1244,7 +1244,7 @@ export default function Home() {
                     return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="white" strokeWidth="0.8"/>
                   })}
                   {/* needle */}
-                  <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                  <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
                   <circle cx={cx} cy={cy} r="3" fill="#333" stroke="white" strokeWidth="1"/>
                   {/* black circle */}
                   <circle cx="60" cy="90" r="40" fill="#111"/>
