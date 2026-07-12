@@ -1238,10 +1238,10 @@ export default function Home() {
                   <path d="M 44 52 A 16 16 0 0 1 76 52 Z" fill="rgba(70,70,70,0.7)"/>
                   {/* arc background */}
                   <path d="M 44 52 A 16 16 0 0 1 76 52" fill="none" stroke="#333" strokeWidth="4" strokeLinecap="round"/>
-                  {/* blue arc (0〜16km/h) */}
-                  <path d="M 44 52 A 16 16 0 0 1 76 52" fill="none" stroke="#4A90D9" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${blueEnd} ${arcCirc}`}/>
-                  {/* gold arc (16〜40km/h) */}
-                  <path d="M 44 52 A 16 16 0 0 1 76 52" fill="none" stroke="#D4AF37" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${yellowEnd - blueEnd} ${arcCirc}`} strokeDashoffset={`-${blueEnd}`}/>
+                  {/* yellow arc (0〜16km/h) */}
+                  <path d="M 44 52 A 16 16 0 0 1 76 52" fill="none" stroke="#D4AF37" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${blueEnd} ${arcCirc}`}/>
+                  {/* orange arc (16〜40km/h) */}
+                  <path d="M 44 52 A 16 16 0 0 1 76 52" fill="none" stroke="#FF8C00" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${yellowEnd - blueEnd} ${arcCirc}`} strokeDashoffset={`-${blueEnd}`}/>
                   {/* red arc (40km/h〜) */}
                   <path d="M 44 52 A 16 16 0 0 1 76 52" fill="none" stroke="#E57373" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${arcCirc - yellowEnd} ${arcCirc}`} strokeDashoffset={`-${yellowEnd}`}/>
                   {/* tick marks */}
