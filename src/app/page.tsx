@@ -1300,8 +1300,11 @@ export default function Home() {
                 const minLng = Math.min(...lngs), maxLng = Math.max(...lngs)
                 const pad = 6
                 const lngScale = Math.cos((minLat + maxLat) / 2 * Math.PI / 180)
-                const toX = (lng: number) => pad + (lng - minLng) * lngScale / ((maxLng - minLng) * lngScale) * (80 - pad * 2)
-                const toY = (lat: number) => pad + (maxLat - lat) / (maxLat - minLat) * (80 - pad * 2)
+                const latRange = maxLat - minLat
+                const lngRange = (maxLng - minLng) * lngScale
+                const scale = Math.min((80 - pad * 2) / latRange, (80 - pad * 2) / lngRange)
+                const toX = (lng: number) => 40 + ((lng - (minLng + maxLng) / 2) * lngScale * scale)
+                const toY = (lat: number) => 40 + (((minLat + maxLat) / 2 - lat) * scale)
                 const d = allPoints.map((p, i) => `${i === 0 ? 'M' : 'L'}${toX(p.lng).toFixed(1)},${toY(p.lat).toFixed(1)}`).join(' ')
                 return <>
                   <path d={d} fill="none" stroke="#FF6B00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
