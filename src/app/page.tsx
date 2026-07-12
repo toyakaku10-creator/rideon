@@ -1215,7 +1215,7 @@ export default function Home() {
         {(tab === 'speed' || isDemoMode) && (
           <div style={{
             position: 'absolute',
-            top: '-14px',
+            top: '-11px',
             left: '50%',
             transform: 'translateX(-50%)',
             zIndex: 500,
