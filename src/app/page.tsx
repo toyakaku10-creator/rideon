@@ -1385,7 +1385,7 @@ export default function Home() {
                 <rect x="19" y="2" width="109" height="34" fill="#D4AF37" stroke="#D4AF37" strokeWidth="2" rx="4"/>
                 <circle cx="19" cy="19" r="17" fill="white" stroke="#D4AF37" strokeWidth="2"/>
                 <rect x="10" y="10" width="18" height="18" fill="#D4AF37" rx="2"/>
-                <text x="75" y="24" textAnchor="middle" fontSize="18" fontWeight="700" fill="white" fontFamily="Dancing Script, cursive">RideOn</text>
+                <text x="75" y="24" textAnchor="middle" fontSize="18" fontWeight="700" fill="white" fontFamily="Dancing Script, cursive">Demo</text>
               </svg>
             ) : tab === 'speed' ? (
               <svg width="130" height="38" viewBox="0 0 130 38">
