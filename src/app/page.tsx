@@ -124,7 +124,7 @@ export default function Home() {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>('distance');
   const [mapStyle, setMapStyle] = useState<'default' | 'roadmap' | 'gray' | 'retro' | 'silver' | 'highcontrast'>(() =>
-    (typeof window !== 'undefined' ? localStorage.getItem('rideon-map-style') : null) as 'default' | 'roadmap' | 'gray' | 'retro' | 'silver' | 'highcontrast' | null ?? 'default'
+    (typeof window !== 'undefined' ? localStorage.getItem('rideon-map-style') : null) as 'default' | 'roadmap' | 'gray' | 'retro' | 'silver' | 'highcontrast' | null ?? 'roadmap'
   );
 
   // Distance measurement
