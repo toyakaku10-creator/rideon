@@ -3,10 +3,10 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'RideOn',
-  description: '自転車ルート計測アプリ',
+  description: '自転車ライドアプリ',
   openGraph: {
     title: 'RideOn',
-    description: '自転車ルート計測アプリ',
+    description: '自転車ライドアプリ',
     url: 'https://rideon-map.vercel.app',
     siteName: 'RideOn',
     images: [
