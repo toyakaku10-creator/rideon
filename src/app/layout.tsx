@@ -4,6 +4,21 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'RideOn',
   description: '自転車ルート計測アプリ',
+  openGraph: {
+    title: 'RideOn',
+    description: '自転車ルート計測アプリ',
+    url: 'https://rideon-map.vercel.app',
+    siteName: 'RideOn',
+    images: [
+      {
+        url: 'https://rideon-map.vercel.app/icon-512.png',
+        width: 512,
+        height: 512,
+        alt: 'RideOn',
+      },
+    ],
+    type: 'website',
+  },
 };
 
 export default function RootLayout({
