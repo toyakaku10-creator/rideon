@@ -1233,7 +1233,7 @@ export default function Home() {
               const blueEnd = arcCirc * (16 / 60)
               const yellowEnd = arcCirc * (40 / 60)
               return (
-                <svg width="90" height="100" viewBox="0 30 120 110">
+                <svg width="100" height="112" viewBox="0 30 120 110">
                   {/* half circle fill */}
                   <path d="M 44 52 A 16 16 0 0 1 76 52 Z" fill="rgba(17,17,17,0.6)"/>
                   {/* arc background */}
