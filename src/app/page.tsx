@@ -1102,8 +1102,16 @@ export default function Home() {
 
   const elevationMarkerDistance = (() => {
     if (elevationIndex === null || elevations.length < 2) return undefined;
-    const km = (elevationIndex / (elevations.length - 1)) * totalDistance / 1000;
-    return `${km.toFixed(2)}km / ${Math.round(elevations[elevationIndex])}m`;
+    const allPoints = segments.flatMap(s => s.geometry);
+    if (allPoints.length === 0) return undefined;
+    const cumulativeDists: number[] = [0];
+    for (let i = 1; i < allPoints.length; i++) {
+      cumulativeDists.push(cumulativeDists[i - 1] + haversineDistance(allPoints[i - 1], allPoints[i]));
+    }
+    const ptIndex = Math.round(elevationIndex / (elevations.length - 1) * (allPoints.length - 1));
+    const actualDist = cumulativeDists[Math.min(ptIndex, cumulativeDists.length - 1)] ?? 0;
+    const km = (actualDist / 1000).toFixed(2);
+    return `${km}km / ${Math.round(elevations[elevationIndex])}m`;
   })();
 
 
