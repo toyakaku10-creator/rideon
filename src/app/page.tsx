@@ -796,7 +796,7 @@ export default function Home() {
           body: JSON.stringify({ points: pts }),
         })
           .then(r => r.json())
-          .then(d => { if (d.elevations) setElevations(d.elevations); })
+          .then(d => { if (d.elevations) { setElevations(d.elevations); setElevationSampledIndices(d.sampledIndices ?? []); } })
           .catch(() => {});
       }
       setIsShareImport(true);
@@ -835,6 +835,7 @@ export default function Home() {
         console.log('elevation fetch result:', data.elevations?.length);
         if (data.elevations) {
           setElevations(data.elevations);
+          setElevationSampledIndices(data.sampledIndices ?? []);
           skipElevationFetchRef.current = false;
         }
         setIsElevationLoading(false);
@@ -897,6 +898,7 @@ export default function Home() {
         const data = await res.json();
         if (data.elevations) {
           setElevations(data.elevations);
+          setElevationSampledIndices(data.sampledIndices ?? []);
           fetchedElevations = data.elevations;
         }
       } catch { /* silent fail */ }
@@ -1565,7 +1567,7 @@ export default function Home() {
               body: JSON.stringify({ points: pts }),
             })
               .then(r => r.json())
-              .then(data => { if (data.elevations) setElevations(data.elevations); })
+              .then(data => { if (data.elevations) { setElevations(data.elevations); setElevationSampledIndices(data.sampledIndices ?? []); } })
               .catch(() => {});
           }}
           onDemoStart={() => {
