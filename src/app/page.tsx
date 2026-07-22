@@ -1116,7 +1116,6 @@ export default function Home() {
         closestIdx = i;
         break;
       }
-      closestIdx = i;
     }
     return allPoints[closestIdx];
   })();
