@@ -18,6 +18,7 @@ export async function POST(request: NextRequest) {
 
   // 距離ベースで均等にMAX_POINTS点を選ぶ
   const sampled: {lat: number, lng: number}[] = []
+  const sampledIndices: number[] = []
   for (let i = 0; i < MAX_POINTS; i++) {
     const targetDist = (i / (MAX_POINTS - 1)) * totalDist
     let idx = 0
@@ -26,6 +27,7 @@ export async function POST(request: NextRequest) {
       idx = j
     }
     sampled.push(points[idx])
+    sampledIndices.push(idx)
   }
 
   const apiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
@@ -50,5 +52,5 @@ export async function POST(request: NextRequest) {
     allElevations.push(...data.results.map((r: { elevation: number }) => r.elevation))
   }
 
-  return NextResponse.json({ elevations: allElevations })
+  return NextResponse.json({ elevations: allElevations, sampledIndices })
 }

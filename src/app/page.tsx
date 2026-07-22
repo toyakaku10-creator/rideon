@@ -149,6 +149,7 @@ export default function Home() {
   const [isElevationLoading, setIsElevationLoading] = useState(false);
   const [navElevations, setNavElevations] = useState<number[]>([]);
   const [elevationIndex, setElevationIndex] = useState<number | null>(null);
+  const [elevationSampledIndices, setElevationSampledIndices] = useState<number[]>([]);
   const [elevHoverInfo, setElevHoverInfo] = useState<{distance: number, elevation: number} | null>(null);
   const [navElevationIndex, setNavElevationIndex] = useState<number | null>(null);
   const elevRafRef = useRef<number | null>(null);
@@ -356,7 +357,7 @@ export default function Home() {
         body: JSON.stringify({ points: latlngs }),
       })
         .then((r) => r.json())
-        .then((data) => { if (data.elevations) setElevations(data.elevations); })
+        .then((data) => { if (data.elevations) { setElevations(data.elevations); if (data.sampledIndices) setElevationSampledIndices(data.sampledIndices); } })
         .catch(() => {});
     } catch { /* ignore */ }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -380,7 +381,7 @@ export default function Home() {
       .then((data) => {
         console.log('elevation response (segments):', data);
         console.log('elevations length (segments):', data.elevations?.length);
-        if (!cancelled && data.elevations) setElevations(data.elevations);
+        if (!cancelled && data.elevations) { setElevations(data.elevations); if (data.sampledIndices) setElevationSampledIndices(data.sampledIndices); }
       })
       .catch(() => { /* silent fail */ });
     return () => { cancelled = true; };
@@ -1096,7 +1097,9 @@ export default function Home() {
     if (elevationIndex === null || elevations.length < 2) return undefined;
     const allPoints = segments.flatMap((s) => s.geometry);
     if (allPoints.length === 0) return undefined;
-    const ptIndex = Math.round(elevationIndex / (elevations.length - 1) * (allPoints.length - 1));
+    const ptIndex = elevationSampledIndices.length > elevationIndex
+      ? elevationSampledIndices[elevationIndex]
+      : Math.round(elevationIndex / (elevations.length - 1) * (allPoints.length - 1));
     return allPoints[Math.min(ptIndex, allPoints.length - 1)];
   })();
 
