@@ -154,6 +154,11 @@ export default function Home() {
   const [navElevationIndex, setNavElevationIndex] = useState<number | null>(null);
   const elevRafRef = useRef<number | null>(null);
   const handleElevationPositionChange = useCallback((index: number, distance: number, elevation: number) => {
+    if (index === -1) {
+      setElevationIndex(null);
+      setElevHoverInfo(null);
+      return;
+    }
     if (elevRafRef.current) cancelAnimationFrame(elevRafRef.current);
     elevRafRef.current = requestAnimationFrame(() => {
       setElevationIndex(index);

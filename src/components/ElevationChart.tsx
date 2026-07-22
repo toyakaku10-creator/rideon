@@ -60,6 +60,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
       <div
         onTouchStart={handleTouch}
         onTouchMove={handleTouch}
+        onTouchEnd={() => onPositionChange?.(-1, 0, 0)}
         onMouseMove={(e) => {
           if (!onPositionChange) return;
           const rect = e.currentTarget.getBoundingClientRect();
