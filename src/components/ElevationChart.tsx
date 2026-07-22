@@ -71,6 +71,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
               onPositionChange(index, distance, elevations[index]);
             }}
             onMouseLeave={() => onPositionChange?.(-1, 0, 0)}
+            onTouchEnd={() => onPositionChange?.(-1, 0, 0)}
           >
             <defs>
               <linearGradient id={gradientId.current} x1="0" y1="0" x2="1" y2="0">
