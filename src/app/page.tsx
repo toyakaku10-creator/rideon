@@ -600,6 +600,14 @@ export default function Home() {
   }, [currentPosition, navRoute]);
 
   const totalDistance = segments.reduce((sum, s) => sum + s.distance, 0);
+  const geometryTotalDistance = useMemo(() => {
+    const allPoints = segments.flatMap(s => s.geometry);
+    let dist = 0;
+    for (let i = 1; i < allPoints.length; i++) {
+      dist += haversineDistance(allPoints[i - 1], allPoints[i]);
+    }
+    return dist;
+  }, [segments]);
   const avgSpeed = speedCount > 0 ? speedSum / speedCount : 0;
 
   // Map tap handler — adds waypoint and fetches route segment
@@ -1099,11 +1107,7 @@ export default function Home() {
     if (elevationIndex === null || elevations.length < 2) return undefined;
     const allPoints = segments.flatMap((s) => s.geometry);
     if (allPoints.length === 0) return undefined;
-    let actualTotalDist = 0;
-    for (let i = 1; i < allPoints.length; i++) {
-      actualTotalDist += haversineDistance(allPoints[i - 1], allPoints[i]);
-    }
-    const targetDist = (elevationIndex / (elevations.length - 1)) * actualTotalDist;
+    const targetDist = (elevationIndex / (elevations.length - 1)) * geometryTotalDistance;
     let cumDist = 0;
     let closestIdx = 0;
     for (let i = 1; i < allPoints.length; i++) {
@@ -1505,7 +1509,7 @@ export default function Home() {
           waypoints={waypoints}
           segments={segments}
           routeType={routeType}
-          totalDistance={totalDistance}
+          totalDistance={geometryTotalDistance}
           isLoading={isLoading}
           onRouteTypeChange={handleRouteTypeChange}
           onUndo={handleUndo}
