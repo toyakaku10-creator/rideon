@@ -56,7 +56,23 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
       <div
         onTouchStart={handleTouch}
         onTouchMove={handleTouch}
-        style={{ position: 'relative', touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none' } as React.CSSProperties}
+        onMouseMove={(e) => {
+          if (!onPositionChange) return;
+          const rect = e.currentTarget.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const ratio = Math.max(0, Math.min(1, x / rect.width));
+          const index = Math.floor(ratio * (elevations.length - 1));
+          const distance = (index / (elevations.length - 1)) * totalDistance;
+          onPositionChange(index, distance, elevations[index]);
+        }}
+        style={{
+          position: 'relative',
+          touchAction: 'none',
+          userSelect: 'none',
+          WebkitUserSelect: 'none',
+          WebkitTouchCallout: 'none',
+          padding: '10px 0',
+        } as React.CSSProperties}
       >
         <ResponsiveContainer width="100%" height={72}>
           <AreaChart data={data} margin={{ top: 4, right: 20, left: -10, bottom: 0 }}>
