@@ -40,16 +40,6 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
     onPositionChange(index, distance, elevation);
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!onPositionChange) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const ratio = Math.max(0, Math.min(1, x / rect.width));
-    const index = Math.floor(ratio * (elevations.length - 1));
-    const distance = (index / (elevations.length - 1)) * totalDistance;
-    onPositionChange(index, distance, elevations[index]);
-  };
-
   const data = elevations.map((elev, i) => ({
     idx: i,
     elev: Math.round(elev),
@@ -63,7 +53,27 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
 
   return (
     <div className="mt-2 mb-1">
-      <div style={{ position: 'relative' }}>
+      <div
+        onTouchStart={handleTouch}
+        onTouchMove={handleTouch}
+        onMouseMove={(e) => {
+          if (!onPositionChange) return;
+          const rect = e.currentTarget.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const ratio = Math.max(0, Math.min(1, x / rect.width));
+          const index = Math.floor(ratio * (elevations.length - 1));
+          const distance = (index / (elevations.length - 1)) * totalDistance;
+          onPositionChange(index, distance, elevations[index]);
+        }}
+        style={{
+          position: 'relative',
+          touchAction: 'none',
+          userSelect: 'none',
+          WebkitUserSelect: 'none',
+          WebkitTouchCallout: 'none',
+          padding: '10px 0',
+        } as React.CSSProperties}
+      >
         <ResponsiveContainer width="100%" height={72}>
           <AreaChart data={data} margin={{ top: 4, right: 20, left: -10, bottom: 0 }}>
             <defs>
@@ -129,20 +139,6 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
             />
           </AreaChart>
         </ResponsiveContainer>
-        {/* タッチ専用オーバーレイ */}
-        <div
-          onTouchStart={handleTouch}
-          onTouchMove={handleTouch}
-          onMouseMove={handleMouseMove}
-          style={{
-            position: 'absolute',
-            top: 0, left: 0, right: 0, bottom: 0,
-            zIndex: 10,
-            touchAction: 'none',
-            userSelect: 'none',
-            WebkitUserSelect: 'none',
-          } as React.CSSProperties}
-        />
       </div>
     </div>
   );
