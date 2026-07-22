@@ -1099,10 +1099,22 @@ export default function Home() {
     if (elevationIndex === null || elevations.length < 2) return undefined;
     const allPoints = segments.flatMap((s) => s.geometry);
     if (allPoints.length === 0) return undefined;
-    const ptIndex = elevationSampledIndices.length > elevationIndex
-      ? elevationSampledIndices[elevationIndex]
-      : Math.round(elevationIndex / (elevations.length - 1) * (allPoints.length - 1));
-    return allPoints[Math.min(ptIndex, allPoints.length - 1)];
+    let actualTotalDist = 0;
+    for (let i = 1; i < allPoints.length; i++) {
+      actualTotalDist += haversineDistance(allPoints[i - 1], allPoints[i]);
+    }
+    const targetDist = (elevationIndex / (elevations.length - 1)) * actualTotalDist;
+    let cumDist = 0;
+    let closestIdx = 0;
+    for (let i = 1; i < allPoints.length; i++) {
+      cumDist += haversineDistance(allPoints[i - 1], allPoints[i]);
+      if (cumDist >= targetDist) {
+        closestIdx = i;
+        break;
+      }
+      closestIdx = i;
+    }
+    return allPoints[closestIdx];
   })();
 
   const elevationMarkerDistance = (() => {
