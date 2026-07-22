@@ -60,13 +60,13 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
             margin={{ top: 4, right: 20, left: -10, bottom: 0 }}
             onMouseMove={(state) => {
               if (!onPositionChange || state?.activeTooltipIndex == null) return;
-              const index = state.activeTooltipIndex;
+              const index = Number(state.activeTooltipIndex);
               const distance = (index / (elevations.length - 1)) * totalDistance;
               onPositionChange(index, distance, elevations[index]);
             }}
             onTouchMove={(state) => {
               if (!onPositionChange || state?.activeTooltipIndex == null) return;
-              const index = state.activeTooltipIndex;
+              const index = Number(state.activeTooltipIndex);
               const distance = (index / (elevations.length - 1)) * totalDistance;
               onPositionChange(index, distance, elevations[index]);
             }}
