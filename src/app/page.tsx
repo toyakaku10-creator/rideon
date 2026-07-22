@@ -1104,6 +1104,7 @@ export default function Home() {
   const mapFollow = tab === 'speed' && currentPosition !== null;
 
   const elevationMarkerPos = (() => {
+    if (tab === 'speed' || isDemoMode) return undefined;
     if (elevationIndex === null || elevations.length < 2) return undefined;
     const allPoints = segments.flatMap((s) => s.geometry);
     if (allPoints.length === 0) return undefined;
@@ -1121,6 +1122,7 @@ export default function Home() {
   })();
 
   const elevationMarkerDistance = (() => {
+    if (tab === 'speed' || isDemoMode) return undefined;
     if (elevationIndex === null || elevations.length < 2) return undefined;
     const allPoints = segments.flatMap(s => s.geometry);
     if (allPoints.length === 0) return undefined;
