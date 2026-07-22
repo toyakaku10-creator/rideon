@@ -58,7 +58,6 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
           <AreaChart
             data={data}
             margin={{ top: 4, right: 20, left: -10, bottom: 0 }}
-            activeIndex={elevationIndex ?? undefined}
             onMouseMove={(state) => {
               if (!onPositionChange || state?.activeTooltipIndex == null) return;
               const index = state.activeTooltipIndex;
