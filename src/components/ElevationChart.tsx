@@ -13,7 +13,7 @@ import {
 interface ElevationChartProps {
   elevations: number[];
   totalDistance: number; // meters
-  onPositionChange?: (index: number) => void;
+  onPositionChange?: (index: number, distance: number, elevation: number) => void;
   rideDistance?: number;
 }
 
@@ -35,7 +35,9 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
     const x = e.touches[0].clientX - rect.left;
     const ratio = Math.max(0, Math.min(1, x / rect.width));
     const index = Math.floor(ratio * (elevations.length - 1));
-    onPositionChange(index);
+    const distance = (index / (elevations.length - 1)) * totalDistance;
+    const elevation = elevations[index];
+    onPositionChange(index, distance, elevation);
   };
 
   const data = elevations.map((elev, i) => ({

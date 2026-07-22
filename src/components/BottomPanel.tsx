@@ -325,7 +325,7 @@ interface BottomPanelProps {
   onImportClick: () => void;
   isImported: boolean;
   elevations?: number[];
-  onElevationPositionChange?: (index: number) => void;
+  onElevationPositionChange?: (index: number, distance: number, elevation: number) => void;
   rideDistance?: number;
   onReverseRoute?: () => void;
   onLoadRouteFromUrl?: (shareId: string) => void;
