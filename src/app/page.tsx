@@ -1095,7 +1095,7 @@ export default function Home() {
   const elevationMarkerDistance = (() => {
     if (elevationIndex === null || elevations.length < 2) return undefined;
     const km = (elevationIndex / (elevations.length - 1)) * totalDistance / 1000;
-    return `${km.toFixed(2)}km`;
+    return `${km.toFixed(2)}km / ${Math.round(elevations[elevationIndex])}m`;
   })();
 
 
@@ -1441,26 +1441,6 @@ export default function Home() {
           );
         })()}
 
-        {elevHoverInfo && (
-          <div style={{
-            position: 'absolute',
-            bottom: '220px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            zIndex: 500,
-            background: 'rgba(0,0,0,0.75)',
-            borderRadius: '8px',
-            padding: '6px 12px',
-            pointerEvents: 'none',
-            display: 'flex',
-            gap: '12px',
-            color: 'white',
-            fontSize: '13px',
-          }}>
-            <span>📍 {(elevHoverInfo.distance / 1000).toFixed(1)}km</span>
-            <span>↑ {Math.round(elevHoverInfo.elevation)}m</span>
-          </div>
-        )}
         {tab === 'speed' && navInstruction && (
           <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[900] bg-[#D4AF37] text-white text-sm font-bold px-5 py-2 rounded-full shadow-lg pointer-events-none">
             {navInstruction}
