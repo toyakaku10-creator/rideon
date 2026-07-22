@@ -151,6 +151,14 @@ export default function Home() {
   const [elevationIndex, setElevationIndex] = useState<number | null>(null);
   const [elevHoverInfo, setElevHoverInfo] = useState<{distance: number, elevation: number} | null>(null);
   const [navElevationIndex, setNavElevationIndex] = useState<number | null>(null);
+  const elevRafRef = useRef<number | null>(null);
+  const handleElevationPositionChange = useCallback((index: number, distance: number, elevation: number) => {
+    if (elevRafRef.current) cancelAnimationFrame(elevRafRef.current);
+    elevRafRef.current = requestAnimationFrame(() => {
+      setElevationIndex(index);
+      setElevHoverInfo({ distance, elevation });
+    });
+  }, []);
 
   // Navigation
   const [navRoute, setNavRoute] = useState<SavedRoute | null>(null);
@@ -1489,10 +1497,7 @@ export default function Home() {
           onImportClick={() => router.push('/import')}
           isImported={isImported}
           elevations={elevations}
-          onElevationPositionChange={(index, distance, elevation) => {
-            setElevationIndex(index);
-            setElevHoverInfo({ distance, elevation });
-          }}
+          onElevationPositionChange={handleElevationPositionChange}
           rideDistance={rideDistance}
           onReverseRoute={handleReverseRoute}
           onLoadRouteFromUrl={handleLoadRouteFromUrl}
