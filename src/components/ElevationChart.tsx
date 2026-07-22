@@ -32,8 +32,9 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
   const handleTouch = (e: React.TouchEvent<HTMLDivElement>) => {
     if (!onPositionChange) return;
     const rect = e.currentTarget.getBoundingClientRect();
-    // Rechartsのmargin: left=-10（YAxis幅45px）, right=20
-    const leftOffset = 45; // YAxis width=45に合わせる
+    // recharts-yAxis要素から実際の幅を取得
+    const yAxisEl = e.currentTarget.querySelector('.recharts-yAxis');
+    const leftOffset = yAxisEl ? yAxisEl.getBoundingClientRect().width : 45;
     const rightOffset = 20;
     const chartWidth = rect.width - leftOffset - rightOffset;
     const x = e.touches[0].clientX - rect.left - leftOffset;
