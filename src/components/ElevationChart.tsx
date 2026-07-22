@@ -30,21 +30,6 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
 
   if (elevations.length < 2) return null;
 
-  const handleTouch = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (!onPositionChange) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    // recharts-yAxis要素から実際の幅を取得
-    const yAxisEl = e.currentTarget.querySelector('.recharts-yAxis');
-    const leftOffset = yAxisEl ? yAxisEl.getBoundingClientRect().width : 45;
-    const rightOffset = 20;
-    const chartWidth = rect.width - leftOffset - rightOffset;
-    const x = e.touches[0].clientX - rect.left - leftOffset;
-    const ratio = Math.max(0, Math.min(1, x / chartWidth));
-    const index = Math.floor(ratio * (elevations.length - 1));
-    const distance = (index / (elevations.length - 1)) * totalDistance;
-    onPositionChange(index, distance, elevations[index]);
-  };
-
   const data = elevations.map((elev, i) => ({
     idx: i,
     elev: Math.round(elev),
@@ -59,18 +44,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
   return (
     <div className="mt-2 mb-1">
       <div
-        onTouchStart={handleTouch}
-        onTouchMove={handleTouch}
         onTouchEnd={() => onPositionChange?.(-1, 0, 0)}
-        onMouseMove={(e) => {
-          if (!onPositionChange) return;
-          const rect = e.currentTarget.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const ratio = Math.max(0, Math.min(1, x / rect.width));
-          const index = Math.floor(ratio * (elevations.length - 1));
-          const distance = (index / (elevations.length - 1)) * totalDistance;
-          onPositionChange(index, distance, elevations[index]);
-        }}
         style={{
           position: 'relative',
           touchAction: 'none',
@@ -81,7 +55,24 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
         } as React.CSSProperties}
       >
         <ResponsiveContainer width="100%" height={72}>
-          <AreaChart data={data} margin={{ top: 4, right: 20, left: -10, bottom: 0 }} activeIndex={elevationIndex ?? undefined}>
+          <AreaChart
+            data={data}
+            margin={{ top: 4, right: 20, left: -10, bottom: 0 }}
+            activeIndex={elevationIndex ?? undefined}
+            onMouseMove={(state) => {
+              if (!onPositionChange || state?.activeTooltipIndex == null) return;
+              const index = state.activeTooltipIndex;
+              const distance = (index / (elevations.length - 1)) * totalDistance;
+              onPositionChange(index, distance, elevations[index]);
+            }}
+            onTouchMove={(state) => {
+              if (!onPositionChange || state?.activeTooltipIndex == null) return;
+              const index = state.activeTooltipIndex;
+              const distance = (index / (elevations.length - 1)) * totalDistance;
+              onPositionChange(index, distance, elevations[index]);
+            }}
+            onMouseLeave={() => onPositionChange?.(-1, 0, 0)}
+          >
             <defs>
               <linearGradient id={gradientId.current} x1="0" y1="0" x2="1" y2="0">
                 {rideDistance != null ? (
