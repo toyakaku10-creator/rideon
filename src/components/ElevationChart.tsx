@@ -33,7 +33,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
     if (!onPositionChange) return;
     const rect = e.currentTarget.getBoundingClientRect();
     // Rechartsのmargin: left=-10（YAxis幅45px）, right=20
-    const leftOffset = 35; // YAxis幅
+    const leftOffset = 45; // YAxis width=45に合わせる
     const rightOffset = 20;
     const chartWidth = rect.width - leftOffset - rightOffset;
     const x = e.touches[0].clientX - rect.left - leftOffset;
