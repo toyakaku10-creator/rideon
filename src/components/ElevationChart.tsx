@@ -15,9 +15,10 @@ interface ElevationChartProps {
   totalDistance: number; // meters
   onPositionChange?: (index: number, distance: number, elevation: number) => void;
   rideDistance?: number;
+  elevationIndex?: number | null;
 }
 
-export default function ElevationChart({ elevations, totalDistance, onPositionChange, rideDistance }: ElevationChartProps) {
+export default function ElevationChart({ elevations, totalDistance, onPositionChange, rideDistance, elevationIndex }: ElevationChartProps) {
   const gradientId = useRef(`elevation-progress-gradient-${Math.random().toString(36).slice(2)}`);
   const [progressRatio, setProgressRatio] = useState(0);
 
@@ -80,7 +81,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
         } as React.CSSProperties}
       >
         <ResponsiveContainer width="100%" height={72}>
-          <AreaChart data={data} margin={{ top: 4, right: 20, left: -10, bottom: 0 }}>
+          <AreaChart data={data} margin={{ top: 4, right: 20, left: -10, bottom: 0 }} activeIndex={elevationIndex ?? undefined}>
             <defs>
               <linearGradient id={gradientId.current} x1="0" y1="0" x2="1" y2="0">
                 {rideDistance != null ? (
@@ -120,6 +121,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
               width={45}
             />
             <Tooltip
+              active={elevationIndex != null}
               contentStyle={{
                 background: 'var(--surface)',
                 border: '1px solid var(--border)',
@@ -140,6 +142,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
               strokeWidth={1.5}
               fill={`url(#${gradientId.current})`}
               dot={false}
+              activeDot={{ r: 4, fill: '#D4AF37', stroke: 'white', strokeWidth: 1.5 }}
               isAnimationActive={false}
             />
           </AreaChart>

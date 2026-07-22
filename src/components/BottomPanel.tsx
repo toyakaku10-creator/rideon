@@ -326,6 +326,7 @@ interface BottomPanelProps {
   isImported: boolean;
   elevations?: number[];
   onElevationPositionChange?: (index: number, distance: number, elevation: number) => void;
+  elevationIndex?: number | null;
   rideDistance?: number;
   onReverseRoute?: () => void;
   onLoadRouteFromUrl?: (shareId: string) => void;
@@ -373,6 +374,7 @@ export default function BottomPanel({
   isImported,
   elevations = [],
   onElevationPositionChange,
+  elevationIndex,
   rideDistance,
   onReverseRoute,
   onLoadRouteFromUrl,
@@ -660,7 +662,7 @@ export default function BottomPanel({
         {/* Elevation chart */}
         {elevations.length >= 2 && (
           <div className="px-4">
-            <ElevationChart elevations={elevations} totalDistance={totalDistance} onPositionChange={onElevationPositionChange} />
+            <ElevationChart elevations={elevations} totalDistance={totalDistance} onPositionChange={onElevationPositionChange} elevationIndex={elevationIndex} />
           </div>
         )}
 

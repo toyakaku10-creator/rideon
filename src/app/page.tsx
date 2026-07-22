@@ -1533,6 +1533,7 @@ export default function Home() {
           isImported={isImported}
           elevations={elevations}
           onElevationPositionChange={handleElevationPositionChange}
+          elevationIndex={elevationIndex}
           rideDistance={rideDistance}
           onReverseRoute={handleReverseRoute}
           onLoadRouteFromUrl={handleLoadRouteFromUrl}
