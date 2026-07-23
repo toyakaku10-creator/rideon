@@ -145,6 +145,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
           onTouchStart={(e) => { e.preventDefault(); handleSliderPointerDown(e); }}
           onTouchMove={(e) => { e.preventDefault(); handleSliderPointerMove(e); }}
           onTouchEnd={handleSliderRelease}
+          tabIndex={-1}
           style={{
             position: 'absolute',
             left: '35px',
@@ -155,7 +156,9 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
             alignItems: 'center',
             touchAction: 'none',
             cursor: 'pointer',
-          }}
+            outline: 'none',
+            WebkitTapHighlightColor: 'transparent',
+          } as React.CSSProperties}
         >
           <div style={{ width: '100%', height: '3px', background: 'rgba(212,175,55,0.35)', borderRadius: '2px', position: 'relative' }}>
             {hoverRatio != null && (
