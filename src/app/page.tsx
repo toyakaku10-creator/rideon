@@ -152,18 +152,14 @@ export default function Home() {
   const [elevationSampledIndices, setElevationSampledIndices] = useState<number[]>([]);
   const [elevHoverInfo, setElevHoverInfo] = useState<{distance: number, elevation: number} | null>(null);
   const [navElevationIndex, setNavElevationIndex] = useState<number | null>(null);
-  const elevRafRef = useRef<number | null>(null);
   const handleElevationPositionChange = useCallback((index: number, distance: number, elevation: number) => {
     if (index === -1) {
       setElevationIndex(null);
       setElevHoverInfo(null);
       return;
     }
-    if (elevRafRef.current) cancelAnimationFrame(elevRafRef.current);
-    elevRafRef.current = requestAnimationFrame(() => {
-      setElevationIndex(index);
-      setElevHoverInfo({ distance, elevation });
-    });
+    setElevationIndex(index);
+    setElevHoverInfo({ distance, elevation });
   }, []);
 
   // Navigation
