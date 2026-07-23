@@ -28,6 +28,19 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
     setProgressRatio(ratio);
   }, [rideDistance, totalDistance]);
 
+  useEffect(() => {
+    if (!onPositionChange) return;
+    const handleGlobalTouchEnd = () => {
+      onPositionChange(-1, 0, 0);
+    };
+    window.addEventListener('touchend', handleGlobalTouchEnd);
+    window.addEventListener('mouseup', handleGlobalTouchEnd);
+    return () => {
+      window.removeEventListener('touchend', handleGlobalTouchEnd);
+      window.removeEventListener('mouseup', handleGlobalTouchEnd);
+    };
+  }, [onPositionChange]);
+
   if (elevations.length < 2) return null;
 
   const data = elevations.map((elev, i) => ({
