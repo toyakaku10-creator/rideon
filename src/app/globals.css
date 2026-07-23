@@ -46,3 +46,11 @@ input, textarea, select {
   from { transform: translateY(100%); }
   to { transform: translateY(0); }
 }
+
+.recharts-wrapper svg,
+.recharts-surface {
+  outline: none !important;
+}
+.recharts-wrapper *:focus {
+  outline: none !important;
+}
