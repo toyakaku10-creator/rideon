@@ -20,7 +20,6 @@ interface ElevationChartProps {
 
 export default function ElevationChart({ elevations, totalDistance, onPositionChange, rideDistance, elevationIndex }: ElevationChartProps) {
   const gradientId = useRef(`elevation-progress-gradient-${Math.random().toString(36).slice(2)}`);
-  const chartContainerRef = useRef<HTMLDivElement>(null);
   const [progressRatio, setProgressRatio] = useState(0);
 
   useEffect(() => {
@@ -44,30 +43,6 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
 
   if (elevations.length < 2) return null;
 
-  const calcIndexFromClientX = (clientX: number): number | null => {
-    const container = chartContainerRef.current;
-    if (!container) return null;
-    const svgEl = container.querySelector('.recharts-surface');
-    if (!svgEl) return null;
-    const svgRect = svgEl.getBoundingClientRect();
-    const yAxisEl = container.querySelector('.recharts-yAxis');
-    const yAxisWidth = yAxisEl ? yAxisEl.getBoundingClientRect().width : 0;
-    const plotLeft = svgRect.left + yAxisWidth;
-    const plotRight = svgRect.right - 20; // right margin
-    const plotWidth = plotRight - plotLeft;
-    if (plotWidth <= 0) return null;
-    const ratio = Math.max(0, Math.min(1, (clientX - plotLeft) / plotWidth));
-    return Math.round(ratio * (elevations.length - 1));
-  };
-
-  const handlePointerMove = (clientX: number) => {
-    if (!onPositionChange) return;
-    const index = calcIndexFromClientX(clientX);
-    if (index === null) return;
-    const distance = (index / (elevations.length - 1)) * totalDistance;
-    onPositionChange(index, distance, elevations[index]);
-  };
-
   const data = elevations.map((elev, i) => ({
     idx: i,
     elev: Math.round(elev),
@@ -82,16 +57,24 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
   return (
     <div className="mt-2 mb-1">
       <div
-        ref={chartContainerRef}
-        onTouchStart={(e) => handlePointerMove(e.touches[0].clientX)}
-        onTouchMove={(e) => handlePointerMove(e.touches[0].clientX)}
-        onMouseMove={(e) => handlePointerMove(e.clientX)}
-        style={{ position: 'relative', touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none' } as React.CSSProperties}
+        style={{ touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none' } as React.CSSProperties}
       >
         <ResponsiveContainer width="100%" height={72}>
           <AreaChart
             data={data}
             margin={{ top: 4, right: 20, left: -10, bottom: 0 }}
+            onMouseMove={(state) => {
+              if (!onPositionChange || state?.activeTooltipIndex == null) return;
+              const index = Number(state.activeTooltipIndex);
+              const distance = (index / (elevations.length - 1)) * totalDistance;
+              onPositionChange(index, distance, elevations[index]);
+            }}
+            onTouchMove={(state) => {
+              if (!onPositionChange || state?.activeTooltipIndex == null) return;
+              const index = Number(state.activeTooltipIndex);
+              const distance = (index / (elevations.length - 1)) * totalDistance;
+              onPositionChange(index, distance, elevations[index]);
+            }}
           >
             <defs>
               <linearGradient id={gradientId.current} x1="0" y1="0" x2="1" y2="0">
