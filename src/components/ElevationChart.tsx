@@ -59,6 +59,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
 
   return (
     <div className="mt-2 mb-1">
+      <div style={{ position: 'relative' }}>
       <ResponsiveContainer width="100%" height={72}>
         <AreaChart
           data={data}
@@ -125,12 +126,19 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
         onMouseUp={handleSliderRelease}
         onTouchEnd={handleSliderRelease}
         style={{
-          width: '100%',
-          marginTop: '4px',
+          position: 'absolute',
+          left: '35px',
+          right: '20px',
+          bottom: '18px',
+          width: 'auto',
+          height: '24px',
+          margin: 0,
           accentColor: '#D4AF37',
-          height: '20px',
+          opacity: 0.85,
+          background: 'transparent',
         }}
       />
+      </div>
     </div>
   );
 }
