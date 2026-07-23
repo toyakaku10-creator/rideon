@@ -21,6 +21,7 @@ interface ElevationChartProps {
 export default function ElevationChart({ elevations, totalDistance, onPositionChange, rideDistance, elevationIndex }: ElevationChartProps) {
   const gradientId = useRef(`elevation-progress-gradient-${Math.random().toString(36).slice(2)}`);
   const [progressRatio, setProgressRatio] = useState(0);
+  const [hoverRatio, setHoverRatio] = useState<number | null>(null);
 
   useEffect(() => {
     if (rideDistance == null || !totalDistance) return;
@@ -43,6 +44,8 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
 
   if (elevations.length < 2) return null;
 
+  const displayRatio = hoverRatio ?? progressRatio;
+
   const data = elevations.map((elev, i) => ({
     idx: i,
     elev: Math.round(elev),
@@ -64,25 +67,31 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
             data={data}
             margin={{ top: 4, right: 20, left: -10, bottom: 0 }}
             onMouseMove={(state) => {
-              if (!onPositionChange || state?.activeTooltipIndex == null) return;
+              if (state?.activeTooltipIndex == null) return;
               const index = Number(state.activeTooltipIndex);
+              setHoverRatio(index / (elevations.length - 1));
+              if (!onPositionChange) return;
               const distance = (index / (elevations.length - 1)) * totalDistance;
               onPositionChange(index, distance, elevations[index]);
             }}
             onTouchMove={(state) => {
-              if (!onPositionChange || state?.activeTooltipIndex == null) return;
+              if (state?.activeTooltipIndex == null) return;
               const index = Number(state.activeTooltipIndex);
+              setHoverRatio(index / (elevations.length - 1));
+              if (!onPositionChange) return;
               const distance = (index / (elevations.length - 1)) * totalDistance;
               onPositionChange(index, distance, elevations[index]);
             }}
+            onMouseLeave={() => { setHoverRatio(null); onPositionChange?.(-1, 0, 0); }}
+            onTouchEnd={() => { setHoverRatio(null); onPositionChange?.(-1, 0, 0); }}
           >
             <defs>
               <linearGradient id={gradientId.current} x1="0" y1="0" x2="1" y2="0">
-                {rideDistance != null ? (
+                {hoverRatio != null || rideDistance != null ? (
                   <>
                     <stop offset="0%" stopColor="#D4AF37" stopOpacity={0.9} />
-                    <stop offset={`${progressRatio * 100}%`} stopColor="#D4AF37" stopOpacity={0.9} />
-                    <stop offset={`${progressRatio * 100}%`} stopColor="#D4AF37" stopOpacity={0.2} />
+                    <stop offset={`${displayRatio * 100}%`} stopColor="#D4AF37" stopOpacity={0.9} />
+                    <stop offset={`${displayRatio * 100}%`} stopColor="#D4AF37" stopOpacity={0.2} />
                     <stop offset="100%" stopColor="#D4AF37" stopOpacity={0.2} />
                   </>
                 ) : (
