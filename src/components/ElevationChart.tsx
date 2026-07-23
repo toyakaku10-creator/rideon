@@ -124,21 +124,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
               tickFormatter={(v) => `${v}`}
               width={45}
             />
-            <Tooltip
-              active={elevationIndex != null}
-              contentStyle={{
-                background: 'var(--surface)',
-                border: '1px solid var(--border)',
-                borderRadius: '8px',
-                fontSize: '11px',
-                padding: '4px 8px',
-              }}
-              formatter={(value) => [`${value}m`, '標高']}
-              labelFormatter={(v) => {
-                const km = (Number(v) / (elevations.length - 1)) * totalDistance / 1000;
-                return `${Math.round(km * 10) / 10}km`;
-              }}
-            />
+            <Tooltip active={false} />
             <Area
               type="monotone"
               dataKey="elev"
