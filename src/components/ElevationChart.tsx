@@ -123,6 +123,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
         step={1}
         defaultValue={0}
         onChange={handleSliderChange}
+        onInput={handleSliderChange as React.FormEventHandler<HTMLInputElement>}
         onMouseUp={handleSliderRelease}
         onTouchEnd={handleSliderRelease}
         style={{
