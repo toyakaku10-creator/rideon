@@ -37,10 +37,15 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
       const container = containerRef.current;
       if (!container) return;
       const xAxisEl = container.querySelector('.recharts-xAxis .recharts-cartesian-axis-line');
-      if (!xAxisEl) return;
+      console.log('xAxisEl found:', xAxisEl);
+      if (!xAxisEl) {
+        console.log('全recharts要素:', container.querySelectorAll('[class*="recharts"]'));
+        return;
+      }
       const containerRect = container.getBoundingClientRect();
       const axisRect = xAxisEl.getBoundingClientRect();
       const bottomOffset = containerRect.bottom - axisRect.top;
+      console.log('containerRect.bottom:', containerRect.bottom, 'axisRect.top:', axisRect.top, 'bottomOffset:', bottomOffset);
       setAxisBottom(bottomOffset);
     };
     measure();
