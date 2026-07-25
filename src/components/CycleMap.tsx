@@ -150,30 +150,32 @@ function makePositionIcon(heading: number | null): google.maps.Icon {
   };
 }
 
-function makeElevationMarkerIcon(distanceLabel?: string): google.maps.Icon {
-  if (distanceLabel) {
-    const W = 90, labelH = 18, gap = 2, dotR = 5;
+function makeElevationMarkerIcon(distanceText?: string, elevationText?: string): google.maps.Icon {
+  if (distanceText && elevationText) {
+    const W = 90, lineH = 16, gap = 2, dotR = 5;
+    const labelH = lineH * 2;
     const dotY = labelH + gap + dotR;
     const H = dotY + dotR;
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
       <rect x="0" y="0" width="${W}" height="${labelH}" rx="8" fill="#D4AF37"/>
-      <text x="${W / 2}" y="${labelH - 4}" text-anchor="middle" fill="#fff" font-size="11" font-weight="700" font-family="sans-serif">${distanceLabel}</text>
-      <circle cx="${W / 2}" cy="${dotY}" r="${dotR}" fill="#D4AF37" stroke="white" stroke-width="2"/>
+      <text x="${W/2}" y="${lineH - 3}" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">距離 ${distanceText}</text>
+      <text x="${W/2}" y="${lineH * 2 - 3}" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">標高 ${elevationText}</text>
+      <circle cx="${W/2}" cy="${dotY}" r="${dotR}" fill="#D4AF37" stroke="white" stroke-width="2"/>
     </svg>`;
     return {
-      url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
-      scaledSize: new google.maps.Size(W, H),
+      url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
       anchor: new google.maps.Point(W / 2, dotY),
+      scaledSize: new google.maps.Size(W, H),
     };
   }
-  const size = 14;
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
-    <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2 - 1}" fill="#D4AF37" stroke="white" stroke-width="2"/>
+  const W = 14, R = 7;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${W}">
+    <circle cx="${R}" cy="${R}" r="${R}" fill="#D4AF37" stroke="white" stroke-width="2"/>
   </svg>`;
   return {
-    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
-    scaledSize: new google.maps.Size(size, size),
-    anchor: new google.maps.Point(size / 2, size / 2),
+    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
+    anchor: new google.maps.Point(R, R),
+    scaledSize: new google.maps.Size(W, W),
   };
 }
 
@@ -228,7 +230,8 @@ interface CycleMapProps {
   isDemoMode?: boolean;
   heading?: number | null;
   elevationMarkerPos?: LatLng;
-  elevationMarkerDistance?: string;
+  elevationMarkerDistanceText?: string;
+  elevationMarkerElevationText?: string;
   spots?: Spot[];
   onLongPress?: (lat: number, lng: number) => void;
   onSpotClick?: (spot: Spot) => void;
@@ -257,7 +260,8 @@ export default function CycleMap({
   isDemoMode = false,
   heading = null,
   elevationMarkerPos,
-  elevationMarkerDistance,
+  elevationMarkerDistanceText,
+  elevationMarkerElevationText,
   spots = [],
   onLongPress,
   onSpotClick,
@@ -507,7 +511,7 @@ export default function CycleMap({
       {elevationMarkerPos && (
         <Marker
           position={{ lat: elevationMarkerPos.lat, lng: elevationMarkerPos.lng }}
-          icon={makeElevationMarkerIcon(elevationMarkerDistance)}
+          icon={makeElevationMarkerIcon(elevationMarkerDistanceText, elevationMarkerElevationText)}
           zIndex={8}
         />
       )}

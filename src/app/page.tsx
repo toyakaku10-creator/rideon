@@ -1122,11 +1122,11 @@ export default function Home() {
     return allPoints[closestIdx];
   })();
 
-  const elevationMarkerDistance = (() => {
-    if (tab === 'speed' || isDemoMode) return undefined;
-    if (elevationIndex === null || elevations.length < 2) return undefined;
+  const { elevationMarkerDistanceText, elevationMarkerElevationText } = (() => {
+    if (tab === 'speed' || isDemoMode) return {};
+    if (elevationIndex === null || elevations.length < 2) return {};
     const allPoints = segments.flatMap(s => s.geometry);
-    if (allPoints.length === 0) return undefined;
+    if (allPoints.length === 0) return {};
     const cumulativeDists: number[] = [0];
     for (let i = 1; i < allPoints.length; i++) {
       cumulativeDists.push(cumulativeDists[i - 1] + haversineDistance(allPoints[i - 1], allPoints[i]));
@@ -1134,7 +1134,10 @@ export default function Home() {
     const ptIndex = Math.round(elevationIndex / (elevations.length - 1) * (allPoints.length - 1));
     const actualDist = cumulativeDists[Math.min(ptIndex, cumulativeDists.length - 1)] ?? 0;
     const km = (actualDist / 1000).toFixed(2);
-    return `${km}km / ${Math.round(elevations[elevationIndex])}m`;
+    return {
+      elevationMarkerDistanceText: `${km}km`,
+      elevationMarkerElevationText: `${Math.round(elevations[elevationIndex])}m`,
+    };
   })();
 
 
@@ -1167,7 +1170,8 @@ export default function Home() {
             return null;
           })()}
           elevationMarkerPos={elevationMarkerPos}
-          elevationMarkerDistance={elevationMarkerDistance}
+          elevationMarkerDistanceText={elevationMarkerDistanceText}
+          elevationMarkerElevationText={elevationMarkerElevationText}
           spots={[...spots, ...sharedSpots]}
           onLongPress={(lat, lng) => { if (!isSpotMode) return; setSpotDialog({ lat, lng }); setSpotName(''); setSpotCategory('pin'); }}
           onSpotClick={(spot) => { if (spots.some((s) => s.id === spot.id)) setSpotDeleteConfirm(spot); }}
