@@ -151,16 +151,22 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
             left: '35px',
             right: '20px',
             bottom: '14px',
-            height: '24px',
-            display: 'flex',
-            alignItems: 'center',
+            height: '55px',
             touchAction: 'none',
             cursor: 'pointer',
             outline: 'none',
             WebkitTapHighlightColor: 'transparent',
           } as React.CSSProperties}
         >
-          <div style={{ width: '100%', height: '3px', background: 'rgba(212,175,55,0.35)', borderRadius: '2px', position: 'relative' }}>
+          <div style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: '3px',
+            background: 'rgba(212,175,55,0.35)',
+            borderRadius: '2px',
+          }}>
             {hoverRatio != null && (
               <div style={{
                 position: 'absolute',
