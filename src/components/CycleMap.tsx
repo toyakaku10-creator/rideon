@@ -152,7 +152,7 @@ function makePositionIcon(heading: number | null): google.maps.Icon {
 
 function makeElevationMarkerIcon(distanceText?: string, elevationText?: string): google.maps.Icon {
   if (distanceText && elevationText) {
-    const W = 90, lineH = 16, gap = 2, dotR = 5;
+    const W = 66, lineH = 16, gap = 2, dotR = 5;
     const labelH = lineH * 2;
     const dotY = labelH + gap + dotR;
     const H = dotY + dotR;
