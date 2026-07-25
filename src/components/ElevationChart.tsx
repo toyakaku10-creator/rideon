@@ -150,7 +150,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
             position: 'absolute',
             left: '35px',
             right: '20px',
-            bottom: '14px',
+            bottom: '28px',
             height: '55px',
             touchAction: 'none',
             cursor: 'pointer',
