@@ -512,7 +512,7 @@ export default function CycleMap({
         <Marker
           position={{ lat: elevationMarkerPos.lat, lng: elevationMarkerPos.lng }}
           icon={makeElevationMarkerIcon(elevationMarkerDistanceText, elevationMarkerElevationText)}
-          zIndex={8}
+          zIndex={99999}
         />
       )}
 
