@@ -79,13 +79,11 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
 
   return (
     <div className="mt-2 mb-1">
-      <div style={{ position: 'relative', outline: 'none', WebkitTapHighlightColor: 'transparent' } as React.CSSProperties}>
-        <ResponsiveContainer width="100%" height={84}>
+      <div style={{ position: 'relative' }}>
+        <ResponsiveContainer width="100%" height={72}>
           <AreaChart
             data={data}
-            margin={{ top: 4, right: 20, left: -10, bottom: 16 }}
-            tabIndex={-1}
-            style={{ outline: 'none' }}
+            margin={{ top: 4, right: 20, left: -10, bottom: 0 }}
           >
             <defs>
               <linearGradient id={gradientId.current} x1="0" y1="0" x2="1" y2="0">
@@ -153,9 +151,9 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
             left: '35px',
             right: '20px',
             bottom: '14px',
-            height: '55px',
+            height: '24px',
             display: 'flex',
-            alignItems: 'flex-end',
+            alignItems: 'center',
             touchAction: 'none',
             cursor: 'pointer',
             outline: 'none',
