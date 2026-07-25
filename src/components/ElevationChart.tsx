@@ -152,7 +152,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
             position: 'absolute',
             left: '35px',
             right: '20px',
-            bottom: '4px',
+            bottom: '14px',
             height: '55px',
             display: 'flex',
             alignItems: 'flex-end',
