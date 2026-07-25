@@ -21,37 +21,14 @@ interface ElevationChartProps {
 export default function ElevationChart({ elevations, totalDistance, onPositionChange, rideDistance, elevationIndex }: ElevationChartProps) {
   const gradientId = useRef(`elevation-progress-gradient-${Math.random().toString(36).slice(2)}`);
   const sliderTrackRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
   const [progressRatio, setProgressRatio] = useState(0);
   const [hoverRatio, setHoverRatio] = useState<number | null>(null);
-  const [axisBottom, setAxisBottom] = useState(14);
 
   useEffect(() => {
     if (rideDistance == null || !totalDistance) return;
     const ratio = Math.min(rideDistance / totalDistance, 1);
     setProgressRatio(ratio);
   }, [rideDistance, totalDistance]);
-
-  useEffect(() => {
-    const measure = () => {
-      const container = containerRef.current;
-      if (!container) return;
-      const xAxisEl = container.querySelector('.recharts-xAxis .recharts-cartesian-axis-line');
-      console.log('xAxisEl found:', xAxisEl);
-      if (!xAxisEl) {
-        console.log('全recharts要素:', container.querySelectorAll('[class*="recharts"]'));
-        return;
-      }
-      const containerRect = container.getBoundingClientRect();
-      const axisRect = xAxisEl.getBoundingClientRect();
-      const bottomOffset = containerRect.bottom - axisRect.top;
-      console.log('containerRect.bottom:', containerRect.bottom, 'axisRect.top:', axisRect.top, 'bottomOffset:', bottomOffset);
-      setAxisBottom(bottomOffset);
-    };
-    measure();
-    window.addEventListener('resize', measure);
-    return () => window.removeEventListener('resize', measure);
-  }, [elevations]);
 
   if (elevations.length < 2) return null;
 
@@ -102,14 +79,11 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
 
   return (
     <div className="mt-2 mb-1">
-      <div
-        ref={containerRef}
-        style={{ position: 'relative', outline: 'none', WebkitTapHighlightColor: 'transparent' } as React.CSSProperties}
-      >
-        <ResponsiveContainer width="100%" height={72}>
+      <div style={{ position: 'relative', outline: 'none', WebkitTapHighlightColor: 'transparent' } as React.CSSProperties}>
+        <ResponsiveContainer width="100%" height={84}>
           <AreaChart
             data={data}
-            margin={{ top: 4, right: 20, left: -10, bottom: 0 }}
+            margin={{ top: 4, right: 20, left: -10, bottom: 16 }}
             tabIndex={-1}
             style={{ outline: 'none' }}
           >
@@ -178,7 +152,7 @@ export default function ElevationChart({ elevations, totalDistance, onPositionCh
             position: 'absolute',
             left: '35px',
             right: '20px',
-            bottom: `${axisBottom - 8}px`,
+            bottom: '14px',
             height: '55px',
             display: 'flex',
             alignItems: 'flex-end',
