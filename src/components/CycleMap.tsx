@@ -158,8 +158,8 @@ function makeElevationMarkerIcon(distanceText?: string, elevationText?: string):
     const H = dotY + dotR;
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
       <rect x="0" y="0" width="${W}" height="${labelH}" rx="8" fill="#D4AF37"/>
-      <text x="${W/2}" y="${lineH - 3}" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">距離 ${distanceText}</text>
-      <text x="${W/2}" y="${lineH * 2 - 3}" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">標高 ${elevationText}</text>
+      <text x="${W/2}" y="${lineH - 3}" text-anchor="middle" fill="#fff" font-size="11" font-weight="700" font-family="sans-serif">距離 ${distanceText}</text>
+      <text x="${W/2}" y="${lineH * 2 - 3}" text-anchor="middle" fill="#fff" font-size="11" font-weight="700" font-family="sans-serif">標高 ${elevationText}</text>
       <circle cx="${W/2}" cy="${dotY}" r="${dotR}" fill="#D4AF37" stroke="white" stroke-width="2"/>
     </svg>`;
     return {
