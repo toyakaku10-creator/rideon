@@ -157,7 +157,7 @@ function makeElevationMarkerIcon(distanceLabel?: string): google.maps.Icon {
     const H = dotY + dotR;
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
       <rect x="0" y="0" width="${W}" height="${labelH}" rx="8" fill="#D4AF37"/>
-      <text x="${W / 2}" y="${labelH - 4}" text-anchor="middle" fill="#000" font-size="11" font-weight="700" font-family="sans-serif">${distanceLabel}</text>
+      <text x="${W / 2}" y="${labelH - 4}" text-anchor="middle" fill="#fff" font-size="11" font-weight="700" font-family="sans-serif">${distanceLabel}</text>
       <circle cx="${W / 2}" cy="${dotY}" r="${dotR}" fill="#D4AF37" stroke="white" stroke-width="2"/>
     </svg>`;
     return {
