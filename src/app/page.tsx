@@ -999,7 +999,6 @@ export default function Home() {
       mapInstanceRef.current.panTo({ lat: pts[0][0], lng: pts[0][1] });
     }
     rideTrackRef.current = [];
-    rideStartTimeRef.current = Date.now();
     setLogTrack(null);
     setMaxSpeed(0);
     setSpeedSum(0);
@@ -1426,7 +1425,6 @@ export default function Home() {
             style={{ position: 'relative', width: '130px', height: '38px', cursor: 'pointer', userSelect: 'none', WebkitUserSelect: 'none' } as React.CSSProperties}
             onClick={() => {
               if (isDemoMode) {
-                saveRideLog();
                 stopDemo();
                 return;
               }
