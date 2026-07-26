@@ -1401,7 +1401,10 @@ export default function Home() {
                     const logs: RideLog[] = raw ? JSON.parse(raw) : [];
                     logs.push(log);
                     localStorage.setItem(RIDE_LOG_KEY, JSON.stringify(logs));
-                  } catch { /* ignore */ }
+                    alert(`保存成功: ${logs.length}件目 (${distanceKm.toFixed(2)}km)`);
+                  } catch (err) {
+                    alert('保存エラー: ' + String(err));
+                  }
                 }
                 rideStartTimeRef.current = null;
                 localStorage.removeItem('rideon-active-ride');

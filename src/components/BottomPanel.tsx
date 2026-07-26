@@ -489,7 +489,6 @@ export default function BottomPanel({
   };
 
   useEffect(() => {
-    if (!showHistory) return;
     try {
       const raw = localStorage.getItem(RIDE_LOG_KEY);
       if (raw) setRideLogs(JSON.parse(raw) as RideLog[]);
