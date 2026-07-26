@@ -28,6 +28,22 @@ function SpotIcon({ category, size = 20 }: { category: string; size?: number }) 
 const RIDE_LOG_KEY = 'rideon-logs';
 import ElevationChart from '@/components/ElevationChart';
 
+const getStorageUsage = () => {
+  let total = 0;
+  const breakdown: { key: string; bytes: number }[] = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (!key) continue;
+    const value = localStorage.getItem(key) ?? '';
+    // UTF-16で2バイト/文字として概算
+    const bytes = (key.length + value.length) * 2;
+    total += bytes;
+    breakdown.push({ key, bytes });
+  }
+  breakdown.sort((a, b) => b.bytes - a.bytes);
+  return { total, breakdown };
+};
+
 function formatDistance(meters: number): string {
   if (meters < 1000) return `${Math.round(meters)}m`;
   return `${(meters / 1000).toFixed(2)}km`;
@@ -999,6 +1015,20 @@ export default function BottomPanel({
                   />
                 ))
               )}
+              {(() => {
+                const { total, breakdown } = getStorageUsage();
+                const toKB = (b: number) => (b / 1024).toFixed(0);
+                return (
+                  <div style={{ padding: '10px 16px', fontSize: '11px', color: '#888', borderTop: '1px solid #eee' }}>
+                    <div>使用容量: {toKB(total)}KB / 約5,120KB</div>
+                    {breakdown.slice(0, 3).map((b) => (
+                      <div key={b.key} style={{ marginTop: '2px' }}>
+                        {b.key}: {toKB(b.bytes)}KB
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
               <div style={{ height: 'calc(20px + env(safe-area-inset-bottom))' }} />
             </div>
           )}
