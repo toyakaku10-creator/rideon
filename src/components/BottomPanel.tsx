@@ -491,9 +491,9 @@ export default function BottomPanel({
   useEffect(() => {
     try {
       const raw = localStorage.getItem(RIDE_LOG_KEY);
-      if (raw) setRideLogs(JSON.parse(raw) as RideLog[]);
+      setRideLogs(raw ? (JSON.parse(raw) as RideLog[]) : []);
     } catch { /* ignore */ }
-  }, [showHistory]);
+  }, [showHistory, historyTab]);
 
   const handleDeleteLog = useCallback((id: string) => {
     setRideLogs((prev) => {
