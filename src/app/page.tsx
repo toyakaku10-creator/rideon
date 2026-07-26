@@ -190,6 +190,20 @@ export default function Home() {
     const duration = rideStartTimeRef.current ? Math.round((endTime - rideStartTimeRef.current) / 1000) : 0;
     const distanceKm = rideDistance / 1000;
     if (distanceKm >= 0.1 && duration > 0) {
+      const rawTrack = rideTrackRef.current;
+      const MAX_TRACK_POINTS = 500;
+      let track = rawTrack;
+      if (rawTrack.length > MAX_TRACK_POINTS) {
+        const step = rawTrack.length / MAX_TRACK_POINTS;
+        track = Array.from({ length: MAX_TRACK_POINTS }, (_, i) => rawTrack[Math.floor(i * step)]);
+        if (track[track.length - 1] !== rawTrack[rawTrack.length - 1]) {
+          track[track.length - 1] = rawTrack[rawTrack.length - 1];
+        }
+      }
+      const compactTrack = track.map((p) => ({
+        lat: Math.round(p.lat * 1e6) / 1e6,
+        lng: Math.round(p.lng * 1e6) / 1e6,
+      }));
       const log: RideLog = {
         id: endTime.toString(),
         date: new Date().toISOString(),
@@ -198,16 +212,20 @@ export default function Home() {
         avgSpeed: speedCount > 0 ? speedSum / speedCount : 0,
         maxSpeed,
         routeName: rideRouteNameRef.current,
-        track: [...rideTrackRef.current],
+        track: compactTrack,
       };
       try {
         const raw = localStorage.getItem(RIDE_LOG_KEY);
         const logs: RideLog[] = raw ? JSON.parse(raw) : [];
         logs.push(log);
         localStorage.setItem(RIDE_LOG_KEY, JSON.stringify(logs));
-        alert(`保存成功: ${logs.length}件目 (${distanceKm.toFixed(2)}km)`);
-      } catch (err) {
-        alert('保存エラー: ' + String(err));
+      } catch {
+        try {
+          const raw = localStorage.getItem(RIDE_LOG_KEY);
+          const logs: RideLog[] = raw ? JSON.parse(raw) : [];
+          logs.push({ ...log, track: undefined });
+          localStorage.setItem(RIDE_LOG_KEY, JSON.stringify(logs));
+        } catch { /* ignore */ }
       }
     }
   }, [rideDistance, speedCount, speedSum, maxSpeed]);
