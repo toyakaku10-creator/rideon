@@ -152,33 +152,6 @@ export default function Home() {
   const [elevationSampledIndices, setElevationSampledIndices] = useState<number[]>([]);
   const [elevHoverInfo, setElevHoverInfo] = useState<{distance: number, elevation: number} | null>(null);
   const [navElevationIndex, setNavElevationIndex] = useState<number | null>(null);
-  const saveRideLog = useCallback(() => {
-    const endTime = Date.now();
-    const duration = rideStartTimeRef.current ? Math.round((endTime - rideStartTimeRef.current) / 1000) : 0;
-    const distanceKm = rideDistance / 1000;
-    if (distanceKm >= 0.1 && duration > 0) {
-      const log: RideLog = {
-        id: endTime.toString(),
-        date: new Date().toISOString(),
-        distance: distanceKm,
-        duration,
-        avgSpeed: speedCount > 0 ? speedSum / speedCount : 0,
-        maxSpeed,
-        routeName: rideRouteNameRef.current,
-        track: [...rideTrackRef.current],
-      };
-      try {
-        const raw = localStorage.getItem(RIDE_LOG_KEY);
-        const logs: RideLog[] = raw ? JSON.parse(raw) : [];
-        logs.push(log);
-        localStorage.setItem(RIDE_LOG_KEY, JSON.stringify(logs));
-        alert(`保存成功: ${logs.length}件目 (${distanceKm.toFixed(2)}km)`);
-      } catch (err) {
-        alert('保存エラー: ' + String(err));
-      }
-    }
-  }, [rideDistance, speedCount, speedSum, maxSpeed]);
-
   const handleElevationPositionChange = useCallback((index: number, distance: number, elevation: number) => {
     if (index === -1) {
       setElevationIndex(null);
@@ -211,6 +184,34 @@ export default function Home() {
   const rideStartTimeRef = useRef<number | null>(null);
   const rideTrackRef = useRef<{ lat: number; lng: number }[]>([]);
   const rideRouteNameRef = useRef<string | undefined>(undefined);
+
+  const saveRideLog = useCallback(() => {
+    const endTime = Date.now();
+    const duration = rideStartTimeRef.current ? Math.round((endTime - rideStartTimeRef.current) / 1000) : 0;
+    const distanceKm = rideDistance / 1000;
+    if (distanceKm >= 0.1 && duration > 0) {
+      const log: RideLog = {
+        id: endTime.toString(),
+        date: new Date().toISOString(),
+        distance: distanceKm,
+        duration,
+        avgSpeed: speedCount > 0 ? speedSum / speedCount : 0,
+        maxSpeed,
+        routeName: rideRouteNameRef.current,
+        track: [...rideTrackRef.current],
+      };
+      try {
+        const raw = localStorage.getItem(RIDE_LOG_KEY);
+        const logs: RideLog[] = raw ? JSON.parse(raw) : [];
+        logs.push(log);
+        localStorage.setItem(RIDE_LOG_KEY, JSON.stringify(logs));
+        alert(`保存成功: ${logs.length}件目 (${distanceKm.toFixed(2)}km)`);
+      } catch (err) {
+        alert('保存エラー: ' + String(err));
+      }
+    }
+  }, [rideDistance, speedCount, speedSum, maxSpeed]);
+
   const [logTrack, setLogTrack] = useState<{ lat: number; lng: number }[] | null>(null);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const isDemoModeRef = useRef(false);
