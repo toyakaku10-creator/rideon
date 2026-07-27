@@ -928,7 +928,7 @@ const handleDeleteLog = useCallback((id: string) => {
                   { id: 'silver',       label: 'シルバー',         bg: '#f5f5f5', road: '#ffffff', water: '#d8e4ec', label2: '#666', highway: null },
                   { id: 'gray',         label: 'グレー',           bg: '#e0e0e0', road: '#f0f0f0', water: '#c0ccd8', label2: '#666', highway: null },
                   { id: 'retro',        label: 'レトロ',           bg: '#ebe3cd', road: '#f5f1e6', water: '#b9d3c2', label2: '#666', highway: null },
-                  { id: 'highcontrast', label: 'ハイコントラスト', bg: '#b8ccb0', road: '#ffffff', water: '#8fb4d4', label2: '#666', highway: '#ffd54f' },
+                  { id: 'highcontrast', label: 'ハイコントラスト', bg: '#e4ead8', road: '#ffffff', water: '#c2d9ea', label2: '#666', highway: '#ffd54f' },
                 ] as const).map(style => (
                   <button key={style.id} onClick={() => onMapStyleChange?.(style.id)} style={{
                     width: 'calc(33.33% - 6px)', padding: '0', border: mapStyle === style.id ? '2px solid #D4AF37' : '1px solid #ddd',

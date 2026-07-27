@@ -90,10 +90,10 @@ const MAP_STYLES: Record<string, google.maps.MapTypeStyle[]> = {
   ],
   highcontrast: [
     // 背景を濃いめにして道路との明暗差を作る
-    { featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#b8ccb0' }] },
-    { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#8fb4d4' }] },
-    { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#a8bfa0' }] },
-    { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#9fc094' }] },
+    { featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#e4ead8' }] },
+    { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#c2d9ea' }] },
+    { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#d8e2cc' }] },
+    { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#cfe0c0' }] },
     // 道路種別の色分け（ロードマップと同じ考え方、彩度と明度を強めに）
     { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#ffd54f' }] },
     { featureType: 'road.highway', elementType: 'geometry.stroke', stylers: [{ color: '#5a5a5a' }] },
