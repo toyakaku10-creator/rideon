@@ -89,13 +89,21 @@ const MAP_STYLES: Record<string, google.maps.MapTypeStyle[]> = {
     { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#eeeeee' }] },
   ],
   highcontrast: [
-    { elementType: 'geometry', stylers: [{ color: '#c8d8b8' }] },
-    { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#a0c0d8' }] },
-    { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#ffffff' }] },
-    { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#333333' }] },
-    { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#90a890' }] },
+    // 背景を濃いめにして道路との明暗差を作る
+    { featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#b8ccb0' }] },
+    { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#8fb4d4' }] },
+    { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#a8bfa0' }] },
+    { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#9fc094' }] },
+    // 道路種別の色分け（ロードマップと同じ考え方、彩度と明度を強めに）
+    { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#ffd54f' }] },
+    { featureType: 'road.highway', elementType: 'geometry.stroke', stylers: [{ color: '#5a5a5a' }] },
+    { featureType: 'road.arterial', elementType: 'geometry', stylers: [{ color: '#ffffff' }] },
+    { featureType: 'road.arterial', elementType: 'geometry.stroke', stylers: [{ color: '#5a5a5a' }] },
+    { featureType: 'road.local', elementType: 'geometry', stylers: [{ color: '#f0f0f0' }] },
+    { featureType: 'road.local', elementType: 'geometry.stroke', stylers: [{ color: '#8a8a8a' }] },
+    // 文字は黒＋白フチで日差し下でも読みやすく
     { elementType: 'labels.text.fill', stylers: [{ color: '#000000' }] },
-    { elementType: 'labels.text.stroke', stylers: [{ color: '#ffffff' }] },
+    { elementType: 'labels.text.stroke', stylers: [{ color: '#ffffff' }, { weight: 3 }] },
   ],
 };
 

@@ -923,12 +923,12 @@ const handleDeleteLog = useCallback((id: string) => {
             <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '16px', boxSizing: 'border-box' } as React.CSSProperties}>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 {([
-                  { id: 'default',     label: '標準',           bg: '#e8f4e8', road: '#f5f0e8', water: '#c8dfc8', label2: '#666' },
-                  { id: 'roadmap',     label: 'ロードマップ',   bg: '#eef5ee', road: '#f5d76e', water: '#daeada', label2: '#666' },
-                  { id: 'silver',      label: 'シルバー',       bg: '#f5f5f5', road: '#ffffff', water: '#d8e4ec', label2: '#666' },
-                  { id: 'gray',        label: 'グレー',         bg: '#e0e0e0', road: '#f0f0f0', water: '#c0ccd8', label2: '#666' },
-                  { id: 'retro',       label: 'レトロ',         bg: '#ebe3cd', road: '#f5f1e6', water: '#b9d3c2', label2: '#666' },
-                  { id: 'highcontrast', label: 'ハイコントラスト', bg: '#c8d8b8', road: '#ffffff', water: '#a0c0d8', label2: '#666' },
+                  { id: 'default',      label: '標準',             bg: '#e8f4e8', road: '#f5f0e8', water: '#c8dfc8', label2: '#666', highway: null },
+                  { id: 'roadmap',      label: 'ロードマップ',     bg: '#eef5ee', road: '#f5d76e', water: '#daeada', label2: '#666', highway: null },
+                  { id: 'silver',       label: 'シルバー',         bg: '#f5f5f5', road: '#ffffff', water: '#d8e4ec', label2: '#666', highway: null },
+                  { id: 'gray',         label: 'グレー',           bg: '#e0e0e0', road: '#f0f0f0', water: '#c0ccd8', label2: '#666', highway: null },
+                  { id: 'retro',        label: 'レトロ',           bg: '#ebe3cd', road: '#f5f1e6', water: '#b9d3c2', label2: '#666', highway: null },
+                  { id: 'highcontrast', label: 'ハイコントラスト', bg: '#b8ccb0', road: '#ffffff', water: '#8fb4d4', label2: '#666', highway: '#ffd54f' },
                 ] as const).map(style => (
                   <button key={style.id} onClick={() => onMapStyleChange?.(style.id)} style={{
                     width: 'calc(33.33% - 6px)', padding: '0', border: mapStyle === style.id ? '2px solid #D4AF37' : '1px solid #ddd',
@@ -937,7 +937,7 @@ const handleDeleteLog = useCallback((id: string) => {
                     <svg viewBox="0 0 80 60" width="100%" xmlns="http://www.w3.org/2000/svg">
                       <rect width="80" height="60" fill={style.bg}/>
                       <rect x="0" y="18" width="80" height="24" fill={style.water}/>
-                      <rect x="10" y="0" width="8" height="60" fill={style.road}/>
+                      <rect x="10" y="0" width="8" height="60" fill={style.highway ?? style.road}/>
                       <rect x="35" y="0" width="6" height="60" fill={style.road}/>
                       <rect x="60" y="0" width="7" height="60" fill={style.road}/>
                       <rect x="0" y="5" width="80" height="5" fill="white" opacity="0.15"/>
