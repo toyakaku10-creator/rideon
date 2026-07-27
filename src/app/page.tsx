@@ -240,12 +240,21 @@ export default function Home() {
   const [isSpotMode, setIsSpotMode] = useState(false);
   const [brightDot, setBrightDot] = useState(0);
 
-  // 起動時に一度だけ、localStorage → IndexedDB へデータをコピー（既存データは保持）
+  // 起動時に一度だけ、localStorage → IndexedDB へコピーし、コピー済みを削除
   useEffect(() => {
     (async () => {
-      await migrateFromLocalStorage(STORAGE_KEY);    // 'cycle-map-routes' マイルート
-      await migrateFromLocalStorage(RIDE_LOG_KEY);   // 'rideon-logs' 走行記録
-      await migrateFromLocalStorage(SPOT_KEY);       // 'rideon-spots' スポット
+      // localStorage → IndexedDB へコピー（既にコピー済みなら何もしない）
+      await migrateFromLocalStorage(STORAGE_KEY);
+      await migrateFromLocalStorage(RIDE_LOG_KEY);
+      await migrateFromLocalStorage(SPOT_KEY);
+
+      // IndexedDB側にデータがあることを確認してから localStorage を削除
+      for (const key of [STORAGE_KEY, RIDE_LOG_KEY, SPOT_KEY]) {
+        const idbData = await idbGet(key);
+        if (idbData !== null && localStorage.getItem(key) !== null) {
+          localStorage.removeItem(key);
+        }
+      }
     })();
   }, []);
 
