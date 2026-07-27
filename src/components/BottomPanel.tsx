@@ -7,6 +7,7 @@ import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type D
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { SPOT_CATEGORIES, spotCustomSvg } from '@/lib/spotCategories';
+import { idbGet } from '@/lib/storage';
 
 const SPOT_ICONS: Record<string, React.ComponentType<LucideProps>> = {
   Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin,
@@ -434,6 +435,7 @@ export default function BottomPanel({
   const [showShareSheet, setShowShareSheet] = useState(false);
   const [historyTab, setHistoryTab] = useState<'routes' | 'style' | 'spots' | 'logs'>('routes');
   const [rideLogs, setRideLogs] = useState<RideLog[]>([]);
+  const [idbStatus, setIdbStatus] = useState<string>('確認中...');
   const [showDataMenu, setShowDataMenu] = useState(false);
   const [showGpxMenu, setShowGpxMenu] = useState(false);
   const [showShareExpand, setShowShareExpand] = useState(false);
@@ -509,6 +511,19 @@ export default function BottomPanel({
       const raw = localStorage.getItem(RIDE_LOG_KEY);
       setRideLogs(raw ? (JSON.parse(raw) as RideLog[]) : []);
     } catch { /* ignore */ }
+  }, [showHistory, historyTab]);
+
+  useEffect(() => {
+    (async () => {
+      const routes = await idbGet<unknown[]>('cycle-map-routes');
+      const logs = await idbGet<unknown[]>('rideon-logs');
+      const spots = await idbGet<unknown[]>('rideon-spots');
+      setIdbStatus(
+        `IndexedDB: ルート${Array.isArray(routes) ? routes.length : 0}件 / ` +
+        `記録${Array.isArray(logs) ? logs.length : 0}件 / ` +
+        `スポット${Array.isArray(spots) ? spots.length : 0}件`
+      );
+    })();
   }, [showHistory, historyTab]);
 
   const handleDeleteLog = useCallback((id: string) => {
@@ -1026,6 +1041,7 @@ export default function BottomPanel({
                         {b.key}: {toKB(b.bytes)}KB
                       </div>
                     ))}
+                    <div style={{ marginTop: '4px' }}>{idbStatus}</div>
                   </div>
                 );
               })()}
