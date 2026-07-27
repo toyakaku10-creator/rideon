@@ -29,21 +29,6 @@ function SpotIcon({ category, size = 20 }: { category: string; size?: number }) 
 const RIDE_LOG_KEY = 'rideon-logs';
 import ElevationChart from '@/components/ElevationChart';
 
-const getStorageUsage = () => {
-  let total = 0;
-  const breakdown: { key: string; bytes: number }[] = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (!key) continue;
-    const value = localStorage.getItem(key) ?? '';
-    // UTF-16で2バイト/文字として概算
-    const bytes = (key.length + value.length) * 2;
-    total += bytes;
-    breakdown.push({ key, bytes });
-  }
-  breakdown.sort((a, b) => b.bytes - a.bytes);
-  return { total, breakdown };
-};
 
 function formatDistance(meters: number): string {
   if (meters < 1000) return `${Math.round(meters)}m`;
@@ -435,8 +420,7 @@ export default function BottomPanel({
   const [showShareSheet, setShowShareSheet] = useState(false);
   const [historyTab, setHistoryTab] = useState<'routes' | 'style' | 'spots' | 'logs'>('routes');
   const [rideLogs, setRideLogs] = useState<RideLog[]>([]);
-  const [idbStatus, setIdbStatus] = useState<string>('確認中...');
-  const [showDataMenu, setShowDataMenu] = useState(false);
+const [showDataMenu, setShowDataMenu] = useState(false);
   const [showGpxMenu, setShowGpxMenu] = useState(false);
   const [showShareExpand, setShowShareExpand] = useState(false);
   const [showUrlInput, setShowUrlInput] = useState(false);
@@ -513,20 +497,7 @@ export default function BottomPanel({
     })();
   }, [showHistory, historyTab]);
 
-  useEffect(() => {
-    (async () => {
-      const routes = await idbGet<unknown[]>('cycle-map-routes');
-      const logs = await idbGet<unknown[]>('rideon-logs');
-      const spots = await idbGet<unknown[]>('rideon-spots');
-      setIdbStatus(
-        `IndexedDB: ルート${Array.isArray(routes) ? routes.length : 0}件 / ` +
-        `記録${Array.isArray(logs) ? logs.length : 0}件 / ` +
-        `スポット${Array.isArray(spots) ? spots.length : 0}件`
-      );
-    })();
-  }, [showHistory, historyTab]);
-
-  const handleDeleteLog = useCallback((id: string) => {
+const handleDeleteLog = useCallback((id: string) => {
     setRideLogs((prev) => {
       const updated = prev.filter((l) => l.id !== id);
       void idbSet(RIDE_LOG_KEY, updated);
@@ -1030,22 +1001,7 @@ export default function BottomPanel({
                   />
                 ))
               )}
-              {(() => {
-                const { total, breakdown } = getStorageUsage();
-                const toKB = (b: number) => (b / 1024).toFixed(0);
-                return (
-                  <div style={{ padding: '10px 16px', fontSize: '11px', color: '#888', borderTop: '1px solid #eee' }}>
-                    <div>使用容量: {toKB(total)}KB / 約5,120KB</div>
-                    {breakdown.slice(0, 3).map((b) => (
-                      <div key={b.key} style={{ marginTop: '2px' }}>
-                        {b.key}: {toKB(b.bytes)}KB
-                      </div>
-                    ))}
-                    <div style={{ marginTop: '4px' }}>{idbStatus}</div>
-                  </div>
-                );
-              })()}
-              <div style={{ height: 'calc(20px + env(safe-area-inset-bottom))' }} />
+<div style={{ height: 'calc(20px + env(safe-area-inset-bottom))' }} />
             </div>
           )}
         </div>
