@@ -22,6 +22,7 @@ function SpotCatIcon({ iconName, category, size = 16, color = '#D4AF37' }: { ico
   return <Icon size={size} color={color} />;
 }
 import { decodeRoute } from '@/lib/routeShare';
+import { migrateFromLocalStorage } from '@/lib/storage';
 import BottomPanel from '@/components/BottomPanel';
 import SpeedPanel from '@/components/SpeedPanel';
 
@@ -262,6 +263,15 @@ export default function Home() {
   const [sharedSpots, setSharedSpots] = useState<Spot[]>([]);
   const [isSpotMode, setIsSpotMode] = useState(false);
   const [brightDot, setBrightDot] = useState(0);
+
+  // 起動時に一度だけ、localStorage → IndexedDB へデータをコピー（既存データは保持）
+  useEffect(() => {
+    (async () => {
+      await migrateFromLocalStorage(STORAGE_KEY);    // 'cycle-map-routes' マイルート
+      await migrateFromLocalStorage(RIDE_LOG_KEY);   // 'rideon-logs' 走行記録
+      await migrateFromLocalStorage(SPOT_KEY);       // 'rideon-spots' スポット
+    })();
+  }, []);
 
   useEffect(() => {
     if (tab !== 'speed' && !isDemoMode) return
