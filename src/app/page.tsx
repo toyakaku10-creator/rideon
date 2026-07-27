@@ -22,7 +22,7 @@ function SpotCatIcon({ iconName, category, size = 16, color = '#D4AF37' }: { ico
   return <Icon size={size} color={color} />;
 }
 import { decodeRoute } from '@/lib/routeShare';
-import { migrateFromLocalStorage } from '@/lib/storage';
+import { migrateFromLocalStorage, idbGet, idbSet } from '@/lib/storage';
 import BottomPanel from '@/components/BottomPanel';
 import SpeedPanel from '@/components/SpeedPanel';
 
@@ -186,25 +186,11 @@ export default function Home() {
   const rideTrackRef = useRef<{ lat: number; lng: number }[]>([]);
   const rideRouteNameRef = useRef<string | undefined>(undefined);
 
-  const saveRideLog = useCallback(() => {
+  const saveRideLog = useCallback(async () => {
     const endTime = Date.now();
     const duration = rideStartTimeRef.current ? Math.round((endTime - rideStartTimeRef.current) / 1000) : 0;
     const distanceKm = rideDistance / 1000;
     if (distanceKm >= 0.1 && duration > 0) {
-      const rawTrack = rideTrackRef.current;
-      const MAX_TRACK_POINTS = 500;
-      let track = rawTrack;
-      if (rawTrack.length > MAX_TRACK_POINTS) {
-        const step = rawTrack.length / MAX_TRACK_POINTS;
-        track = Array.from({ length: MAX_TRACK_POINTS }, (_, i) => rawTrack[Math.floor(i * step)]);
-        if (track[track.length - 1] !== rawTrack[rawTrack.length - 1]) {
-          track[track.length - 1] = rawTrack[rawTrack.length - 1];
-        }
-      }
-      const compactTrack = track.map((p) => ({
-        lat: Math.round(p.lat * 1e6) / 1e6,
-        lng: Math.round(p.lng * 1e6) / 1e6,
-      }));
       const log: RideLog = {
         id: endTime.toString(),
         date: new Date().toISOString(),
@@ -213,21 +199,11 @@ export default function Home() {
         avgSpeed: speedCount > 0 ? speedSum / speedCount : 0,
         maxSpeed,
         routeName: rideRouteNameRef.current,
-        track: compactTrack,
+        track: [...rideTrackRef.current],
       };
-      try {
-        const raw = localStorage.getItem(RIDE_LOG_KEY);
-        const logs: RideLog[] = raw ? JSON.parse(raw) : [];
-        logs.push(log);
-        localStorage.setItem(RIDE_LOG_KEY, JSON.stringify(logs));
-      } catch {
-        try {
-          const raw = localStorage.getItem(RIDE_LOG_KEY);
-          const logs: RideLog[] = raw ? JSON.parse(raw) : [];
-          logs.push({ ...log, track: undefined });
-          localStorage.setItem(RIDE_LOG_KEY, JSON.stringify(logs));
-        } catch { /* ignore */ }
-      }
+      const logs = (await idbGet<RideLog[]>(RIDE_LOG_KEY)) ?? [];
+      logs.push(log);
+      await idbSet(RIDE_LOG_KEY, logs);
     }
   }, [rideDistance, speedCount, speedSum, maxSpeed]);
 
@@ -1439,7 +1415,7 @@ export default function Home() {
                 return;
               }
               if (tab === 'speed') {
-                saveRideLog();
+                void saveRideLog();
                 rideStartTimeRef.current = null;
                 localStorage.removeItem('rideon-active-ride');
                 if (rideStopMarkerRef.current) {

@@ -7,7 +7,7 @@ import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type D
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { SPOT_CATEGORIES, spotCustomSvg } from '@/lib/spotCategories';
-import { idbGet } from '@/lib/storage';
+import { idbGet, idbSet } from '@/lib/storage';
 
 const SPOT_ICONS: Record<string, React.ComponentType<LucideProps>> = {
   Droplets, Mountain, TrendingUp, AlertTriangle, Camera, Utensils, MapPin,
@@ -529,7 +529,7 @@ export default function BottomPanel({
   const handleDeleteLog = useCallback((id: string) => {
     setRideLogs((prev) => {
       const updated = prev.filter((l) => l.id !== id);
-      localStorage.setItem(RIDE_LOG_KEY, JSON.stringify(updated));
+      void idbSet(RIDE_LOG_KEY, updated);
       return updated;
     });
   }, []);
