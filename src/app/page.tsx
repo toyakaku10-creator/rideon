@@ -237,8 +237,7 @@ export default function Home() {
   const [spotDeleteConfirm, setSpotDeleteConfirm] = useState<Spot | null>(null);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [sharedSpots, setSharedSpots] = useState<Spot[]>([]);
-  const [isSpotMode, setIsSpotMode] = useState(false);
-  const [brightDot, setBrightDot] = useState(0);
+const [brightDot, setBrightDot] = useState(0);
 
   // 起動時に一度だけ、localStorage → IndexedDB へコピーし、コピー済みを削除
   useEffect(() => {
@@ -678,17 +677,13 @@ export default function Home() {
     [isLoading, routeType]
   );
 
-  const handleMapClick = useCallback(
-    (latlng: LatLng) => {
-      if (isSpotMode) {
-        setSpotDialog({ lat: latlng.lat, lng: latlng.lng });
-        setSpotName('');
-        setSpotCategory('pin');
-        setIsSpotMode(false);
-      }
-    },
-    [isSpotMode]
-  );
+  const handleSpotButtonClick = useCallback(() => {
+    const center = mapInstanceRef.current?.getCenter();
+    if (!center) return;
+    setSpotDialog({ lat: center.lat(), lng: center.lng() });
+    setSpotName('');
+    setSpotCategory('pin');
+  }, []);
 
   const handleAddPoint = useCallback(() => {
     if (!mapInstanceRef.current) return;
@@ -1190,7 +1185,7 @@ export default function Home() {
           currentPosition={currentPosition}
           center={mapCenter}
           follow={mapFollow}
-          onMapClick={handleMapClick}
+          onMapClick={() => {}}
           fitBoundsPoints={fitBoundsPoints}
           onStartPointDragged={handleStartPointDragged}
           isAdjustingImport={isAdjustingImport}
@@ -1211,7 +1206,7 @@ export default function Home() {
           elevationMarkerDistanceText={elevationMarkerDistanceText}
           elevationMarkerElevationText={elevationMarkerElevationText}
           spots={[...spots, ...sharedSpots]}
-          onLongPress={(lat, lng) => { if (!isSpotMode) return; setSpotDialog({ lat, lng }); setSpotName(''); setSpotCategory('pin'); }}
+          onLongPress={undefined}
           onSpotClick={(spot) => { if (spots.some((s) => s.id === spot.id)) setSpotDeleteConfirm(spot); }}
           logTrack={logTrack}
           referenceSegments={referenceRoute?.segments}
@@ -1618,8 +1613,8 @@ export default function Home() {
             if (pts.length >= 2) startDemoRide(pts);
           }}
           isElevationLoading={isElevationLoading}
-          isSpotMode={isSpotMode}
-          onToggleSpotMode={() => setIsSpotMode((v) => !v)}
+          isSpotMode={false}
+          onToggleSpotMode={handleSpotButtonClick}
           onReorderRoutes={(routes) => {
             setSavedRoutes(routes);
             void idbSet(STORAGE_KEY, routes);
