@@ -507,10 +507,10 @@ export default function BottomPanel({
   };
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(RIDE_LOG_KEY);
-      setRideLogs(raw ? (JSON.parse(raw) as RideLog[]) : []);
-    } catch { /* ignore */ }
+    (async () => {
+      const logs = await idbGet<RideLog[]>(RIDE_LOG_KEY);
+      setRideLogs(Array.isArray(logs) ? logs : []);
+    })();
   }, [showHistory, historyTab]);
 
   useEffect(() => {
