@@ -270,20 +270,18 @@ export default function Home() {
 
   // Load saved routes
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setSavedRoutes(JSON.parse(raw) as SavedRoute[]);
-    } catch {
-      // ignore corrupt data
-    }
+    (async () => {
+      const routes = await idbGet<SavedRoute[]>(STORAGE_KEY);
+      if (Array.isArray(routes)) setSavedRoutes(routes);
+    })();
   }, []);
 
   // Load spots
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(SPOT_KEY);
-      if (raw) setSpots(JSON.parse(raw) as Spot[]);
-    } catch { /* ignore */ }
+    (async () => {
+      const spots = await idbGet<Spot[]>(SPOT_KEY);
+      if (Array.isArray(spots)) setSpots(spots);
+    })();
   }, []);
 
   // Restore route from ?share=ID (Firestore short URL)
@@ -735,7 +733,7 @@ export default function Home() {
     };
     setSpots((prev) => {
       const updated = [...prev, spot];
-      localStorage.setItem(SPOT_KEY, JSON.stringify(updated));
+      void idbSet(SPOT_KEY, updated);
       return updated;
     });
     setSpotDialog(null);
@@ -746,7 +744,7 @@ export default function Home() {
   const handleDeleteSpot = useCallback((id: string) => {
     setSpots((prev) => {
       const updated = prev.filter((s) => s.id !== id);
-      localStorage.setItem(SPOT_KEY, JSON.stringify(updated));
+      void idbSet(SPOT_KEY, updated);
       return updated;
     });
   }, []);
@@ -756,7 +754,7 @@ export default function Home() {
       const existingIds = new Set(prev.map((s) => s.id));
       const newSpots = incoming.filter((s) => !existingIds.has(s.id));
       const updated = [...prev, ...newSpots];
-      localStorage.setItem(SPOT_KEY, JSON.stringify(updated));
+      void idbSet(SPOT_KEY, updated);
       return updated;
     });
     setSharedSpots([]);
@@ -781,7 +779,7 @@ export default function Home() {
     (id: string) => {
       const updated = savedRoutes.filter((r) => r.id !== id);
       setSavedRoutes(updated);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      void idbSet(STORAGE_KEY, updated);
     },
     [savedRoutes]
   );
@@ -790,7 +788,7 @@ export default function Home() {
     (id: string, newName: string) => {
       const updated = savedRoutes.map((r) => r.id === id ? { ...r, name: newName } : r);
       setSavedRoutes(updated);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      void idbSet(STORAGE_KEY, updated);
     },
     [savedRoutes]
   );
@@ -801,7 +799,7 @@ export default function Home() {
       const newRoutes = imported.filter((r) => !existing.has(r.id));
       const updated = [...savedRoutes, ...newRoutes];
       setSavedRoutes(updated);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      void idbSet(STORAGE_KEY, updated);
       alert(`${newRoutes.length}件のルートをインポートしました`);
     },
     [savedRoutes]
@@ -916,7 +914,7 @@ export default function Home() {
       };
       const updated = [...savedRoutes, route];
       setSavedRoutes(updated);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      void idbSet(STORAGE_KEY, updated);
       setIsImported(false);
       setIsAdjustingImport(false);
       setIsGpxImport(false);
@@ -1615,7 +1613,7 @@ export default function Home() {
           onToggleSpotMode={() => setIsSpotMode((v) => !v)}
           onReorderRoutes={(routes) => {
             setSavedRoutes(routes);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(routes));
+            void idbSet(STORAGE_KEY, routes);
           }}
           mapStyle={mapStyle}
           onMapStyleChange={handleMapStyleChange}
