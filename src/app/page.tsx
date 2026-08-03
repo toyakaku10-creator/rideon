@@ -188,18 +188,10 @@ export default function Home() {
 
   const saveRideLog = useCallback(async () => {
     const endTime = Date.now();
-    const duration = rideStartTimeRef.current ? Math.round((endTime - rideStartTimeRef.current) / 1000) : 0;
+    // refが失われていてもlocalStorageから復元
+    const startTime = rideStartTimeRef.current ?? (Number(localStorage.getItem('rideon-ride-start')) || 0);
+    const duration = startTime > 0 ? Math.round((endTime - startTime) / 1000) : 0;
     const distanceKm = rideDistance / 1000;
-
-    // デバッグ用：保存試行の記録
-    const debugInfo: Record<string, unknown> = {
-      time: new Date().toISOString(),
-      distanceKm,
-      duration,
-      rideStartTimeRef: rideStartTimeRef.current,
-      trackPoints: rideTrackRef.current.length,
-      conditionMet: distanceKm >= 0.1 && duration > 0,
-    };
 
     if (distanceKm >= 0.1 && duration > 0) {
       const log: RideLog = {
@@ -215,22 +207,9 @@ export default function Home() {
       try {
         const logs = (await idbGet<RideLog[]>(RIDE_LOG_KEY)) ?? [];
         logs.push(log);
-        const ok = await idbSet(RIDE_LOG_KEY, logs);
-        debugInfo.saveResult = ok ? 'success' : 'idbSet returned false';
-        debugInfo.totalLogs = logs.length;
-      } catch (err) {
-        debugInfo.saveResult = 'error: ' + String(err);
-      }
-    } else {
-      debugInfo.saveResult = 'condition not met';
+        await idbSet(RIDE_LOG_KEY, logs);
+      } catch { /* ignore */ }
     }
-
-    // 直近5件の試行履歴を保存
-    try {
-      const history = (await idbGet<unknown[]>('rideon-save-debug')) ?? [];
-      history.push(debugInfo);
-      await idbSet('rideon-save-debug', history.slice(-5));
-    } catch { /* ignore */ }
   }, [rideDistance, speedCount, speedSum, maxSpeed]);
 
   const [logTrack, setLogTrack] = useState<{ lat: number; lng: number }[] | null>(null);
@@ -1445,6 +1424,7 @@ const [brightDot, setBrightDot] = useState(0);
               if (tab === 'speed') {
                 await saveRideLog();
                 rideStartTimeRef.current = null;
+                localStorage.removeItem('rideon-ride-start');
                 localStorage.removeItem('rideon-active-ride');
                 if (rideStopMarkerRef.current) {
                   rideStopMarkerRef.current.setMap(null);
@@ -1455,7 +1435,9 @@ const [brightDot, setBrightDot] = useState(0);
                 // ライドモード開始
                 rideTrackRef.current = [];
                 setLogTrack(null);
-                rideStartTimeRef.current = Date.now();
+                const startTime = Date.now();
+                rideStartTimeRef.current = startTime;
+                localStorage.setItem('rideon-ride-start', String(startTime));
                 setMaxSpeed(0);
                 setSpeedSum(0);
                 setSpeedCount(0);

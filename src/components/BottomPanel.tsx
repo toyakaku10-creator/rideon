@@ -430,8 +430,6 @@ const [showDataMenu, setShowDataMenu] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showSaveSheet, setShowSaveSheet] = useState(false);
   const [routeName, setRouteName] = useState('');
-  const [saveDebug, setSaveDebug] = useState<string>('');
-
   // 外部から保存シートを開く（インポート完了後など）
   const prevOpenSaveSheet = useRef(false);
   useEffect(() => {
@@ -495,13 +493,6 @@ const [showDataMenu, setShowDataMenu] = useState(false);
     (async () => {
       const logs = await idbGet<RideLog[]>(RIDE_LOG_KEY);
       setRideLogs(Array.isArray(logs) ? logs : []);
-    })();
-  }, [showHistory, historyTab]);
-
-  useEffect(() => {
-    (async () => {
-      const history = await idbGet<unknown[]>('rideon-save-debug');
-      setSaveDebug(history ? JSON.stringify(history, null, 1) : 'なし');
     })();
   }, [showHistory, historyTab]);
 
@@ -1009,10 +1000,7 @@ const handleDeleteLog = useCallback((id: string) => {
                   />
                 ))
               )}
-              <div style={{ padding: '10px 16px', fontSize: '10px', color: '#888', borderTop: '1px solid #eee', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
-                保存履歴: {saveDebug}
-              </div>
-              <div style={{ height: 'calc(20px + env(safe-area-inset-bottom))' }} />
+<div style={{ height: 'calc(20px + env(safe-area-inset-bottom))' }} />
             </div>
           )}
         </div>
