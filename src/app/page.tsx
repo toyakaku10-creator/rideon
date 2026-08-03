@@ -190,6 +190,17 @@ export default function Home() {
     const endTime = Date.now();
     const duration = rideStartTimeRef.current ? Math.round((endTime - rideStartTimeRef.current) / 1000) : 0;
     const distanceKm = rideDistance / 1000;
+
+    // デバッグ用：保存試行の記録
+    const debugInfo: Record<string, unknown> = {
+      time: new Date().toISOString(),
+      distanceKm,
+      duration,
+      rideStartTimeRef: rideStartTimeRef.current,
+      trackPoints: rideTrackRef.current.length,
+      conditionMet: distanceKm >= 0.1 && duration > 0,
+    };
+
     if (distanceKm >= 0.1 && duration > 0) {
       const log: RideLog = {
         id: endTime.toString(),
@@ -201,10 +212,25 @@ export default function Home() {
         routeName: rideRouteNameRef.current,
         track: [...rideTrackRef.current],
       };
-      const logs = (await idbGet<RideLog[]>(RIDE_LOG_KEY)) ?? [];
-      logs.push(log);
-      await idbSet(RIDE_LOG_KEY, logs);
+      try {
+        const logs = (await idbGet<RideLog[]>(RIDE_LOG_KEY)) ?? [];
+        logs.push(log);
+        const ok = await idbSet(RIDE_LOG_KEY, logs);
+        debugInfo.saveResult = ok ? 'success' : 'idbSet returned false';
+        debugInfo.totalLogs = logs.length;
+      } catch (err) {
+        debugInfo.saveResult = 'error: ' + String(err);
+      }
+    } else {
+      debugInfo.saveResult = 'condition not met';
     }
+
+    // 直近5件の試行履歴を保存
+    try {
+      const history = (await idbGet<unknown[]>('rideon-save-debug')) ?? [];
+      history.push(debugInfo);
+      await idbSet('rideon-save-debug', history.slice(-5));
+    } catch { /* ignore */ }
   }, [rideDistance, speedCount, speedSum, maxSpeed]);
 
   const [logTrack, setLogTrack] = useState<{ lat: number; lng: number }[] | null>(null);
@@ -1411,13 +1437,13 @@ const [brightDot, setBrightDot] = useState(0);
           <div
             className={segments.length > 0 && tab !== 'speed' && !isDemoMode ? 'rideon-pulse' : ''}
             style={{ position: 'relative', width: '130px', height: '38px', cursor: 'pointer', userSelect: 'none', WebkitUserSelect: 'none' } as React.CSSProperties}
-            onClick={() => {
+            onClick={async () => {
               if (isDemoMode) {
                 stopDemo();
                 return;
               }
               if (tab === 'speed') {
-                void saveRideLog();
+                await saveRideLog();
                 rideStartTimeRef.current = null;
                 localStorage.removeItem('rideon-active-ride');
                 if (rideStopMarkerRef.current) {
